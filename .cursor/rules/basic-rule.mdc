@@ -1,0 +1,45 @@
+---
+alwaysApply: true
+---
+
+# Cursor Rules for Stay One Korea Project
+
+## Responsive Design Rules ✅ COMPLETED
+
+### Breakpoint System
+- **Desktop Layout**: 1200px and above (`xl:` breakpoint ≈ 1280px)
+- **Mobile Layout**: Below 1200px, maximum width 600px
+
+### Implementation Guidelines ✅
+- ✅ Container widths: `max-w-7xl xl:max-w-[1200px]`
+- ✅ Page content: `max-w-[600px]` for mobile layouts
+- ✅ Padding: `px-4 lg:px-6 xl:px-8` for responsive spacing
+- ✅ Applied to all views: header, footer, and all pages
+
+### Applied Components ✅
+- ✅ Header component: `xl:max-w-[1200px]` container with responsive padding
+- ✅ Footer component: `xl:max-w-[1200px]` container with responsive padding
+- ✅ All page layouts: `max-w-[600px]` for mobile content width
+- ✅ Main pages: home, signup, account_check, verify-email, signin, email-verified
+
+### Responsive Classes Used
+- Container: `max-w-7xl xl:max-w-[1200px]`
+- Content: `max-w-[600px]` (mobile limit)
+- Spacing: `px-4 lg:px-6 xl:px-8`
+- Layout: Consistent responsive behavior across all breakpoints
+
+## Code Style
+- Use TypeScript for all components
+- Follow Tailwind CSS utility-first approach
+- Maintain consistent spacing and typography across breakpoints
+- Implement mobile-first responsive design
+
+모든 Global Top Navigation은 Position: Fixed로 상단에 고정됩니다.
+
+ - Figma Dev Mode MCP 서버는 이미지 및 SVG 에셋을 제공할 수 있는 끝점을 제공합니다.
+  - 중요: Figma Dev Mode MCP 서버가 이미지 또는 SVG에 대한 로컬 호스트 소스를 반환하는 경우 해당 이미지 또는 SVG 소스를 직접 사용하세요.
+  - 중요: 새로운 아이콘 패키지를 가져오거나 추가하지 마세요. 모든 에셋은 Figma 페이로드에 있어야 합니다.
+  - 중요: 로컬 호스트 소스가 제공되는 경우 입력 예시를 사용하거나 생성하지 마세요.
+
+환경변수를 등록할때는 아래의 예시와 같이 하드코딩 되면 안됩니다.
+- const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:8080"

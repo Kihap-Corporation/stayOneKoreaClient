@@ -1,0 +1,33 @@
+# Cursor Rules for Stay One Korea Project
+
+## Responsive Design Rules ✅ COMPLETED
+
+### Breakpoint System
+- **Desktop Layout**: 1200px and above (`xl:` breakpoint ≈ 1280px)
+- **Mobile Layout**: Below 1200px, maximum width 600px
+
+### Implementation Guidelines ✅
+- ✅ Container widths: `max-w-7xl xl:max-w-[1200px]`
+- ✅ Page content: `max-w-[600px]` for mobile layouts
+- ✅ Padding: `px-4 lg:px-6 xl:px-8` for responsive spacing
+- ✅ Applied to all views: header, footer, and all pages
+
+### Applied Components ✅
+- ✅ Header component: Responsive design with hamburger menu (hidden elements) + profile dropdown
+- ✅ Footer component: `xl:max-w-[1200px]` container with responsive padding
+- ✅ All page layouts: `max-w-[600px]` for mobile content width
+- ✅ Main pages: home, signup, account_check, verify-email, signin, email-verified
+- ✅ MyPage: User profile page with bookings, settings, and account management (responsive)
+
+### Responsive Classes Used
+- Container: `max-w-7xl xl:max-w-[1200px]`
+- Content: `max-w-[600px]` (mobile limit)
+- Spacing: `px-4 lg:px-6 xl:px-8`
+- Layout: `hidden lg:flex` (desktop), `flex lg:hidden` (mobile)
+- Mobile Menu: Hamburger menu with slide-down navigation
+
+## Code Style
+- Use TypeScript for all components
+- Follow Tailwind CSS utility-first approach
+- Maintain consistent spacing and typography across breakpoints
+- Implement mobile-first responsive design
