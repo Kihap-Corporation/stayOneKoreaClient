@@ -13,11 +13,12 @@
 - ✅ Applied to all views: header, footer, and all pages
 
 ### Applied Components ✅
-- ✅ Header component: Responsive design with hamburger menu (hidden elements) + profile dropdown
+- ✅ Header component: Responsive design with hamburger menu (hidden elements) + custom profile dropdown
 - ✅ Footer component: `xl:max-w-[1200px]` container with responsive padding
 - ✅ All page layouts: `max-w-[600px]` for mobile content width
 - ✅ Main pages: home, signup, account_check, verify-email, signin, email-verified
 - ✅ MyPage: User profile page with bookings, settings, and account management (responsive)
+- ✅ Signup: Email readonly, international phone input with country selector
 
 ### Responsive Classes Used
 - Container: `max-w-7xl xl:max-w-[1200px]`

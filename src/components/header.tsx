@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { Search, Bell, User, Bed, ChevronDown, Globe, DollarSign, Menu, X } from "lucide-react"
+import { Search, Bell, User, Bed, ChevronDown, Globe, DollarSign, Menu, X, Heart, LogOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -30,6 +30,7 @@ const currencies = [
 export function Header() {
   const { currentLanguage, setCurrentLanguage, currentCurrency, setCurrentCurrency, messages } = useLanguage()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isProfileOpen, setIsProfileOpen] = useState(false)
 
   return (
     <header className="border-b bg-white">
@@ -114,35 +115,58 @@ export function Header() {
               <Bell className="h-5 w-5" />
             </Button>
             {/* Profile Menu */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="rounded-full bg-blue-100">
-                  <User className="h-5 w-5 text-blue-400" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuItem className="flex items-center gap-2">
-                  <User className="h-4 w-4" />
-                  {messages?.header?.profile?.viewProfile || "View Profile"}
-                </DropdownMenuItem>
-                <DropdownMenuItem className="flex items-center gap-2">
-                  <Bell className="h-4 w-4" />
-                  {messages?.header?.profile?.notifications || "Notifications"}
-                </DropdownMenuItem>
-                <DropdownMenuItem className="flex items-center gap-2">
-                  <Bed className="h-4 w-4" />
-                  {messages?.header?.profile?.myBookings || "My Bookings"}
-                </DropdownMenuItem>
-                <DropdownMenuItem className="flex items-center gap-2">
-                  <Globe className="h-4 w-4" />
-                  {messages?.header?.profile?.settings || "Settings"}
-                </DropdownMenuItem>
-                <DropdownMenuItem className="flex items-center gap-2 text-red-600">
-                  <ChevronDown className="h-4 w-4 rotate-90" />
-                  {messages?.header?.profile?.logout || "Logout"}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <div className="relative">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="rounded-full bg-blue-100"
+                onClick={() => setIsProfileOpen(!isProfileOpen)}
+              >
+                <User className="h-5 w-5 text-blue-400" />
+              </Button>
+
+              {isProfileOpen && (
+                <>
+                  <div className="fixed inset-0 z-10" onClick={() => setIsProfileOpen(false)} />
+                  <div className="absolute right-0 top-12 z-20 w-56 bg-white rounded-2xl shadow-lg border border-gray-200 py-2">
+                    <Link
+                      href="/mypage"
+                      className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors"
+                      onClick={() => setIsProfileOpen(false)}
+                    >
+                      <User className="h-5 w-5 text-gray-600" />
+                      <span className="text-base">My account</span>
+                    </Link>
+                    <Link
+                      href="/mypage"
+                      className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors"
+                      onClick={() => setIsProfileOpen(false)}
+                    >
+                      <Bed className="h-5 w-5 text-gray-600" />
+                      <span className="text-base">Bookings</span>
+                    </Link>
+                    <Link
+                      href="#"
+                      className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors"
+                      onClick={() => setIsProfileOpen(false)}
+                    >
+                      <Heart className="h-5 w-5 text-gray-600" />
+                      <span className="text-base">Saved</span>
+                    </Link>
+                    <button
+                      className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors w-full text-left"
+                      onClick={() => {
+                        setIsProfileOpen(false)
+                        // 로그아웃 로직 추가 가능
+                      }}
+                    >
+                      <LogOut className="h-5 w-5 text-gray-600" />
+                      <span className="text-base">Sign out</span>
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </div>
 
@@ -160,41 +184,67 @@ export function Header() {
           {/* Mobile Profile + Hamburger - Right */}
           <div className="flex items-center gap-2">
             {/* Mobile Profile Icon */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="rounded-full bg-blue-100">
-                  <User className="h-5 w-5 text-blue-400" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuItem className="flex items-center gap-2">
-                  <User className="h-4 w-4" />
-                  {messages?.header?.profile?.viewProfile || "View Profile"}
-                </DropdownMenuItem>
-                <DropdownMenuItem className="flex items-center gap-2">
-                  <Bell className="h-4 w-4" />
-                  {messages?.header?.profile?.notifications || "Notifications"}
-                </DropdownMenuItem>
-                <DropdownMenuItem className="flex items-center gap-2">
-                  <Bed className="h-4 w-4" />
-                  {messages?.header?.profile?.myBookings || "My Bookings"}
-                </DropdownMenuItem>
-                <DropdownMenuItem className="flex items-center gap-2">
-                  <Globe className="h-4 w-4" />
-                  {messages?.header?.profile?.settings || "Settings"}
-                </DropdownMenuItem>
-                <DropdownMenuItem className="flex items-center gap-2 text-red-600">
-                  <ChevronDown className="h-4 w-4 rotate-90" />
-                  {messages?.header?.profile?.logout || "Logout"}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <div className="relative">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="rounded-full bg-blue-100"
+                onClick={() => setIsProfileOpen(!isProfileOpen)}
+              >
+                <User className="h-5 w-5 text-blue-400" />
+              </Button>
+
+              {isProfileOpen && (
+                <>
+                  <div className="fixed inset-0 z-10" onClick={() => setIsProfileOpen(false)} />
+                  <div className="absolute right-0 top-12 z-20 w-56 bg-white rounded-2xl shadow-lg border border-gray-200 py-2">
+                    <Link
+                      href="/mypage"
+                      className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors"
+                      onClick={() => setIsProfileOpen(false)}
+                    >
+                      <User className="h-5 w-5 text-gray-600" />
+                      <span className="text-base">My account</span>
+                    </Link>
+                    <Link
+                      href="/mypage"
+                      className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors"
+                      onClick={() => setIsProfileOpen(false)}
+                    >
+                      <Bed className="h-5 w-5 text-gray-600" />
+                      <span className="text-base">Bookings</span>
+                    </Link>
+                    <Link
+                      href="#"
+                      className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors"
+                      onClick={() => setIsProfileOpen(false)}
+                    >
+                      <Heart className="h-5 w-5 text-gray-600" />
+                      <span className="text-base">Saved</span>
+                    </Link>
+                    <button
+                      className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors w-full text-left"
+                      onClick={() => {
+                        setIsProfileOpen(false)
+                        // 로그아웃 로직 추가 가능
+                      }}
+                    >
+                      <LogOut className="h-5 w-5 text-gray-600" />
+                      <span className="text-base">Sign out</span>
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
 
             {/* Mobile Hamburger Menu */}
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              onClick={() => {
+                setIsMobileMenuOpen(!isMobileMenuOpen)
+                setIsProfileOpen(false) // 햄버거 메뉴 열 때 프로필 메뉴 닫기
+              }}
             >
               {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </Button>

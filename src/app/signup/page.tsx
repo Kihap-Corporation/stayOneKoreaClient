@@ -11,19 +11,42 @@ import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { useLanguage } from "@/components/language-provider"
+import { PhoneInput } from 'react-international-phone'
+import 'react-international-phone/style.css'
 
 export default function SignupPage() {
-  const { messages, phoneFormat } = useLanguage()
+  const { messages } = useLanguage()
   const searchParams = useSearchParams()
   const [firstName, setFirstName] = useState("")
   const [lastName, setLastName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [passwordError, setPasswordError] = useState("")
   const [phoneNumber, setPhoneNumber] = useState("")
   const [consentAll, setConsentAll] = useState(false)
   const [consentTerms, setConsentTerms] = useState(false)
   const [consentPrivacy, setConsentPrivacy] = useState(false)
   const [consentThirdParty, setConsentThirdParty] = useState(false)
+
+  // 비밀번호 유효성 검사 함수
+  const validatePassword = (password: string) => {
+    if (!password) {
+      return ""
+    }
+
+    // 길이 체크 (8-20자)
+    if (password.length < 8 || password.length > 20) {
+      return messages?.signup?.passwordLengthError || "Password must be 8-20 characters long."
+    }
+
+    // 정규식 체크 (영문자, 숫자, 특수문자 포함)
+    const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]+$/
+    if (!passwordRegex.test(password)) {
+      return messages?.signup?.passwordPatternError || "Password must contain at least one letter, one number, and one special character (@, $, !, %, *, ?, &, #)."
+    }
+
+    return ""
+  }
 
   // URL 파라미터에서 이메일 읽어오기
   useEffect(() => {
@@ -32,6 +55,12 @@ export default function SignupPage() {
       setEmail(emailParam)
     }
   }, [searchParams])
+
+  // 비밀번호 실시간 유효성 검사
+  useEffect(() => {
+    const error = validatePassword(password)
+    setPasswordError(error)
+  }, [password, messages])
 
   const handleConsentAllChange = (checked: boolean) => {
     setConsentAll(checked)
@@ -55,7 +84,7 @@ export default function SignupPage() {
       lastName,
       email,
       password,
-      phoneNumber,
+      phoneNumber, // PhoneInput에서 반환되는 전체 전화번호 (국가코드 포함)
       consentTerms,
       consentPrivacy,
       consentThirdParty,
@@ -114,7 +143,8 @@ export default function SignupPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="rounded-lg border-gray-300"
+                readOnly
+                className="rounded-lg border-gray-300 bg-gray-50 cursor-not-allowed"
               />
             </div>
 
@@ -130,10 +160,14 @@ export default function SignupPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="rounded-lg border-gray-300"
+                className={`rounded-lg border-gray-300 ${passwordError ? 'border-red-500 focus:border-red-500' : ''}`}
               />
-              <div className="flex items-center gap-1 text-xs text-gray-500">
-                <span>ⓘ {messages?.signup?.passwordRule || "Password Rule"}</span>
+              <div className="flex items-center gap-1 text-xs">
+                {passwordError ? (
+                  <span className="text-red-600">⚠️ {passwordError}</span>
+                ) : (
+                  <span className="text-gray-500">ⓘ {messages?.signup?.passwordRule || "Password Rule"}</span>
+                )}
               </div>
             </div>
 
@@ -142,25 +176,17 @@ export default function SignupPage() {
               <Label htmlFor="phoneNumber" className="text-sm font-medium">
                 {messages?.signup?.phoneNumber || "Phone number"} <span className="text-primary">*</span>
               </Label>
-              <div className="flex gap-2">
-                <div className="flex items-center px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 min-w-[100px]">
-                  {phoneFormat.flag} {phoneFormat.countryCode}
-                </div>
-                <Input
-                  id="phoneNumber"
-                  type="tel"
-                  placeholder={messages?.signup?.phoneNumberPlaceholder || phoneFormat.placeholder}
-                  value={phoneNumber}
-                  onChange={(e) => {
-                    // 각 나라별 전화번호 형식으로 자동 포맷팅
-                    const formattedValue = phoneFormat.format(e.target.value)
-                    setPhoneNumber(formattedValue)
-                  }}
-                  required
-                  className="flex-1 rounded-lg border-gray-300"
-                  maxLength={phoneFormat.maxLength}
-                />
-              </div>
+              <PhoneInput
+                defaultCountry="kr"
+                value={phoneNumber}
+                onChange={(phone) => setPhoneNumber(phone)}
+                inputClassName="flex-1 rounded-lg border-gray-300"
+                containerClass="!w-full"
+                inputProps={{
+                  id: "phoneNumber",
+                  required: true,
+                }}
+              />
             </div>
 
             {/* Consent checkboxes */}

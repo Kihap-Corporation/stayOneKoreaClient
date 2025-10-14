@@ -80,7 +80,9 @@ header: {
       emailPlaceholder: "id@email.com",
       password: "비밀번호",
       passwordPlaceholder: "비밀번호",
-    passwordRule: "비밀번호 규칙",
+    passwordRule: "비밀번호는 영문자, 숫자, 특수문자(@ , $, !, %, *, ?, &, #)를 각각 최소 1개 이상 포함한 8~20자의 문자열이어야 합니다.",
+    passwordLengthError: "비밀번호는 8자 이상 20자 이하여야 합니다.",
+    passwordPatternError: "비밀번호는 영문자, 숫자, 특수문자를 최소 1개씩 포함해야 합니다.",
     phoneNumber: "휴대폰 번호",
       phoneNumberPlaceholder: "010-1234-5678",
     southKorea: "대한민국",
@@ -113,6 +115,5 @@ header: {
     edit: "편집",
     close: "닫기"
   }
-}
 
 }
