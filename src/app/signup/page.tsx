@@ -3,7 +3,7 @@
 import type React from "react"
 
 import { useState, useEffect } from "react"
-import {Header} from "@/components/header"
+import { Header } from "@/components/header"
 import {Footer} from "@/components/footer"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -12,6 +12,9 @@ import { Label } from "@/components/ui/label"
 import { useLanguage } from "@/components/language-provider"
 import { PhoneInput } from 'react-international-phone'
 import 'react-international-phone/style.css'
+
+// useSearchParams를 사용하므로 동적 렌더링 강제
+export const dynamic = 'force-dynamic'
 
 export default function SignupPage() {
   const { messages } = useLanguage()
@@ -46,6 +49,17 @@ export default function SignupPage() {
     return ""
   }
 
+  // localStorage에서 이메일 읽어오기
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedEmail = localStorage.getItem('signupEmail')
+      if (savedEmail) {
+        setEmail(savedEmail)
+        // 사용 후 localStorage에서 제거
+        localStorage.removeItem('signupEmail')
+      }
+    }
+  }, [])
 
   // 비밀번호 실시간 유효성 검사
   useEffect(() => {
