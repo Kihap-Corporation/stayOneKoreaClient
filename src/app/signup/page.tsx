@@ -181,7 +181,6 @@ export default function SignupPage() {
                 value={phoneNumber}
                 onChange={(phone) => setPhoneNumber(phone)}
                 inputClassName="flex-1 rounded-lg border-gray-300"
-                containerClass="!w-full"
                 inputProps={{
                   id: "phoneNumber",
                   required: true,

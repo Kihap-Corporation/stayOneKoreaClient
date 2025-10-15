@@ -2,14 +2,14 @@
 
 import { useState, useEffect, createContext, useContext, ReactNode } from "react"
 
-const languages = [
+export const languages = [
   { code: 'ko', name: '한국어', flag: '🇰🇷' },
   { code: 'en', name: 'English', flag: '🇺🇸' },
   { code: 'zh', name: '中文', flag: '🇨🇳' },
   { code: 'fr', name: 'Français', flag: '🇫🇷' },
 ] as const
 
-const currencies = [
+export const currencies = [
   { code: 'USD', symbol: '$', name: 'US Dollar' },
   { code: 'KRW', symbol: '₩', name: 'Korean Won' },
   { code: 'CNY', symbol: '¥', name: 'Chinese Yuan' },
@@ -18,10 +18,10 @@ const currencies = [
 
 // 언어 상태를 관리하는 Context
 interface LanguageContextType {
-  currentLanguage: typeof languages[0]
-  setCurrentLanguage: (language: typeof languages[0]) => void
-  currentCurrency: typeof currencies[0]
-  setCurrentCurrency: (currency: typeof currencies[0]) => void
+  currentLanguage: typeof languages[number]
+  setCurrentLanguage: (language: typeof languages[number]) => void
+  currentCurrency: typeof currencies[number]
+  setCurrentCurrency: (currency: typeof currencies[number]) => void
   messages: any
   setMessages: (messages: any) => void
   phoneFormat: typeof phoneFormats.ko
@@ -451,8 +451,8 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
     const savedLanguage = localStorage.getItem('selectedLanguage')
     const savedCurrency = localStorage.getItem('selectedCurrency')
 
-    let newLanguage = languages[0] // 기본값
-    let newCurrency = currencies[1] // 기본값
+    let newLanguage: typeof languages[number] = languages[0] // 기본값
+    let newCurrency: typeof currencies[number] = currencies[1] // 기본값
 
     if (savedLanguage) {
       const found = languages.find(lang => lang.code === savedLanguage)

@@ -10,22 +10,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { useLanguage } from "./language-provider"
+import { useLanguage, languages, currencies } from "./language-provider"
 import { useState } from "react"
-
-const languages = [
-  { code: 'ko', name: '한국어', flag: '🇰🇷' },
-  { code: 'en', name: 'English', flag: '🇺🇸' },
-  { code: 'zh', name: '中文', flag: '🇨🇳' },
-  { code: 'fr', name: 'Français', flag: '🇫🇷' },
-] as const
-
-const currencies = [
-  { code: 'USD', symbol: '$', name: 'US Dollar' },
-  { code: 'KRW', symbol: '₩', name: 'Korean Won' },
-  { code: 'CNY', symbol: '¥', name: 'Chinese Yuan' },
-  { code: 'EUR', symbol: '€', name: 'Euro' },
-] as const
 
 export function Header() {
   const { currentLanguage, setCurrentLanguage, currentCurrency, setCurrentCurrency, messages } = useLanguage()

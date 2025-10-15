@@ -13,7 +13,8 @@ import { useRouter } from "next/navigation"
 import { useLanguage } from "@/components/language-provider"
 
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
+// Vercel에서는 Environment Variables에서 NEXT_PUBLIC_BASE_URL 설정 필요
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "https://your-backend-api.com"
 
 export default function AccountCheckPage() {
   const [email, setEmail] = useState("")
