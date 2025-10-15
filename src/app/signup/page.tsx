@@ -3,7 +3,6 @@
 import type React from "react"
 
 import { useState, useEffect } from "react"
-import { useSearchParams } from "next/navigation"
 import {Header} from "@/components/header"
 import {Footer} from "@/components/footer"
 import { Button } from "@/components/ui/button"
@@ -16,7 +15,6 @@ import 'react-international-phone/style.css'
 
 export default function SignupPage() {
   const { messages } = useLanguage()
-  const searchParams = useSearchParams()
   const [firstName, setFirstName] = useState("")
   const [lastName, setLastName] = useState("")
   const [email, setEmail] = useState("")
@@ -48,13 +46,6 @@ export default function SignupPage() {
     return ""
   }
 
-  // URL 파라미터에서 이메일 읽어오기
-  useEffect(() => {
-    const emailParam = searchParams.get('email')
-    if (emailParam) {
-      setEmail(emailParam)
-    }
-  }, [searchParams])
 
   // 비밀번호 실시간 유효성 검사
   useEffect(() => {

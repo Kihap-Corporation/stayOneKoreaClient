@@ -43,8 +43,11 @@ export default function AccountCheckPage() {
       const data = await response.json()
 
       if (data.code === 200) {
-        // 회원가입 페이지로 이동 (이메일 기억)
-        router.push(`/signup?email=${encodeURIComponent(email)}`)
+        // 이메일을 localStorage에 저장하고 회원가입 페이지로 이동
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('signupEmail', email)
+        }
+        router.push('/signup')
       } else if (data.code === 400) {
         // 로그인 페이지로 이동
         router.push('/signin')
