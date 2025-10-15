@@ -176,16 +176,18 @@ export default function SignupPage() {
               <Label htmlFor="phoneNumber" className="text-sm font-medium">
                 {messages?.signup?.phoneNumber || "Phone number"} <span className="text-primary">*</span>
               </Label>
-              <PhoneInput
-                defaultCountry="kr"
-                value={phoneNumber}
-                onChange={(phone) => setPhoneNumber(phone)}
-                inputClassName="flex-1 rounded-lg border-gray-300"
-                inputProps={{
-                  id: "phoneNumber",
-                  required: true,
-                }}
-              />
+              <div className="w-full">
+                <PhoneInput
+                  defaultCountry="kr"
+                  value={phoneNumber}
+                  onChange={(phone) => setPhoneNumber(phone)}
+                  inputClassName="flex-1 rounded-lg border-gray-300"
+                  inputProps={{
+                    id: "phoneNumber",
+                    required: true,
+                  }}
+                />
+              </div>
             </div>
 
             {/* Consent checkboxes */}
