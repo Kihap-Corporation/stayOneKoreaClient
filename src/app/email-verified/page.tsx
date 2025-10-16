@@ -21,6 +21,7 @@ export default function EmailVerifiedPage() {
 
         {/* Message */}
         <h1 className="text-2xl font-semibold text-gray-900">Your email check has been completed.</h1>
+        <h1 className="text-2xl font-semibold text-gray-900">Please back to page and login to your account!</h1>
       </div>
 
       <style jsx>{`

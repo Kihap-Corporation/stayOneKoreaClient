@@ -1,7 +1,35 @@
 export default {
   header: {
     search: { placeholder: "Find your stay in Korea" },
-    navigation: { stays: "Stays", about: "About Gosiwon" }
+    navigation: { stays: "Stays", about: "About Gosiwon" },
+    profile: {
+      viewProfile: "View Profile",
+      notifications: "Notifications",
+      myBookings: "My Bookings",
+      settings: "Settings",
+      logout: "Logout"
+    }
+  },
+  mypage: {
+    welcome: "My Page",
+    welcomeDesc: "Manage your account information and bookings",
+    myBookings: "My Bookings",
+    bookingDescription: "Check your booking history",
+    noBookings: "No bookings found",
+    noBookingsDesc: "Start your first booking",
+    findStay: "Find a Stay",
+    settings: "Settings",
+    editProfile: "Edit",
+    totalBookings: "Total Bookings",
+    activeBookings: "Active Bookings",
+    rating: "Rating",
+    currentBookings: "Current Bookings",
+    viewAll: "View All",
+    accountSettings: "Account Settings",
+    notifications: "Notifications",
+    paymentMethods: "Payment Methods",
+    help: "Help",
+    logout: "Logout"
   },
   footer: {
     company: "Company Name",
@@ -50,6 +78,8 @@ export default {
     password: "Password",
     passwordPlaceholder: "Password",
     passwordRule: "Password Rule",
+    passwordLengthError: "Password must be 8-20 characters long.",
+    passwordPatternError: "Password must contain at least one letter, one number, and one special character (@, $, !, %, *, ?, &, #).",
     phoneNumber: "Phone number",
     phoneNumberPlaceholder: "Phone number",
     southKorea: "South Korea",
@@ -64,6 +94,44 @@ export default {
     termsAgreement: "By creating an account, I agree to Stay One Korea's",
     and: "and",
     agreeToTerms: "."
+  },
+  signin: {
+    title: "Sign in",
+    email: "Email",
+    emailPlaceholder: "id@email.com",
+    password: "Password",
+    passwordPlaceholder: "Password",
+    continue: "Continue",
+    termsAgreement: "By signing in, I agree to Stay One Korea's",
+    termsOfUse: "Terms of Use",
+    privacyPolicy: "Privacy Policy",
+    and: "and",
+    agreeToTerms: ".",
+    loginSuccess: "Login successful.",
+    loginError: "Login failed"
+  },
+  verifyEmail: {
+    title: "Check your inbox",
+    subtitle: "We've sent you a verification email to your email address.",
+    emailLabel: "Email:",
+    checkLoginEmail: "Please check the email associated with your account.",
+    activationInstructions: "To activate your account, please check your email and click the verification button in the email.",
+    resendVerificationEmail: "Resend verification email",
+    goToSignin: "Go to Sign In",
+    emailResent: "Verification email has been resent."
+  },
+  auth: {
+    tokenExpired: "Access token has expired. Please log in again.",
+    tokenRefreshFailed: "Token refresh failed. Please log in again: Login has expired.",
+    accountLoggedOut: "Your account has been logged out. Please log in again",
+    logoutSuccess: "Logout completed successfully.",
+    logoutError: "An error occurred during logout.",
+    currentPasswordIncorrect: "Current password does not match."
+  },
+  error: {
+    accessDenied: "Access Denied",
+    accessDeniedDescription: "You do not have permission to access this page.",
+    goHome: "Go Home"
   },
   common: {
     loading: "Loading...",

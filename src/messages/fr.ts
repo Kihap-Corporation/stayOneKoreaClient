@@ -1,7 +1,35 @@
 export default {
-  header: {
+header: {
     search: { placeholder: "Trouvez votre séjour en Corée" },
-    navigation: { stays: "Séjours", about: "À propos de Gosiwon" }
+    navigation: { stays: "Séjours", about: "À propos de Gosiwon" },
+    profile: {
+      viewProfile: "Voir le profil",
+      notifications: "Notifications",
+      myBookings: "Mes réservations",
+      settings: "Paramètres",
+      logout: "Déconnexion"
+    }
+  },
+  mypage: {
+    welcome: "Ma page",
+    welcomeDesc: "Gérez vos informations de compte et réservations",
+    myBookings: "Mes réservations",
+    bookingDescription: "Consultez votre historique de réservations",
+    noBookings: "Aucune réservation trouvée",
+    noBookingsDesc: "Commencez votre première réservation",
+    findStay: "Trouver un séjour",
+    settings: "Paramètres",
+    editProfile: "Modifier",
+    totalBookings: "Total des réservations",
+    activeBookings: "Réservations actives",
+    rating: "Évaluation",
+    currentBookings: "Réservations actuelles",
+    viewAll: "Voir tout",
+    accountSettings: "Paramètres du compte",
+    notifications: "Notifications",
+    paymentMethods: "Moyens de paiement",
+    help: "Aide",
+    logout: "Déconnexion"
   },
   footer: {
     company: "Nom de l'entreprise",
@@ -50,6 +78,8 @@ export default {
     password: "Mot de passe",
     passwordPlaceholder: "Mot de passe",
     passwordRule: "Règle de mot de passe",
+    passwordLengthError: "Le mot de passe doit contenir entre 8 et 20 caractères.",
+    passwordPatternError: "Le mot de passe doit contenir au moins une lettre, un chiffre et un caractère spécial (@, $, !, %, *, ?, &, #).",
     phoneNumber: "Numéro de téléphone",
     phoneNumberPlaceholder: "Numéro de téléphone",
     southKorea: "Corée du Sud",
@@ -64,6 +94,44 @@ export default {
     termsAgreement: "En créant un compte, j'accepte les",
     and: "et",
     agreeToTerms: "de Stay One Korea."
+  },
+  signin: {
+    title: "Se connecter",
+    email: "E-mail",
+    emailPlaceholder: "id@email.com",
+    password: "Mot de passe",
+    passwordPlaceholder: "Mot de passe",
+    continue: "Continuer",
+    termsAgreement: "En me connectant, j'accepte les",
+    termsOfUse: "Conditions d'utilisation",
+    privacyPolicy: "Politique de confidentialité",
+    and: "et",
+    agreeToTerms: "de Stay One Korea.",
+    loginSuccess: "Connexion réussie.",
+    loginError: "Échec de la connexion"
+  },
+  verifyEmail: {
+    title: "Vérifiez votre boîte de réception",
+    subtitle: "Nous vous avons envoyé un email de vérification à votre adresse email.",
+    emailLabel: "Email:",
+    checkLoginEmail: "Veuillez vérifier l'email associé à votre compte.",
+    activationInstructions: "Pour activer votre compte, veuillez vérifier votre email et cliquer sur le bouton de vérification dans l'email.",
+    resendVerificationEmail: "Renvoyer l'email de vérification",
+    goToSignin: "Aller à la connexion",
+    emailResent: "L'email de vérification a été renvoyé."
+  },
+  auth: {
+    tokenExpired: "Le jeton d'accès a expiré. Veuillez vous reconnecter.",
+    tokenRefreshFailed: "Échec du renouvellement du jeton. Veuillez vous reconnecter : la connexion a expiré.",
+    accountLoggedOut: "Votre compte a été déconnecté. Veuillez vous reconnecter",
+    logoutSuccess: "Déconnexion terminée avec succès.",
+    logoutError: "Une erreur s'est produite lors de la déconnexion.",
+    currentPasswordIncorrect: "Le mot de passe actuel ne correspond pas."
+  },
+  error: {
+    accessDenied: "Accès Refusé",
+    accessDeniedDescription: "Vous n'avez pas la permission d'accéder à cette page.",
+    goHome: "Retour à l'Accueil"
   },
   common: {
     loading: "Chargement...",

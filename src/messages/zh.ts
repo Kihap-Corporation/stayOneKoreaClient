@@ -1,7 +1,35 @@
 export default {
-  header: {
+header: {
     search: { placeholder: "在韩国寻找您的住宿" },
-    navigation: { stays: "住宿", about: "关于考試院" }
+    navigation: { stays: "住宿", about: "关于考試院" },
+    profile: {
+      viewProfile: "查看个人资料",
+      notifications: "通知",
+      myBookings: "我的预订",
+      settings: "设置",
+      logout: "登出"
+    }
+  },
+  mypage: {
+    welcome: "我的页面",
+    welcomeDesc: "管理您的账户信息和预订",
+    myBookings: "我的预订",
+    bookingDescription: "查看您的预订历史",
+    noBookings: "未找到预订",
+    noBookingsDesc: "开始您的第一次预订",
+    findStay: "寻找住宿",
+    settings: "设置",
+    editProfile: "编辑",
+    totalBookings: "总预订",
+    activeBookings: "活跃预订",
+    rating: "评分",
+    currentBookings: "当前预订",
+    viewAll: "查看全部",
+    accountSettings: "账户设置",
+    notifications: "通知",
+    paymentMethods: "支付方式",
+    help: "帮助",
+    logout: "登出"
   },
   footer: {
     company: "公司名称",
@@ -50,6 +78,8 @@ export default {
     password: "密码",
     passwordPlaceholder: "密码",
     passwordRule: "密码规则",
+    passwordLengthError: "密码必须为8-20个字符。",
+    passwordPatternError: "密码必须包含至少一个字母、一个数字和一个特殊字符（@、$、!、%、*、?、&、#）。",
     phoneNumber: "手机号码",
     phoneNumberPlaceholder: "手机号码",
     southKorea: "韩国",
@@ -64,6 +94,44 @@ export default {
     termsAgreement: "创建账户即表示我同意 Stay One Korea 的",
     and: "和",
     agreeToTerms: "。"
+  },
+  signin: {
+    title: "登录",
+    email: "邮箱",
+    emailPlaceholder: "id@email.com",
+    password: "密码",
+    passwordPlaceholder: "密码",
+    continue: "继续",
+    termsAgreement: "登录即表示我同意 Stay One Korea 的",
+    termsOfUse: "使用条款",
+    privacyPolicy: "隐私政策",
+    and: "和",
+    agreeToTerms: "。",
+    loginSuccess: "登录成功。",
+    loginError: "登录失败"
+  },
+  verifyEmail: {
+    title: "检查您的收件箱",
+    subtitle: "我们已向您的邮箱发送了验证邮件。",
+    emailLabel: "邮箱:",
+    checkLoginEmail: "请检查与您的账户关联的邮箱。",
+    activationInstructions: "要激活您的账户，请检查您的邮箱并点击邮件中的验证按钮。",
+    resendVerificationEmail: "重新发送验证邮件",
+    goToSignin: "返回登录",
+    emailResent: "验证邮件已重新发送。"
+  },
+  auth: {
+    tokenExpired: "访问令牌已过期。请重新登录。",
+    tokenRefreshFailed: "令牌刷新失败。请重新登录：登录已过期。",
+    accountLoggedOut: "您的账户已注销。请重新登录",
+    logoutSuccess: "注销成功完成。",
+    logoutError: "注销过程中发生错误。",
+    currentPasswordIncorrect: "当前密码不匹配。"
+  },
+  error: {
+    accessDenied: "访问被拒绝",
+    accessDeniedDescription: "您没有权限访问此页面。",
+    goHome: "返回首页"
   },
   common: {
     loading: "加载中...",

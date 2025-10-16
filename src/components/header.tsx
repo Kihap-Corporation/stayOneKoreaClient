@@ -11,12 +11,43 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useLanguage, languages, currencies } from "./language-provider"
-import { useState } from "react"
+import { logout } from "@/lib/api"
+import { useState, useEffect } from "react"
 
 export function Header() {
   const { currentLanguage, setCurrentLanguage, currentCurrency, setCurrentCurrency, messages } = useLanguage()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isProfileOpen, setIsProfileOpen] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+
+  // 로그인 상태 확인
+  useEffect(() => {
+    const checkLoginStatus = () => {
+      // localStorage에서 로그인 상태 우선 확인
+      const localLoginStatus = localStorage.getItem('isLoggedIn') === 'true'
+
+      if (localLoginStatus) {
+        setIsLoggedIn(true)
+        return
+      }
+
+      // 쿠키에서 액세스 토큰이나 리프레시 토큰 확인
+      const cookies = document.cookie.split(';').reduce((acc, cookie) => {
+        const [key, value] = cookie.trim().split('=')
+        acc[key] = value
+        return acc
+      }, {} as Record<string, string>)
+
+      const hasToken = !!(cookies.access || cookies.refresh)
+      setIsLoggedIn(hasToken)
+    }
+
+    checkLoginStatus()
+
+    // 주기적으로 확인 (선택사항)
+    // const interval = setInterval(checkLoginStatus, 5000)
+    // return () => clearInterval(interval)
+  }, [])
 
   return (
     <header className="border-b bg-white">
@@ -115,40 +146,55 @@ export function Header() {
                 <>
                   <div className="fixed inset-0 z-10" onClick={() => setIsProfileOpen(false)} />
                   <div className="absolute right-0 top-12 z-20 w-56 bg-white rounded-2xl shadow-lg border border-gray-200 py-2">
-                    <Link
-                      href="/mypage"
-                      className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors"
-                      onClick={() => setIsProfileOpen(false)}
-                    >
-                      <User className="h-5 w-5 text-gray-600" />
-                      <span className="text-base">My account</span>
-                    </Link>
-                    <Link
-                      href="/mypage"
-                      className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors"
-                      onClick={() => setIsProfileOpen(false)}
-                    >
-                      <Bed className="h-5 w-5 text-gray-600" />
-                      <span className="text-base">Bookings</span>
-                    </Link>
-                    <Link
-                      href="#"
-                      className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors"
-                      onClick={() => setIsProfileOpen(false)}
-                    >
-                      <Heart className="h-5 w-5 text-gray-600" />
-                      <span className="text-base">Saved</span>
-                    </Link>
-                    <button
-                      className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors w-full text-left"
-                      onClick={() => {
-                        setIsProfileOpen(false)
-                        // 로그아웃 로직 추가 가능
-                      }}
-                    >
-                      <LogOut className="h-5 w-5 text-gray-600" />
-                      <span className="text-base">Sign out</span>
-                    </button>
+                    {isLoggedIn ? (
+                      <>
+                        <Link
+                          href="/mypage"
+                          className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors"
+                          onClick={() => setIsProfileOpen(false)}
+                        >
+                          <User className="h-5 w-5 text-gray-600" />
+                          <span className="text-base">My account</span>
+                        </Link>
+                        <Link
+                          href="/mypage"
+                          className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors"
+                          onClick={() => setIsProfileOpen(false)}
+                        >
+                          <Bed className="h-5 w-5 text-gray-600" />
+                          <span className="text-base">Bookings</span>
+                        </Link>
+                        <Link
+                          href="#"
+                          className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors"
+                          onClick={() => setIsProfileOpen(false)}
+                        >
+                          <Heart className="h-5 w-5 text-gray-600" />
+                          <span className="text-base">Saved</span>
+                        </Link>
+                        <button
+                          className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors w-full text-left"
+                          onClick={() => {
+                            setIsProfileOpen(false)
+                            logout()
+                          }}
+                        >
+                          <LogOut className="h-5 w-5 text-gray-600" />
+                          <span className="text-base">Sign out</span>
+                        </button>
+                      </>
+                    ) : (
+                      <button
+                        className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors w-full text-left"
+                        onClick={() => {
+                          setIsProfileOpen(false)
+                          window.location.href = '/account_check'
+                        }}
+                      >
+                        <LogOut className="h-5 w-5 text-gray-600" />
+                        <span className="text-base">Sign in</span>
+                      </button>
+                    )}
                   </div>
                 </>
               )}
@@ -184,40 +230,55 @@ export function Header() {
                 <>
                   <div className="fixed inset-0 z-10" onClick={() => setIsProfileOpen(false)} />
                   <div className="absolute right-0 top-12 z-20 w-56 bg-white rounded-2xl shadow-lg border border-gray-200 py-2">
-                    <Link
-                      href="/mypage"
-                      className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors"
-                      onClick={() => setIsProfileOpen(false)}
-                    >
-                      <User className="h-5 w-5 text-gray-600" />
-                      <span className="text-base">My account</span>
-                    </Link>
-                    <Link
-                      href="/mypage"
-                      className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors"
-                      onClick={() => setIsProfileOpen(false)}
-                    >
-                      <Bed className="h-5 w-5 text-gray-600" />
-                      <span className="text-base">Bookings</span>
-                    </Link>
-                    <Link
-                      href="#"
-                      className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors"
-                      onClick={() => setIsProfileOpen(false)}
-                    >
-                      <Heart className="h-5 w-5 text-gray-600" />
-                      <span className="text-base">Saved</span>
-                    </Link>
-                    <button
-                      className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors w-full text-left"
-                      onClick={() => {
-                        setIsProfileOpen(false)
-                        // 로그아웃 로직 추가 가능
-                      }}
-                    >
-                      <LogOut className="h-5 w-5 text-gray-600" />
-                      <span className="text-base">Sign out</span>
-                    </button>
+                    {isLoggedIn ? (
+                      <>
+                        <Link
+                          href="/mypage"
+                          className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors"
+                          onClick={() => setIsProfileOpen(false)}
+                        >
+                          <User className="h-5 w-5 text-gray-600" />
+                          <span className="text-base">My account</span>
+                        </Link>
+                        <Link
+                          href="/mypage"
+                          className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors"
+                          onClick={() => setIsProfileOpen(false)}
+                        >
+                          <Bed className="h-5 w-5 text-gray-600" />
+                          <span className="text-base">Bookings</span>
+                        </Link>
+                        <Link
+                          href="#"
+                          className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors"
+                          onClick={() => setIsProfileOpen(false)}
+                        >
+                          <Heart className="h-5 w-5 text-gray-600" />
+                          <span className="text-base">Saved</span>
+                        </Link>
+                        <button
+                          className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors w-full text-left"
+                          onClick={() => {
+                            setIsProfileOpen(false)
+                            logout()
+                          }}
+                        >
+                          <LogOut className="h-5 w-5 text-gray-600" />
+                          <span className="text-base">Sign out</span>
+                        </button>
+                      </>
+                    ) : (
+                      <button
+                        className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors w-full text-left"
+                        onClick={() => {
+                          setIsProfileOpen(false)
+                          window.location.href = '/account_check'
+                        }}
+                      >
+                        <LogOut className="h-5 w-5 text-gray-600" />
+                        <span className="text-base">Sign in</span>
+                      </button>
+                    )}
                   </div>
                 </>
               )}

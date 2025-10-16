@@ -3,6 +3,27 @@ export default {
     search: { placeholder: "한국의 숙소를 찾아보세요" },
     navigation: { stays: "숙박", about: "고시원 소개" }
   },
+  mypage: {
+    welcome: "마이페이지",
+    welcomeDesc: "계정 정보와 예약 내역을 관리하세요",
+    myBookings: "내 예약",
+    bookingDescription: "예약 내역을 확인하세요",
+    noBookings: "예약 내역이 없습니다",
+    noBookingsDesc: "새로운 예약을 시작해보세요",
+    findStay: "숙소 찾기",
+    settings: "설정",
+    editProfile: "편집",
+    totalBookings: "총 예약",
+    activeBookings: "활성 예약",
+    rating: "평점",
+    currentBookings: "현재 예약",
+    viewAll: "전체보기",
+    accountSettings: "계정 설정",
+    notifications: "알림 설정",
+    paymentMethods: "결제 수단",
+    help: "도움말",
+    logout: "로그아웃"
+  },
   footer: {
     company: "스테이원코리아",
     businessNumber: "123-45-67890",
@@ -50,6 +71,8 @@ export default {
     password: "비밀번호",
     passwordPlaceholder: "비밀번호",
     passwordRule: "비밀번호 규칙",
+    passwordLengthError: "비밀번호는 8자 이상 20자 이하여야 합니다.",
+    passwordPatternError: "비밀번호는 영문자, 숫자, 특수문자(@, $, !, %, *, ?, &, #)를 최소 1개씩 포함해야 합니다.",
     phoneNumber: "휴대폰 번호",
     phoneNumberPlaceholder: "휴대폰 번호",
     southKorea: "대한민국",
@@ -64,6 +87,44 @@ export default {
     termsAgreement: "계정을 생성하면 Stay One Korea의",
     and: "및",
     agreeToTerms: "에 동의합니다."
+  },
+  signin: {
+    title: "로그인",
+    email: "이메일",
+    emailPlaceholder: "id@email.com",
+    password: "비밀번호",
+    passwordPlaceholder: "비밀번호",
+    continue: "계속하기",
+    termsAgreement: "로그인하면 Stay One Korea의",
+    termsOfUse: "이용약관",
+    privacyPolicy: "개인정보처리방침",
+    and: "및",
+    agreeToTerms: "에 동의합니다.",
+    loginSuccess: "로그인을 성공하였습니다.",
+    loginError: "로그인 실패"
+  },
+  verifyEmail: {
+    title: "이메일 확인",
+    subtitle: "이메일 주소로 인증 메일을 보냈습니다.",
+    emailLabel: "이메일:",
+    checkLoginEmail: "계정에 연결된 이메일을 확인해주세요.",
+    activationInstructions: "계정을 활성화하려면 이메일을 확인하고 인증 버튼을 클릭하세요.",
+    resendVerificationEmail: "인증 이메일 재전송",
+    goToSignin: "로그인으로 돌아가기",
+    emailResent: "인증 이메일이 재전송되었습니다."
+  },
+  auth: {
+    tokenExpired: "액세스 토큰이 만료되었습니다. 다시 로그인해주세요.",
+    tokenRefreshFailed: "토큰 재발급에 실패했습니다 다시 로그인 해주세요: 로그인이 만료되었습니다.",
+    accountLoggedOut: "계정이 로그아웃 되었습니다. 다시 로그인 해주세요",
+    logoutSuccess: "로그아웃이 완료되었습니다.",
+    logoutError: "로그아웃 중 오류가 발생했습니다.",
+    currentPasswordIncorrect: "현재 비밀번호가 일치하지 않습니다."
+  },
+  error: {
+    accessDenied: "접근이 불가능합니다",
+    accessDeniedDescription: "이 페이지에 접근할 권한이 없습니다.",
+    goHome: "홈으로 돌아가기"
   },
   common: {
     loading: "로딩 중...",
