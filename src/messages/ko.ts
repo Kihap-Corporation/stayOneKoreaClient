@@ -98,11 +98,40 @@ header: {
     and: "및",
     agreeToTerms: "에 동의합니다."
   },
+  signin: {
+    title: "로그인",
+    email: "이메일",
+    emailPlaceholder: "id@email.com",
+    password: "비밀번호",
+    passwordPlaceholder: "비밀번호",
+    continue: "계속하기",
+    termsAgreement: "로그인하면 Stay One Korea의",
+    termsOfUse: "이용약관",
+    privacyPolicy: "개인정보처리방침",
+    and: "및",
+    agreeToTerms: "에 동의합니다.",
+    loginSuccess: "로그인을 성공하였습니다.",
+    loginError: "이메일 또는 비밀번호가 올바르지 않습니다."
+  },
   verifyEmail: {
     title: "이메일을 확인하세요",
     subtitle: "귀하의 이메일 주소로 인증 이메일을 보냈습니다.",
     description: "계정을 활성화하려면 버튼을 클릭하세요.",
     findStay: "숙소 찾기"
+  },
+  auth: {
+    tokenExpired: "액세스 토큰이 만료되었습니다. 다시 로그인해주세요.",
+    tokenRefreshFailed: "토큰 재발급에 실패했습니다 다시 로그인 해주세요: 로그인이 만료되었습니다.",
+    accountLoggedOut: "계정이 로그아웃 되었습니다. 다시 로그인 해주세요",
+    logoutSuccess: "로그아웃이 완료되었습니다.",
+    logoutError: "로그아웃 중 오류가 발생했습니다.",
+    currentPasswordIncorrect: "현재 비밀번호가 일치하지 않습니다.",
+    sessionExpired: "세션이 만료되었습니다. 다시 로그인해주세요."
+  },
+  error: {
+    accessDenied: "접근이 불가능합니다",
+    accessDeniedDescription: "이 페이지에 접근할 권한이 없습니다.",
+    goHome: "홈으로 돌아가기"
   },
   common: {
     loading: "로딩 중...",
@@ -113,7 +142,8 @@ header: {
     save: "저장",
     delete: "삭제",
     edit: "편집",
-    close: "닫기"
+    close: "닫기",
+    noImage: "이미지 없음"
   },
   roomDetail: {
     schedule: "일정",
@@ -139,6 +169,71 @@ header: {
     exchangeRateNotFound: "환율정보를 찾을 수 없습니다",
     pleaseSelectDates: "날짜를 선택해주세요",
     reservationError: "예약 처리 중 오류가 발생했습니다"
+  },
+  reservation: {
+    facilities: "편의시설",
+    showAllFacilities: "모든 {count}개 편의시설 보기",
+    rules: "규칙",
+    showMore: "더 보기",
+    leadGuest: "대표 예약자",
+    firstName: "이름",
+    lastName: "성",
+    firstNamePlaceholder: "이름",
+    lastNamePlaceholder: "성",
+    email: "이메일",
+    emailPlaceholder: "email@email.com",
+    emailHelper: "이메일 주소가 정확한지 확인해주세요. 예약 확인서를 보내는 데 사용됩니다.",
+    countryRegion: "거주 국가/지역",
+    selectPlaceholder: "선택...",
+    phoneNumber: "휴대폰 번호",
+    phoneNumberPlaceholder: "휴대폰 번호",
+    consentAll: "다음의 모든 항목에 동의합니다:",
+    consentTerms: "이용약관에 동의하며, 만 18세 이상임을 확인합니다.",
+    consentPrivacy: "개인정보처리방침에 따라 개인정보의 수집 및 이용에 동의합니다.",
+    consentThirdParty: "개인정보처리방침에 따라 국내외 제3자와 개인정보 공유에 동의합니다.",
+    nextPayment: "다음: 결제 정보",
+    notChargedYet: "아직 요금이 청구되지 않습니다",
+    checkIn: "체크인",
+    checkOut: "체크아웃",
+    nights: "박",
+    roomPricePerNight: "1박 숙박 요금",
+    nightsCount: "× {count}박",
+    roomCount: "× {count}실",
+    bookingFees: "예약 수수료",
+    free: "무료",
+    price: "가격",
+    includedInPrice: "가격에 포함: 세금 10%",
+    currencyNote: "통화 선택은 요금에 영향을 미칩니다",
+    theseTerms: "해당 약관",
+    required: "*",
+    priceGuaranteed: "이 가격은 다음 시간 동안 보장됩니다",
+    timeExpired: "예약 가능 시간이 만료되었습니다.",
+    cancelReservation: "예약 취소",
+    cancelConfirm: "예약을 취소하시겠습니까?",
+    cancelConfirmModal: "예약을 취소하시겠습니까?\n\n이 작업은 되돌릴 수 없습니다.",
+    cancelSuccess: "예약이 취소되었습니다.",
+    cancelNotAllowed: "해당 예약은 취소가 불가능합니다.",
+    userNotFound: "존재하지 않는 사용자입니다.",
+    cancelError: "예약 취소 중 오류가 발생했습니다.",
+    stepCustomerInfo: "고객 정보",
+    stepPayment: "결제 정보",
+    stepConfirmed: "확인 완료",
+    roomNotFound: "존재하지 않는 방입니다",
+    invalidInput: "잘못된 입력을 했습니다",
+    loadError: "예약 정보를 불러오는 중 오류가 발생했습니다",
+    reservationNotAvailable: "예약 가능한 상태가 아닙니다"
+  },
+  bookings: {
+    title: "예약 내역",
+    underWay: "진행 중",
+    pending: "대기 중",
+    approved: "승인됨",
+    cancelled: "취소됨",
+    rejected: "거절됨",
+    checkIn: "체크인",
+    checkOut: "체크아웃",
+    nights: "박",
+    noBookings: "예약 내역이 없습니다"
   }
 
 }
