@@ -144,12 +144,8 @@ export default function BookingsPage() {
   }, [currentPage, currentLanguage])
 
   const handleBookingClick = (reservationId: number, status: string) => {
-    if (status === 'RESERVATION_PENDING') {
-      router.push(`/reservation/${reservationId}`)
-    } else {
-      // 다른 상태의 예약은 상세 페이지로 이동 (향후 구현)
-      console.log('View booking details:', reservationId)
-    }
+    // 모든 예약 상태에서 상세 페이지로 이동
+    router.push(`/bookings/${reservationId}`)
   }
 
   if (loading) {
@@ -174,7 +170,7 @@ export default function BookingsPage() {
         <div className="flex flex-col gap-6">
           <div className="mx-auto max-w-7xl xl:max-w-[1200px]">
             {/* Header */}
-            <div className="flex gap-2 items-center">
+            <div className="flex gap-2 mb-6 items-center">
               <div className="p-1">
                 <Calendar className="h-7 w-7 text-[#14151a]" />
               </div>

@@ -71,7 +71,6 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
     },
     description: "강남 중심부에 위치한 럭셔리 풀빌라입니다. 현대적인 인테리어와 편안한 분위기가 돋보이는 공간으로, 여행객들에게 최고의 휴식을 제공합니다.",
     rules: "체크인: 오후 3:00 이후, 체크아웃: 오전 11:00 이전. 파티 및 흡연 금지.",
-    location: "서울특별시 강남구 테헤란로 123",
     relatedRooms: [
       {
         id: 1,

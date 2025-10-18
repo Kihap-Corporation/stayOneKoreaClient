@@ -281,14 +281,14 @@ export function Header() {
                             <User className="h-5 w-5 text-gray-600" />
                             <span className="text-sm font-medium text-[#14151a] tracking-tight">My account</span>
                           </Link>
-                          <Link
-                            href="/mypage"
-                            className="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 rounded-lg transition-colors"
-                            onClick={() => setIsProfileOpen(false)}
-                          >
-                            <Calendar className="h-5 w-5 text-gray-600" />
-                            <span className="text-sm font-medium text-[#14151a] tracking-tight">Bookings</span>
-                          </Link>
+                            <Link
+                              href="/bookings"
+                              className="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 rounded-lg transition-colors"
+                              onClick={() => setIsProfileOpen(false)}
+                            >
+                              <Calendar className="h-5 w-5 text-gray-600" />
+                              <span className="text-sm font-medium text-[#14151a] tracking-tight">Bookings</span>
+                            </Link>
                           <Link
                             href="#"
                             className="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 rounded-lg transition-colors"
