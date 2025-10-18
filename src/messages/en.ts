@@ -1,5 +1,5 @@
 export default {
-  header: {
+header: {
     search: { placeholder: "Find your stay in Korea" },
     navigation: { stays: "Stays", about: "About Gosiwon" },
     profile: {
@@ -29,17 +29,7 @@ export default {
     notifications: "Notifications",
     paymentMethods: "Payment Methods",
     help: "Help",
-    logout: "Logout",
-    deleteAccountTitle: "Delete Account",
-    deleteWarningTitle: "Warning",
-    deleteWarningMessage: "Once you delete your account, all your bookings, payments, and other data will be permanently deleted and cannot be recovered.",
-    currentPassword: "Current Password",
-    enterCurrentPassword: "Enter current password",
-    deleteConfirmLabel: "Type 'delete' to confirm",
-    deleteConfirmError: "Please enter 'delete' exactly to confirm account deletion.",
-    wrongPassword: "Current password is incorrect. Please try again.",
-    deleteAccount: "Delete Account",
-    deleteSuccess: "Account has been successfully deleted."
+    logout: "Logout"
   },
   footer: {
     company: "Company Name",
@@ -73,6 +63,7 @@ export default {
     emailLabel: "Email",
     emailPlaceholder: "id@email.com",
     continue: "Continue",
+    loading: "Checking...",
     termsAgreement: "By signing in, I agree to Stay One Korea's",
     termsOfUse: "Terms of Use",
     privacyPolicy: "Privacy Policy",
@@ -84,14 +75,16 @@ export default {
     firstName: "First name",
     lastName: "Last name",
     firstNamePlaceholder: "First name",
-    lastNamePlaceholder: "Last name",
-    password: "Password",
-    passwordPlaceholder: "Password",
-    passwordRule: "Password Rule",
+      lastNamePlaceholder: "Last name",
+      email: "Email",
+      emailPlaceholder: "id@email.com",
+      password: "Password",
+      passwordPlaceholder: "Password",
+    passwordRule: "Password must be 8-20 characters long and contain at least one letter, one number, and one special character (@, $, !, %, *, ?, &, #).",
     passwordLengthError: "Password must be 8-20 characters long.",
     passwordPatternError: "Password must contain at least one letter, one number, and one special character (@, $, !, %, *, ?, &, #).",
     phoneNumber: "Phone number",
-    phoneNumberPlaceholder: "Phone number",
+      phoneNumberPlaceholder: "(123) 456-7890",
     southKorea: "South Korea",
     usa: "USA",
     consentAll: "I consent to all of the following:",
@@ -105,44 +98,11 @@ export default {
     and: "and",
     agreeToTerms: "."
   },
-  signin: {
-    title: "Sign in",
-    email: "Email",
-    emailPlaceholder: "id@email.com",
-    password: "Password",
-    passwordPlaceholder: "Password",
-    continue: "Continue",
-    termsAgreement: "By signing in, I agree to Stay One Korea's",
-    termsOfUse: "Terms of Use",
-    privacyPolicy: "Privacy Policy",
-    and: "and",
-    agreeToTerms: ".",
-    loginSuccess: "Login successful.",
-    loginError: "Invalid email or password."
-  },
   verifyEmail: {
     title: "Check your inbox",
     subtitle: "We've sent you a verification email to your email address.",
-    emailLabel: "Email:",
-    checkLoginEmail: "Please check the email associated with your account.",
-    activationInstructions: "To activate your account, please check your email and click the verification button in the email.",
-    resendVerificationEmail: "Resend verification email",
-    goToSignin: "Go to Sign In",
-    emailResent: "Verification email has been resent."
-  },
-  auth: {
-    tokenExpired: "Access token has expired. Please log in again.",
-    tokenRefreshFailed: "Token refresh failed. Please log in again: Login has expired.",
-    accountLoggedOut: "Your account has been logged out. Please log in again",
-    logoutSuccess: "Logout completed successfully.",
-    logoutError: "An error occurred during logout.",
-    currentPasswordIncorrect: "Current password does not match.",
-    sessionExpired: "Session expired. Please login again."
-  },
-  error: {
-    accessDenied: "Access Denied",
-    accessDeniedDescription: "You do not have permission to access this page.",
-    goHome: "Go Home"
+    description: "Click the button to activate your account.",
+    findStay: "Find your stay"
   },
   common: {
     loading: "Loading...",
@@ -154,5 +114,30 @@ export default {
     delete: "Delete",
     edit: "Edit",
     close: "Close"
+  },
+  roomDetail: {
+    schedule: "Schedule",
+    people: "People",
+    selectDates: "Select dates...",
+    perNight: "per night",
+    forNights: "for {nights} nights",
+    freeCancellation: "Free cancellation",
+    save: "Save",
+    reserve: "Reserve",
+    notChargedYet: "You won't be charged yet",
+    shareTitle: "Share this room with friends",
+    shareButton: "Share this room",
+    hostTitle: "Host of this room",
+    verifiedHost: "Verified Host",
+    yearsHosting: "{years} years hosting",
+    showMoreRooms: "Show more rooms",
+    readMore: "Read more",
+    roomNotFound: "Room not found",
+    invalidInput: "Invalid input provided",
+    alreadyReserved: "This period is already reserved",
+    invalidCurrency: "Invalid currency provided",
+    exchangeRateNotFound: "Exchange rate information not found",
+    pleaseSelectDates: "Please select dates",
+    reservationError: "An error occurred while processing the reservation"
   }
 }
