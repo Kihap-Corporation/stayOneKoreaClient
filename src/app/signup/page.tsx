@@ -635,8 +635,8 @@ export default function SignupPage() {
             {/* Submit button */}
             <Button
               type="submit"
+              className="cursor-pointer h-12 w-full rounded-full bg-[#E91E63] text-base font-medium text-white hover:bg-[#E91E63]/90 disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={isLoading}
-              className="h-12 w-full rounded-full bg-[#E91E63] text-base font-medium text-white hover:bg-[#E91E63]/90 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? (messages?.account_check?.loading || "Loading...") : (messages?.signup?.createAccount || "Create an account")}
             </Button>

@@ -29,7 +29,17 @@ export default {
     notifications: "Notifications",
     paymentMethods: "Payment Methods",
     help: "Help",
-    logout: "Logout"
+    logout: "Logout",
+    deleteAccountTitle: "Delete Account",
+    deleteWarningTitle: "Warning",
+    deleteWarningMessage: "Once you delete your account, all your bookings, payments, and other data will be permanently deleted and cannot be recovered.",
+    currentPassword: "Current Password",
+    enterCurrentPassword: "Enter current password",
+    deleteConfirmLabel: "Type 'delete' to confirm",
+    deleteConfirmError: "Please enter 'delete' exactly to confirm account deletion.",
+    wrongPassword: "Current password is incorrect. Please try again.",
+    deleteAccount: "Delete Account",
+    deleteSuccess: "Account has been successfully deleted."
   },
   footer: {
     company: "Company Name",
@@ -108,7 +118,7 @@ export default {
     and: "and",
     agreeToTerms: ".",
     loginSuccess: "Login successful.",
-    loginError: "Login failed"
+    loginError: "Invalid email or password."
   },
   verifyEmail: {
     title: "Check your inbox",
@@ -126,7 +136,8 @@ export default {
     accountLoggedOut: "Your account has been logged out. Please log in again",
     logoutSuccess: "Logout completed successfully.",
     logoutError: "An error occurred during logout.",
-    currentPasswordIncorrect: "Current password does not match."
+    currentPasswordIncorrect: "Current password does not match.",
+    sessionExpired: "Session expired. Please login again."
   },
   error: {
     accessDenied: "Access Denied",

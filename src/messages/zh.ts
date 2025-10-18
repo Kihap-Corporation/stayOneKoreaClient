@@ -29,7 +29,17 @@ header: {
     notifications: "通知",
     paymentMethods: "支付方式",
     help: "帮助",
-    logout: "登出"
+    logout: "登出",
+    deleteAccountTitle: "删除账户",
+    deleteWarningTitle: "警告",
+    deleteWarningMessage: "删除账户后，您的所有预订、支付和其他数据将被永久删除且无法恢复。",
+    currentPassword: "当前密码",
+    enterCurrentPassword: "输入当前密码",
+    deleteConfirmLabel: "输入 'delete' 确认",
+    deleteConfirmError: "请准确输入 'delete' 以确认账户删除。",
+    wrongPassword: "当前密码不正确。请重试。",
+    deleteAccount: "删除账户",
+    deleteSuccess: "账户已成功删除。"
   },
   footer: {
     company: "公司名称",
@@ -108,7 +118,7 @@ header: {
     and: "和",
     agreeToTerms: "。",
     loginSuccess: "登录成功。",
-    loginError: "登录失败"
+    loginError: "邮箱或密码无效。"
   },
   verifyEmail: {
     title: "检查您的收件箱",
@@ -126,7 +136,8 @@ header: {
     accountLoggedOut: "您的账户已注销。请重新登录",
     logoutSuccess: "注销成功完成。",
     logoutError: "注销过程中发生错误。",
-    currentPasswordIncorrect: "当前密码不匹配。"
+    currentPasswordIncorrect: "当前密码不匹配。",
+    sessionExpired: "会话已过期。请重新登录。"
   },
   error: {
     accessDenied: "访问被拒绝",

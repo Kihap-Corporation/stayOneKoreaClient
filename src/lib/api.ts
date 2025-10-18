@@ -120,20 +120,16 @@ export const apiRequest = async (
       if (response.status === 401 && !skipAuth) {
         if (data.code === 40101) {
           // 토큰 재발급 시도
-          console.log(`🔄 토큰 재발급 시도... (${retryCount + 1}/${maxRetries})`)
           const refreshSuccess = await refreshToken()
           if (refreshSuccess) {
-            console.log('✅ 토큰 재발급 성공!')
             retryCount++
             continue // 재시도
           } else {
             // 재발급 실패
-            console.error('❌ 토큰 재발급 실패')
             throw new ApiError(data, response.status)
           }
         } else if (data.code === 40102) {
           // 토큰 재발급 실패 - 더 이상 시도하지 않음
-          console.error('❌ 토큰 재발급 최종 실패')
           alert(globalMessages?.auth?.accountLoggedOut || "계정이 로그아웃 되었습니다. 다시 로그인 해주세요")
           await handleLogout()
           throw new ApiError(data, response.status)
@@ -161,7 +157,6 @@ export const apiRequest = async (
       }
 
       // 성공 시 데이터 반환
-      console.log(`✅ API 요청 성공: ${endpoint}`)
       return data
 
     } catch (error) {
@@ -169,7 +164,6 @@ export const apiRequest = async (
         throw error
       }
       // 네트워크 에러 등
-      console.error('❌ API 요청 실패:', error)
       throw new Error(globalMessages?.common?.error || '요청 중 오류가 발생했습니다.')
     }
   }

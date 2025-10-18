@@ -22,7 +22,17 @@ export default {
     notifications: "알림 설정",
     paymentMethods: "결제 수단",
     help: "도움말",
-    logout: "로그아웃"
+    logout: "로그아웃",
+    deleteAccountTitle: "계정 삭제",
+    deleteWarningTitle: "경고",
+    deleteWarningMessage: "계정을 삭제하면 예약, 결제 등 모든 내역이 삭제되며 복구할 수 없습니다.",
+    currentPassword: "현재 비밀번호",
+    enterCurrentPassword: "현재 비밀번호 입력",
+    deleteConfirmLabel: "'delete'를 입력하여 확인",
+    deleteConfirmError: "'delete'를 정확히 입력해주세요.",
+    wrongPassword: "현재 비밀번호가 올바르지 않습니다. 다시 입력해주세요.",
+    deleteAccount: "계정 삭제",
+    deleteSuccess: "계정이 성공적으로 삭제되었습니다."
   },
   footer: {
     company: "스테이원코리아",
@@ -101,7 +111,7 @@ export default {
     and: "및",
     agreeToTerms: "에 동의합니다.",
     loginSuccess: "로그인을 성공하였습니다.",
-    loginError: "로그인 실패"
+    loginError: "이메일 또는 비밀번호가 올바르지 않습니다."
   },
   verifyEmail: {
     title: "이메일 확인",
@@ -119,7 +129,8 @@ export default {
     accountLoggedOut: "계정이 로그아웃 되었습니다. 다시 로그인 해주세요",
     logoutSuccess: "로그아웃이 완료되었습니다.",
     logoutError: "로그아웃 중 오류가 발생했습니다.",
-    currentPasswordIncorrect: "현재 비밀번호가 일치하지 않습니다."
+    currentPasswordIncorrect: "현재 비밀번호가 일치하지 않습니다.",
+    sessionExpired: "세션이 만료되었습니다. 다시 로그인해주세요."
   },
   error: {
     accessDenied: "접근이 불가능합니다",

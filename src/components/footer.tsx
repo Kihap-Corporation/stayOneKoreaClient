@@ -3,8 +3,6 @@
 import Link from "next/link"
 import { useLanguage } from "./language-provider"
 
-const logoSvg = "http://localhost:3845/assets/b0888dc61066c76c51bb67c48b8b3eef2a86cfcb.svg"
-
 export function Footer() {
   const { messages } = useLanguage()
 
@@ -16,12 +14,11 @@ export function Footer() {
           {/* Logo */}
           <div className="w-[200px] shrink-0">
             <div className="h-12 w-[120px]">
-              <div className="text-2xl font-bold leading-tight">
-                <span className="text-black">STAY</span>
-                <span className="text-black">ONE</span>
-                <br />
-                <span className="text-black">KOREA</span>
-              </div>
+              <img
+                src="/logo/footer_logo.png"
+                alt="Stay One Korea"
+                className="h-full w-full object-contain"
+              />
             </div>
           </div>
 
@@ -75,12 +72,11 @@ export function Footer() {
           {/* Logo */}
           <div className="w-[200px]">
             <div className="h-12 w-[120px]">
-              <div className="text-2xl font-bold leading-tight">
-                <span className="text-black">STAY</span>
-                <span className="text-black">ONE</span>
-                <br />
-                <span className="text-black">KOREA</span>
-              </div>
+              <img
+                src="/logo/footer_logo.png"
+                alt="Stay One Korea"
+                className="h-full w-full object-contain"
+              />
             </div>
           </div>
 

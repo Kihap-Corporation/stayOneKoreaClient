@@ -21,6 +21,7 @@ export default function SignInPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
+  const [loginError, setLoginError] = useState("")
   const router = useRouter()
   const { messages } = useLanguage()
 
@@ -58,12 +59,11 @@ export default function SignInPage() {
         // 이메일 인증이 필요한 경우 verify-email 페이지로 리다이렉트
         router.push('/verify-email')
       } else {
-        // 기타 실패 시 alert 창 표시
-        alert(data.message)
+        // 기타 실패 시 비밀번호 입력란 아래에 에러 메시지 표시
+        setLoginError(data.message || messages?.signin?.loginError || "Login failed")
       }
     } catch (error) {
-      console.error('Login error:', error)
-      alert(messages.signin.loginError)
+      setLoginError(messages?.signin?.loginError || "Login failed")
     } finally {
       setIsLoading(false)
     }
@@ -104,16 +104,24 @@ export default function SignInPage() {
                   type="password"
                   placeholder={messages.signin.passwordPlaceholder}
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full"
+                  onChange={(e) => {
+                    setPassword(e.target.value)
+                    setLoginError("") // 입력 시 에러 메시지 초기화
+                  }}
+                  className={`w-full ${loginError ? 'border-red-500 focus:border-red-500' : ''}`}
                   required
                   disabled={isLoading}
                 />
+                {loginError && (
+                  <div className="mt-1 flex items-center gap-1 text-xs">
+                    <span className="text-red-600">⚠️ {loginError}</span>
+                  </div>
+                )}
               </div>
 
               <Button
                 type="submit"
-                className="w-full bg-[#E91E63] hover:bg-[#C2185B] text-white rounded-full h-12 text-base font-medium"
+                className="cursor-pointer w-full bg-[#E91E63] hover:bg-[#C2185B] text-white rounded-full h-12 text-base font-medium"
                 disabled={isLoading}
               >
                 {isLoading ? messages.common.loading : messages.signin.continue}

@@ -29,7 +29,17 @@ header: {
     notifications: "Notifications",
     paymentMethods: "Moyens de paiement",
     help: "Aide",
-    logout: "Déconnexion"
+    logout: "Déconnexion",
+    deleteAccountTitle: "Supprimer le compte",
+    deleteWarningTitle: "Avertissement",
+    deleteWarningMessage: "Une fois votre compte supprimé, toutes vos réservations, paiements et autres données seront supprimées définitivement et ne pourront pas être récupérées.",
+    currentPassword: "Mot de passe actuel",
+    enterCurrentPassword: "Saisir le mot de passe actuel",
+    deleteConfirmLabel: "Tapez 'delete' pour confirmer",
+    deleteConfirmError: "Veuillez saisir 'delete' exactement pour confirmer la suppression du compte.",
+    wrongPassword: "Le mot de passe actuel est incorrect. Veuillez réessayer.",
+    deleteAccount: "Supprimer le compte",
+    deleteSuccess: "Le compte a été supprimé avec succès."
   },
   footer: {
     company: "Nom de l'entreprise",
@@ -108,7 +118,7 @@ header: {
     and: "et",
     agreeToTerms: "de Stay One Korea.",
     loginSuccess: "Connexion réussie.",
-    loginError: "Échec de la connexion"
+    loginError: "Email ou mot de passe invalide."
   },
   verifyEmail: {
     title: "Vérifiez votre boîte de réception",
@@ -126,7 +136,8 @@ header: {
     accountLoggedOut: "Votre compte a été déconnecté. Veuillez vous reconnecter",
     logoutSuccess: "Déconnexion terminée avec succès.",
     logoutError: "Une erreur s'est produite lors de la déconnexion.",
-    currentPasswordIncorrect: "Le mot de passe actuel ne correspond pas."
+    currentPasswordIncorrect: "Le mot de passe actuel ne correspond pas.",
+    sessionExpired: "La session a expiré. Veuillez vous reconnecter."
   },
   error: {
     accessDenied: "Accès Refusé",

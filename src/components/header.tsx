@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { Search, Bell, User, ChevronDown, Globe, DollarSign, Menu, X, Heart, LogOut, Calendar, Bed } from "lucide-react"
+import { Search, User, ChevronDown, Globe, DollarSign, Menu, X, Heart, LogOut, Calendar, Bed } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -143,17 +143,12 @@ export function Header() {
               <div className="h-6 w-px bg-[#e9eaec]" />
 
               <div className="flex items-center gap-4">
-                {/* Notification */}
-                <Button variant="ghost" size="icon" className="h-8 w-8 p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                  <Bell className="h-4 w-4 text-gray-600" />
-                </Button>
-
                 {/* Profile Menu */}
                 <div className="relative">
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-11 w-8 p-0 rounded-full overflow-hidden"
+                    className="h-11 w-8 p-0 rounded-full overflow-hidden hover:bg-transparent"
                     onClick={() => setIsProfileOpen(!isProfileOpen)}
                   >
                     <img
@@ -262,7 +257,7 @@ export function Header() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-11 w-8 p-0 rounded-full overflow-hidden"
+                  className="h-11 w-8 p-0 rounded-full overflow-hidden hover:bg-transparent"
                   onClick={() => setIsProfileOpen(!isProfileOpen)}
                 >
                   <img
@@ -388,12 +383,6 @@ export function Header() {
 
               {/* Mobile Settings & Language */}
               <div className="border-t border-gray-100 pt-4 space-y-3">
-                {/* Notifications */}
-                <Button variant="ghost" className="w-full justify-start text-sm h-11 hover:bg-gray-50 transition-colors">
-                  <Bell className="h-4 w-4 mr-2 text-gray-600" />
-                  <span className="font-medium text-gray-700">{messages?.header?.profile?.notifications || "Notifications"}</span>
-                </Button>
-
                 {/* Language Selector */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>

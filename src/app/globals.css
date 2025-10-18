@@ -122,4 +122,10 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  /* 클릭 가능한 모든 요소에 cursor:pointer 적용 */
+  button, a, [role="button"], input[type="submit"], input[type="button"],
+  .cursor-pointer, [onclick], [data-clickable] {
+    cursor: pointer;
+  }
 }
