@@ -8,17 +8,17 @@ import frMessages from "@/messages/fr"
 import zhMessages from "@/messages/zh"
 
 export const languages = [
-  { code: 'ko', name: '한국어', flag: '🇰🇷' },
   { code: 'en', name: 'English', flag: '🇺🇸' },
-  { code: 'zh', name: '中文', flag: '🇨🇳' },
   { code: 'fr', name: 'Français', flag: '🇫🇷' },
+  { code: 'zh', name: '中文', flag: '🇨🇳' },
+  { code: 'ko', name: '한국어', flag: '🇰🇷' },
 ] as const
 
 export const currencies = [
   { code: 'USD', symbol: '$', name: 'US Dollar' },
-  { code: 'KRW', symbol: '₩', name: 'Korean Won' },
-  { code: 'CNY', symbol: '¥', name: 'Chinese Yuan' },
   { code: 'EUR', symbol: '€', name: 'Euro' },
+  { code: 'CNY', symbol: '¥', name: 'Chinese Yuan' },
+  { code: 'KRW', symbol: '₩', name: 'Korean Won' },
 ] as const
 
 // 언어 상태를 관리하는 Context
@@ -110,18 +110,18 @@ const phoneFormats = {
 
 export function LanguageProvider({ children }: LanguageProviderProps) {
   // 서버와 클라이언트 모두에서 동일한 초기값 사용 (hydration 불일치 방지)
-  const [currentLanguage, setCurrentLanguage] = useState<typeof languages[number]>(languages[0]) // 항상 한국어로 시작
-  const [currentCurrency, setCurrentCurrency] = useState<typeof currencies[number]>(currencies[1]) // 항상 KRW로 시작
-  const [messages, setMessages] = useState<any>(messagesData.ko) // 항상 한국어 메시지로 시작
-  const [phoneFormat, setPhoneFormat] = useState(phoneFormats.ko) // 항상 한국 전화번호 포맷으로 시작
+  const [currentLanguage, setCurrentLanguage] = useState<typeof languages[number]>(languages[0]) // 항상 영어로 시작
+  const [currentCurrency, setCurrentCurrency] = useState<typeof currencies[number]>(currencies[0]) // 항상 USD로 시작
+  const [messages, setMessages] = useState<any>(messagesData.en) // 항상 영어 메시지로 시작
+  const [phoneFormat, setPhoneFormat] = useState(phoneFormats.en) // 항상 영어 전화번호 포맷으로 시작
 
   // 클라이언트 사이드에서 localStorage 값 불러와서 업데이트
   useEffect(() => {
     const savedLanguage = localStorage.getItem('selectedLanguage')
     const savedCurrency = localStorage.getItem('selectedCurrency')
 
-    let newLanguage: typeof languages[number] = languages[0] // 기본값
-    let newCurrency: typeof currencies[number] = currencies[1] // 기본값
+    let newLanguage: typeof languages[number] = languages[0] // 기본값 (영어)
+    let newCurrency: typeof currencies[number] = currencies[0] // 기본값 (USD)
 
     if (savedLanguage) {
       const found = languages.find(lang => lang.code === savedLanguage)
