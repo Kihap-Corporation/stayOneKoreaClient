@@ -394,24 +394,6 @@ export default function PaymentPage() {
                   </span>
                 </div>
                 
-                <div className="flex justify-between mb-2 text-sm">
-                  <span className="text-[rgba(13,17,38,0.4)] font-medium tracking-[-0.1px]">
-                    {messages?.payment?.ourPrice || "Our price"}
-                  </span>
-                  <span className="font-medium tracking-[-0.1px] line-through text-[rgba(13,17,38,0.4)]">
-                    ${paymentData.ourPrice.toLocaleString()}
-                  </span>
-                </div>
-                
-                <div className="flex justify-between mb-2 text-sm text-[#26bd6c]">
-                  <span className="font-medium tracking-[-0.1px]">
-                    {messages?.payment?.discount || "Discount"}
-                  </span>
-                  <span className="font-medium tracking-[-0.1px]">
-                    - ${paymentData.discountPrice.toLocaleString()}
-                  </span>
-                </div>
-                
                 <div className="flex justify-between mb-4 text-sm text-[#26bd6c]">
                   <span className="font-medium tracking-[-0.1px]">
                     {messages?.reservation?.bookingFees || "Booking fees"}

@@ -72,9 +72,9 @@ export function BookingSidebar({
   onGuestsChange,
   roomId
 }: BookingSidebarProps) {
-  const { currentLanguage, currentCurrency, messages } = useLanguage()
+  const { currentLanguage, messages } = useLanguage()
   const language = currentLanguage.code
-  const currency = currentCurrency.code
+  const currency = 'USD' // 항상 USD로 고정
   const [isCalendarOpen, setIsCalendarOpen] = useState(false)
   const [isReserving, setIsReserving] = useState(false)
   const [datePickerLocale, setDatePickerLocale] = useState<any>(undefined)
@@ -113,12 +113,22 @@ export function BookingSidebar({
   // 날짜 범위 변경 핸들러
   const handleDateChange = (dates: [Date | null, Date | null]) => {
     const [start, end] = dates
-    onCheckInDateChange && onCheckInDateChange(start)
-    onCheckOutDateChange && onCheckOutDateChange(end)
     
-    // 체크아웃 날짜가 선택되면 달력 닫기
-    if (start && end) {
+    // 체크인과 체크아웃이 같은 날이면 체크아웃을 다음날로 자동 설정
+    if (start && end && start.getTime() === end.getTime()) {
+      const nextDay = new Date(start)
+      nextDay.setDate(nextDay.getDate() + 1)
+      onCheckInDateChange && onCheckInDateChange(start)
+      onCheckOutDateChange && onCheckOutDateChange(nextDay)
       setIsCalendarOpen(false)
+    } else {
+      onCheckInDateChange && onCheckInDateChange(start)
+      onCheckOutDateChange && onCheckOutDateChange(end)
+      
+      // 체크아웃 날짜가 선택되면 달력 닫기
+      if (start && end) {
+        setIsCalendarOpen(false)
+      }
     }
   }
 
@@ -299,6 +309,14 @@ export function BookingSidebar({
                     minDate={new Date()}
                     monthsShown={1}
                     calendarClassName="!border-none"
+                    filterDate={(date) => {
+                      // 체크인 날짜가 선택되었고, 체크아웃을 선택 중인 경우
+                      // 체크인 날짜와 같은 날은 선택 불가
+                      if (checkInDate && !checkOutDate) {
+                        return date.getTime() !== checkInDate.getTime()
+                      }
+                      return true
+                    }}
                   />
                 </div>
               )}

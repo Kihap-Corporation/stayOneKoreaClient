@@ -14,11 +14,9 @@ export const languages = [
   { code: 'ko', name: '한국어', flag: '🇰🇷' },
 ] as const
 
+// 통화는 USD로 고정
 export const currencies = [
   { code: 'USD', symbol: '$', name: 'US Dollar' },
-  { code: 'EUR', symbol: '€', name: 'Euro' },
-  { code: 'CNY', symbol: '¥', name: 'Chinese Yuan' },
-  { code: 'KRW', symbol: '₩', name: 'Korean Won' },
 ] as const
 
 // 언어 상태를 관리하는 Context
@@ -118,10 +116,8 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
   // 클라이언트 사이드에서 localStorage 값 불러와서 업데이트
   useEffect(() => {
     const savedLanguage = localStorage.getItem('selectedLanguage')
-    const savedCurrency = localStorage.getItem('selectedCurrency')
 
     let newLanguage: typeof languages[number] = languages[0] // 기본값 (영어)
-    let newCurrency: typeof currencies[number] = currencies[0] // 기본값 (USD)
 
     if (savedLanguage) {
       const found = languages.find(lang => lang.code === savedLanguage)
@@ -130,22 +126,11 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
       }
     }
 
-    if (savedCurrency) {
-      const found = currencies.find(curr => curr.code === savedCurrency)
-      if (found) {
-        newCurrency = found
-      }
-    }
-
     // 저장된 값으로 상태 업데이트
     if (newLanguage.code !== currentLanguage.code) {
       setCurrentLanguage(newLanguage)
       setMessages(messagesData[newLanguage.code as keyof typeof messagesData])
       setPhoneFormat(phoneFormats[newLanguage.code as keyof typeof phoneFormats])
-    }
-
-    if (newCurrency.code !== currentCurrency.code) {
-      setCurrentCurrency(newCurrency)
     }
   }, [])
 
@@ -176,13 +161,10 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
     }
   }
 
+  // 통화는 항상 USD로 고정
   const handleCurrencyChange = (currency: typeof currencies[number]) => {
-    setCurrentCurrency(currency)
-
-    // localStorage에 저장
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('selectedCurrency', currency.code)
-    }
+    // USD로 고정되어 있으므로 변경 불가
+    setCurrentCurrency(currencies[0])
   }
 
   return (

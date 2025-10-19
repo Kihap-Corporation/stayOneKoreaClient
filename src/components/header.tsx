@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { Search, User, ChevronDown, Globe, DollarSign, Menu, X, Heart, LogOut, Calendar, Bed } from "lucide-react"
+import { Search, User, ChevronDown, Globe, Menu, X, Heart, LogOut, Calendar, Bed } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -10,12 +10,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { useLanguage, languages, currencies } from "./language-provider"
+import { useLanguage, languages } from "./language-provider"
 import { logout } from "@/lib/api"
 import { useState, useEffect } from "react"
 
 export function Header() {
-  const { currentLanguage, setCurrentLanguage, currentCurrency, setCurrentCurrency, messages } = useLanguage()
+  const { currentLanguage, setCurrentLanguage, messages } = useLanguage()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isProfileOpen, setIsProfileOpen] = useState(false)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
@@ -111,28 +111,6 @@ export function Header() {
                       >
                         <span className="text-lg">{language.flag}</span>
                         <span className="font-medium">{language.name}</span>
-                      </DropdownMenuItem>
-                    ))}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-
-                {/* Currency Selector */}
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="flex items-center gap-1 px-1 hover:bg-transparent">
-                      <span className="text-[#14151a] text-sm font-medium tracking-tight">{currentCurrency.symbol} {currentCurrency.code}</span>
-                      <ChevronDown className="h-4 w-4 text-gray-600" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-48">
-                    {currencies.map((currency) => (
-                      <DropdownMenuItem
-                        key={currency.code}
-                        onClick={() => setCurrentCurrency(currency)}
-                        className={`flex items-center gap-3 px-3 py-2 cursor-pointer ${currency.code === currentCurrency.code ? "bg-pink-50 text-[#E91E63]" : "hover:bg-gray-50"}`}
-                      >
-                        <span className="font-medium">{currency.symbol} {currency.code}</span>
-                        <span className="text-xs text-gray-500 ml-auto">{currency.name}</span>
                       </DropdownMenuItem>
                     ))}
                   </DropdownMenuContent>
@@ -407,28 +385,6 @@ export function Header() {
                       >
                         <span className="text-lg">{language.flag}</span>
                         <span className="font-medium">{language.name}</span>
-                      </DropdownMenuItem>
-                    ))}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-
-                {/* Currency Selector */}
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="w-full justify-start text-sm h-11 border-2 hover:border-gray-300 transition-colors">
-                      <DollarSign className="h-4 w-4 mr-2 text-gray-600" />
-                      <span className="font-medium">{currentCurrency.symbol} {currentCurrency.code}</span>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start" className="w-full">
-                    {currencies.map((currency) => (
-                      <DropdownMenuItem
-                        key={currency.code}
-                        onClick={() => setCurrentCurrency(currency)}
-                        className={`flex items-center gap-3 px-3 py-2 cursor-pointer ${currency.code === currentCurrency.code ? "bg-pink-50 text-[#E91E63]" : "hover:bg-gray-50"}`}
-                      >
-                        <span className="font-medium">{currency.symbol} {currency.code}</span>
-                        <span className="text-xs text-gray-500 ml-auto">{currency.name}</span>
                       </DropdownMenuItem>
                     ))}
                   </DropdownMenuContent>

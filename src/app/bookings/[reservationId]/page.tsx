@@ -6,14 +6,14 @@ import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { useLanguage } from "@/components/language-provider"
 import { Button } from "@/components/ui/button"
-import { apiGet, apiDelete } from "@/lib/api"
-import { ChevronLeft, ChevronRight, Wifi, WashingMachine, AirVent, Bell, Flame, Globe, Clock } from "lucide-react"
+import { apiGet } from "@/lib/api"
+import { ChevronLeft, ChevronRight, Wifi, WashingMachine, AirVent, Bell, Flame, Globe, Clock, CheckCircle, XCircle, AlertTriangle } from "lucide-react"
 
-// Room Facility 타입 정의
+// Room Facility 타입 정의 (새로운 응답 구조)
 interface RoomFacility {
   facilityType: string
-  customNameI18n: Record<string, string>
-  iconUrl?: string
+  iconUrl: string
+  nameI18n: Record<string, string>
 }
 
 // Booking Detail 타입 정의 (새로운 API 응답 구조에 맞게 수정)
@@ -30,6 +30,11 @@ interface BookingDetail {
   roomDailyPrice: number
   totalPrice: number
   curUnit: string
+  residenceFullAddress: string
+  residenceSiDo: string
+  residenceSiGunGu: string
+  residenceDongMyeon: string
+  residenceDetail: string
   roomFacilities: RoomFacility[]
   userFirstName: string
   userLastName: string
@@ -105,6 +110,27 @@ const getStatusInfo = (status: string) => {
         textColor: 'text-white',
         icon: Clock
       }
+    case 'APPROVED':
+      return {
+        label: 'Approved',
+        color: 'bg-[#26bd6c] border-[#9af4c3]',
+        textColor: 'text-white',
+        icon: CheckCircle
+      }
+    case 'CANCELLED':
+      return {
+        label: 'Cancelled',
+        color: 'bg-[#e9eaec]',
+        textColor: 'text-[#14151a]',
+        icon: XCircle
+      }
+    case 'REJECTED':
+      return {
+        label: 'Rejected',
+        color: 'bg-[#f44336] border-[#ffcdd2]',
+        textColor: 'text-white',
+        icon: AlertTriangle
+      }
     default:
       return {
         label: status,
@@ -155,32 +181,11 @@ export default function BookingDetailPage() {
     fetchBookingDetail()
   }, [reservationId, currentLanguage, messages, router])
 
-  const handleCancelBooking = async () => {
-    if (!window.confirm(messages?.reservation?.cancelConfirmModal || "Are you sure you want to cancel your reservation?\n\nThis action cannot be undone.")) {
-      return
-    }
-
-    try {
-      const response = await apiDelete(`/api/user/reserve/${reservationId}`)
-
-      if (response.code === 200) {
-        alert(messages?.reservation?.cancelSuccess || "Reservation has been cancelled.")
-        router.push('/bookings')
-      } else if (response.code === 40500) {
-        alert(messages?.roomDetail?.roomNotFound || "존재하지 않는 방입니다.")
-      } else if (response.code === 40502) {
-        alert(messages?.reservation?.cancelNotAllowed || "해당 예약은 취소가 불가능합니다.")
-      } else if (response.code === 40103) {
-        alert(messages?.auth?.tokenExpired || "유효한 계정이 아닙니다. 다시 로그인해주세요.")
-        localStorage.removeItem('isLoggedIn')
-        router.push('/account_check')
-      } else {
-        alert(messages?.reservation?.cancelError || "An error occurred while cancelling the reservation.")
-      }
-    } catch (error) {
-      console.error('Error cancelling booking:', error)
-      alert(messages?.reservation?.cancelError || "An error occurred while cancelling the reservation.")
-    }
+  // 예약 취소 기능은 다른 페이지에서 처리됨
+  const handleCancelBooking = () => {
+    // 예약 취소 버튼 클릭 시 처리할 로직
+    // 현재는 API 연결 없이 UI만 표시
+    console.log('Cancel booking clicked for reservation:', reservationId)
   }
 
   if (loading) {
@@ -218,8 +223,8 @@ export default function BookingDetailPage() {
 
   // 시설 정보를 처리 (iconUrl 또는 facilityType을 기반으로 아이콘과 이름 매핑)
   const processedFacilities = (booking.roomFacilities || []).map(facility => {
-    // customNameI18n에서 현재 언어에 맞는 이름 찾기, 없으면 facilityType 사용
-    const facilityName = facility.customNameI18n?.[currentLanguage.code] || facility.facilityType
+    // nameI18n에서 현재 언어에 맞는 이름 찾기, 없으면 facilityType 사용
+    const facilityName = facility.nameI18n?.[currentLanguage.code] || facility.facilityType
     return {
       iconUrl: facility.iconUrl,
       iconComponent: getFacilityIcon(facility.facilityType), // fallback용
@@ -281,6 +286,9 @@ export default function BookingDetailPage() {
               </h3>
               <p className="text-lg text-[rgba(13,17,38,0.4)] font-medium tracking-[-0.2px] leading-[26px]">
                 {booking.residenceName}
+              </p>
+              <p className="text-sm text-[rgba(13,17,38,0.6)] font-medium tracking-[-0.1px] leading-[20px] mt-1">
+                {booking.residenceFullAddress}
               </p>
               <div className="flex items-center gap-1 mt-1">
                 <span className="text-sm text-[rgba(13,17,38,0.4)] font-medium tracking-[-0.1px]">
@@ -445,7 +453,7 @@ export default function BookingDetailPage() {
                   {messages?.reservation?.roomPricePerNight || "Room price per night"}
                 </span>
                 <span className="text-[#14151a]">
-                  {booking.curUnit === 'KRW' ? '₩' : '$'}{booking.roomDailyPrice.toLocaleString()}
+                  ${booking.roomDailyPrice.toLocaleString()}
                 </span>
               </div>
               <div className="flex justify-between text-sm font-medium tracking-[-0.1px]">
@@ -470,29 +478,31 @@ export default function BookingDetailPage() {
               <div className="flex justify-between text-base font-extrabold tracking-[-0.2px] text-[#14151a]">
                 <span>{messages?.reservation?.price || "Price"}</span>
                 <span className="underline">
-                  {booking.curUnit === 'KRW' ? '₩' : '$'}{booking.totalPrice.toLocaleString()}
+                  ${booking.totalPrice.toLocaleString()}
                 </span>
               </div>
             </div>
           </div>
 
-          {/* Cancellation Policy Section */}
-          <div className="bg-white rounded-[16px] px-5 py-4 flex flex-col gap-[18px]">
-            <p className="text-base font-bold tracking-[-0.2px] leading-[24px]">
-              Cancellation Policy
-            </p>
-            <p className="text-sm font-medium text-[#26bd6c] tracking-[-0.1px]">
-              Cancel for free before check-in date
-            </p>
-            <button
-              onClick={handleCancelBooking}
-              className="bg-[rgba(230,72,61,0.1)] hover:bg-[rgba(230,72,61,0.15)] flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl transition-colors cursor-pointer"
-            >
-              <span className="text-sm font-medium text-[#e6483d] tracking-[-0.1px]">
-                {messages?.reservation?.cancelReservation || "Cancel my booking"}
-              </span>
-            </button>
-          </div>
+          {/* Cancellation Policy Section - APPROVED 또는 RESERVATION_PENDING 상태일 때만 표시 */}
+          {(booking.reservationStatus === 'APPROVED' || booking.reservationStatus === 'RESERVATION_PENDING') && (
+            <div className="bg-white rounded-[16px] px-5 py-4 flex flex-col gap-[18px]">
+              <p className="text-base font-bold tracking-[-0.2px] leading-[24px]">
+                Cancellation Policy
+              </p>
+              <p className="text-sm font-medium text-[#26bd6c] tracking-[-0.1px]">
+                Cancel for free before check-in date
+              </p>
+              <button
+                onClick={handleCancelBooking}
+                className="bg-[rgba(230,72,61,0.1)] hover:bg-[rgba(230,72,61,0.15)] flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl transition-colors cursor-pointer"
+              >
+                <span className="text-sm font-medium text-[#e6483d] tracking-[-0.1px]">
+                  {messages?.reservation?.cancelReservation || "Cancel my booking"}
+                </span>
+              </button>
+            </div>
+          )}
         </div>
       </main>
 
