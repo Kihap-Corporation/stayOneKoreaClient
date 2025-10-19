@@ -4,8 +4,9 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useLanguage } from "@/components/language-provider"
-import { MapPin, Calendar, Users } from "lucide-react"
+import { Calendar, Users } from "lucide-react"
 import { DateRangePickerV2 } from "./date-range-picker-v2"
+import { AlgoliaSearch } from "./algolia-search"
 
 export function HeroSection() {
   const { messages, currentLanguage } = useLanguage()
@@ -13,6 +14,7 @@ export function HeroSection() {
   const [checkIn, setCheckIn] = useState<Date | null>(null)
   const [checkOut, setCheckOut] = useState<Date | null>(null)
   const [showDatePicker, setShowDatePicker] = useState(false)
+  const [selectedLocation, setSelectedLocation] = useState<string>("")
 
   // Calculate nights
   const nights = checkIn && checkOut 
@@ -53,14 +55,10 @@ export function HeroSection() {
               <label className="text-sm font-medium text-[#14151a]">
                 Where
               </label>
-              <div className="relative">
-                <Input
-                  type="text"
-                  placeholder="Search destinations"
-                  className="w-full h-10 pl-10 rounded-xl border border-[#dee0e3] focus:border-[#E91E63]"
-                />
-                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-              </div>
+              <AlgoliaSearch
+                placeholder="Search destinations"
+                onSelect={(location) => setSelectedLocation(location)}
+              />
             </div>
 
             {/* Check-in */}
