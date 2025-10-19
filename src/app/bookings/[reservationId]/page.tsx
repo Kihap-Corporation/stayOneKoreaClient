@@ -154,7 +154,7 @@ export default function BookingDetailPage() {
   useEffect(() => {
     const fetchBookingDetail = async () => {
       try {
-        const languageCode = currentLanguage.code === 'ko' ? 'kr' : currentLanguage.code
+        const languageCode = currentLanguage.code
 
         const response = await apiGet(
           `/api/user/reserve/${reservationId}?languageCode=${languageCode}`

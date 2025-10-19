@@ -111,8 +111,7 @@ export default function ReservationPage() {
       
       // API에서 예약 정보 가져오기
       try {
-        // 언어 코드 변환 ('ko' -> 'kr')
-        const languageCode = currentLanguage.code === 'ko' ? 'kr' : currentLanguage.code
+        const languageCode = currentLanguage.code
         
         
         const response = await apiGet(

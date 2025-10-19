@@ -157,18 +157,20 @@ header: {
     notChargedYet: "You won't be charged yet",
     shareTitle: "Share this room with friends",
     shareButton: "Share this room",
+    roomNotFound: "Room not found",
+    cannotLoadRoom: "Unable to load room information",
     hostTitle: "Host of this room",
-    verifiedHost: "Verified Host",
     yearsHosting: "{years} years hosting",
     showMoreRooms: "Show more rooms",
     readMore: "Read more",
-    roomNotFound: "Room not found",
     invalidInput: "Invalid input provided",
     alreadyReserved: "This period is already reserved",
     invalidCurrency: "Invalid currency provided",
     exchangeRateNotFound: "Exchange rate information not found",
     pleaseSelectDates: "Please select dates",
-    reservationError: "An error occurred while processing the reservation"
+    reservationError: "An error occurred while processing the reservation",
+    checkIn: "Check-in",
+    checkOut: "Check-out"
   },
   reservation: {
     facilities: "Facilities",

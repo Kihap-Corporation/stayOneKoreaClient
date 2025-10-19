@@ -157,18 +157,20 @@ header: {
     notChargedYet: "Vous ne serez pas encore facturé",
     shareTitle: "Partagez cette chambre avec des amis",
     shareButton: "Partager cette chambre",
+    roomNotFound: "Chambre introuvable",
+    cannotLoadRoom: "Impossible de charger les informations de la chambre",
     hostTitle: "Hôte de cette chambre",
-    verifiedHost: "Hôte vérifié",
     yearsHosting: "{years} ans d'hébergement",
     showMoreRooms: "Afficher plus de chambres",
     readMore: "Lire la suite",
-    roomNotFound: "Chambre introuvable",
     invalidInput: "Valeur saisie invalide",
     alreadyReserved: "Cette période est déjà réservée",
     invalidCurrency: "Devise invalide",
     exchangeRateNotFound: "Informations de taux de change introuvables",
     pleaseSelectDates: "Veuillez sélectionner des dates",
-    reservationError: "Une erreur s'est produite lors du traitement de la réservation"
+    reservationError: "Une erreur s'est produite lors du traitement de la réservation",
+    checkIn: "Arrivée",
+    checkOut: "Départ"
   },
   reservation: {
     facilities: "Équipements",

@@ -157,18 +157,20 @@ header: {
     notChargedYet: "아직 요금이 청구되지 않습니다",
     shareTitle: "친구와 함께 공유하기",
     shareButton: "이 숙소 공유하기",
+    roomNotFound: "방을 찾을 수 없습니다",
+    cannotLoadRoom: "방 정보를 조회할 수 없습니다",
     hostTitle: "호스트",
-    verifiedHost: "인증된 호스트",
     yearsHosting: "{years}년부터 호스팅",
     showMoreRooms: "다른 숙소 보기",
     readMore: "더 읽어보기",
-    roomNotFound: "존재하지 않는 방입니다",
     invalidInput: "잘못된 값을 입력했습니다",
     alreadyReserved: "해당 기간에 이미 예약이 존재합니다",
     invalidCurrency: "잘못된 화폐단위를 입력했습니다",
     exchangeRateNotFound: "환율정보를 찾을 수 없습니다",
     pleaseSelectDates: "날짜를 선택해주세요",
-    reservationError: "예약 처리 중 오류가 발생했습니다"
+    reservationError: "예약 처리 중 오류가 발생했습니다",
+    checkIn: "체크인",
+    checkOut: "체크아웃"
   },
   reservation: {
     facilities: "편의시설",

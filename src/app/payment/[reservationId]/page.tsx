@@ -75,7 +75,7 @@ export default function PaymentPage() {
   useEffect(() => {
     const initializePayment = async () => {
       try {
-        const languageCode = currentLanguage.code === 'ko' ? 'kr' : currentLanguage.code
+        const languageCode = currentLanguage.code
         
         const response = await apiGet(
           `/api/user/reserve/page/${params.reservationId}?languageCode=${languageCode}`

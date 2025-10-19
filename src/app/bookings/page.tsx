@@ -107,8 +107,7 @@ export default function BookingsPage() {
   useEffect(() => {
     const fetchBookings = async () => {
       try {
-        // 언어 코드 변환
-        const languageCode = currentLanguage.code === 'ko' ? 'kr' : currentLanguage.code
+        const languageCode = currentLanguage.code
 
         // 쿼리 파라미터 구성
         const params = new URLSearchParams()

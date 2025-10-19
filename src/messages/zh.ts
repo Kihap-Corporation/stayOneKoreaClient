@@ -157,18 +157,20 @@ header: {
     notChargedYet: "暂不收费",
     shareTitle: "与朋友分享此房间",
     shareButton: "分享此房间",
+    roomNotFound: "找不到房间",
+    cannotLoadRoom: "无法加载房间信息",
     hostTitle: "房东信息",
-    verifiedHost: "已验证房东",
     yearsHosting: "已托管{years}年",
     showMoreRooms: "查看更多房间",
     readMore: "阅读更多",
-    roomNotFound: "房间不存在",
     invalidInput: "输入的值无效",
     alreadyReserved: "该时间段已被预订",
     invalidCurrency: "货币单位无效",
     exchangeRateNotFound: "找不到汇率信息",
     pleaseSelectDates: "请选择日期",
-    reservationError: "预订处理过程中发生错误"
+    reservationError: "预订处理过程中发生错误",
+    checkIn: "入住",
+    checkOut: "退房"
   },
   reservation: {
     facilities: "设施",
