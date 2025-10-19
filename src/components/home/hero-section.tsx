@@ -14,6 +14,19 @@ export function HeroSection() {
   const [checkOut, setCheckOut] = useState<Date | null>(null)
   const [showDatePicker, setShowDatePicker] = useState(false)
 
+  // Calculate nights
+  const nights = checkIn && checkOut 
+    ? Math.ceil((checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60 * 24))
+    : 0
+
+  // Dynamic button text
+  const getButtonText = () => {
+    if (nights > 0) {
+      return `Search ${nights}days in Seoul`
+    }
+    return messages?.home?.hero?.searchButton || "Search 5days in Seoul"
+  }
+
   return (
     <div className="relative w-full py-20 px-4 flex items-center justify-center overflow-hidden">
       {/* Background Image */}
@@ -142,7 +155,7 @@ export function HeroSection() {
           <Button 
             className="w-full mt-4 bg-[#e0004d] hover:bg-[#C2185B] text-white rounded-xl h-12 text-base font-medium shadow-sm cursor-pointer"
           >
-            {messages?.home?.hero?.searchButton || "Search 5days in Seoul"}
+            {getButtonText()}
           </Button>
         </div>
       </div>
