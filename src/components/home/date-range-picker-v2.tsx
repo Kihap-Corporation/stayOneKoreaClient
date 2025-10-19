@@ -80,7 +80,7 @@ export function DateRangePickerV2({
     : 0
 
   return (
-    <div className="flex gap-4 p-4 bg-white rounded-2xl shadow-lg border border-[#dee0e3] w-fit">
+    <div className="flex flex-col lg:flex-row gap-4 p-4 bg-white rounded-2xl shadow-lg border border-[#dee0e3] w-fit">
       {/* Calendar */}
       <div>
         <DatePicker
@@ -98,8 +98,8 @@ export function DateRangePickerV2({
         />
       </div>
 
-      {/* Info Panel */}
-      <div className="flex flex-col justify-center gap-4 px-4">
+      {/* Info Panel - Desktop Only */}
+      <div className="hidden lg:flex flex-col justify-center gap-4 px-4">
         <div>
           <p className="text-sm font-medium text-gray-600 mb-1">Check-in</p>
           <p className="text-base font-semibold text-[#14151a]">
