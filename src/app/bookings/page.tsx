@@ -144,8 +144,13 @@ export default function BookingsPage() {
   }, [currentPage, currentLanguage])
 
   const handleBookingClick = (reservationId: number, status: string) => {
-    // 모든 예약 상태에서 상세 페이지로 이동
-    router.push(`/bookings/${reservationId}`)
+    if (status === 'RESERVATION_UNDER_WAY') {
+      // 예약 진행 중인 상태 - 예약 페이지로 이동
+      router.push(`/reservation/${reservationId}`)
+    } else {
+      // 예약 완료된 상태 - 예약 상세 페이지로 이동
+      router.push(`/bookings/${reservationId}`)
+    }
   }
 
   if (loading) {

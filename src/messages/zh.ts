@@ -221,7 +221,8 @@ header: {
     roomNotFound: "未找到房间",
     invalidInput: "提供的输入无效",
     loadError: "加载预订信息失败",
-    reservationNotAvailable: "预订不可用"
+    reservationNotAvailable: "预订不可用",
+    consentRequired: "请勾选所有同意事项。"
   },
   bookings: {
     title: "预订",
@@ -234,5 +235,15 @@ header: {
     checkOut: "退房",
     nights: "晚",
     noBookings: "未找到预订"
+  },
+  payment: {
+    securePayment: "安全支付",
+    encryptedInfo: "所有卡信息都经过完全加密、安全和保护。",
+    paypalOnly: "我们仅接受通过 PayPal 付款。",
+    bookWithPaypal: "立即使用 PayPal 预订",
+    clickToComplete: "点击上面的按钮继续付款并完成您的预订。",
+    paypalProcessing: "正在处理 PayPal 付款...",
+    ourPrice: "原价",
+    discount: "折扣"
   }
 }

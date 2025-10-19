@@ -221,7 +221,8 @@ header: {
     roomNotFound: "Chambre introuvable",
     invalidInput: "Valeur saisie invalide",
     loadError: "Échec du chargement des informations de réservation",
-    reservationNotAvailable: "La réservation n'est pas disponible"
+    reservationNotAvailable: "La réservation n'est pas disponible",
+    consentRequired: "Veuillez cocher tous les éléments de consentement."
   },
   bookings: {
     title: "Réservations",
@@ -234,5 +235,15 @@ header: {
     checkOut: "Départ",
     nights: "nuits",
     noBookings: "Aucune réservation trouvée"
+  },
+  payment: {
+    securePayment: "Paiement sécurisé",
+    encryptedInfo: "Toutes les informations de carte sont entièrement cryptées, sécurisées et protégées.",
+    paypalOnly: "Nous acceptons uniquement les paiements via PayPal.",
+    bookWithPaypal: "Réserver maintenant avec PayPal",
+    clickToComplete: "Cliquez sur le bouton ci-dessus pour procéder au paiement et finaliser votre réservation.",
+    paypalProcessing: "Traitement du paiement PayPal...",
+    ourPrice: "Notre prix",
+    discount: "Réduction"
   }
 }

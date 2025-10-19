@@ -4,25 +4,35 @@ import { Button } from "@/components/ui/button"
 import { ShieldCheck, Calendar, Plus, Minus } from "lucide-react"
 import DatePicker from "react-datepicker"
 import "react-datepicker/dist/react-datepicker.css"
-import { ko, enUS, zhCN, fr } from "date-fns/locale"
 import { useState, useEffect, useRef } from "react"
 import { useLanguage } from "@/components/language-provider"
 import { apiPostWithResponse } from "@/lib/api"
 import Image from "next/image"
 
-// 로케일 맵핑
-const getLocale = (lang: string) => {
-  switch (lang) {
-    case 'ko':
-      return ko
-    case 'en':
-      return enUS
-    case 'zh':
-      return zhCN
-    case 'fr':
-      return fr
-    default:
-      return ko
+// 로케일 맵핑 - 동적 import 사용
+const getLocale = async (lang: string) => {
+  try {
+    switch (lang) {
+      case 'ko':
+        const { ko } = await import('date-fns/locale/ko')
+        return ko
+      case 'en':
+        const { enUS } = await import('date-fns/locale/en-US')
+        return enUS
+      case 'zh':
+        const { zhCN } = await import('date-fns/locale/zh-CN')
+        return zhCN
+      case 'fr':
+        const { fr } = await import('date-fns/locale/fr')
+        return fr
+      default:
+        const { ko: defaultKo } = await import('date-fns/locale/ko')
+        return defaultKo
+    }
+  } catch (error) {
+    console.error('Failed to load locale:', error)
+    // 폴백으로 undefined 반환 (DatePicker가 기본 로케일 사용)
+    return undefined
   }
 }
 
@@ -67,21 +77,38 @@ export function BookingSidebar({
   const currency = currentCurrency.code
   const [isCalendarOpen, setIsCalendarOpen] = useState(false)
   const [isReserving, setIsReserving] = useState(false)
+  const [datePickerLocale, setDatePickerLocale] = useState<any>(undefined)
   const calendarRef = useRef<HTMLDivElement>(null)
+
+  // 로케일 로드
+  useEffect(() => {
+    const loadLocale = async () => {
+      const locale = await getLocale(language)
+      setDatePickerLocale(locale)
+    }
+    loadLocale()
+  }, [language])
 
   // 달력 외부 클릭 감지
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (calendarRef.current && !calendarRef.current.contains(event.target as Node)) {
-        setIsCalendarOpen(false)
+        // DatePicker의 내부 요소 클릭인지 확인
+        const target = event.target as HTMLElement
+        if (!target.closest('.react-datepicker') && !target.closest('.react-datepicker-popper')) {
+          setIsCalendarOpen(false)
+        }
       }
     }
 
-    document.addEventListener('mousedown', handleClickOutside)
+    if (isCalendarOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+    
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
     }
-  }, [])
+  }, [isCalendarOpen])
 
   // 날짜 범위 변경 핸들러
   const handleDateChange = (dates: [Date | null, Date | null]) => {
@@ -260,7 +287,7 @@ export function BookingSidebar({
               />
               
               {isCalendarOpen && (
-                <div className="absolute top-full left-0 mt-2 z-50 bg-white rounded-xl shadow-lg border border-[#dee0e3]">
+                <div className="absolute top-full left-0 mt-2 z-50 bg-white rounded-xl shadow-lg border border-[#dee0e3] p-2">
                   <DatePicker
                     selected={checkInDate}
                     onChange={handleDateChange}
@@ -268,9 +295,10 @@ export function BookingSidebar({
                     endDate={checkOutDate}
                     selectsRange
                     inline
-                    locale={getLocale(language)}
+                    locale={datePickerLocale}
                     minDate={new Date()}
                     monthsShown={1}
+                    calendarClassName="!border-none"
                   />
                 </div>
               )}

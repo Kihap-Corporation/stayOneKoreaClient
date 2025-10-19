@@ -221,7 +221,8 @@ header: {
     roomNotFound: "Room not found",
     invalidInput: "Invalid input provided",
     loadError: "Failed to load reservation information",
-    reservationNotAvailable: "Reservation is not available"
+    reservationNotAvailable: "Reservation is not available",
+    consentRequired: "Please check all consent items."
   },
   bookings: {
     title: "Bookings",
@@ -234,5 +235,15 @@ header: {
     checkOut: "Check-out",
     nights: "nights",
     noBookings: "No bookings found"
+  },
+  payment: {
+    securePayment: "Secure payment",
+    encryptedInfo: "All card information is fully encrypted, secure and protected.",
+    paypalOnly: "We only accept payments via PayPal.",
+    bookWithPaypal: "Book Now with PayPal",
+    clickToComplete: "Click the button above to proceed with payment and complete your booking.",
+    paypalProcessing: "Processing PayPal payment...",
+    ourPrice: "Our price",
+    discount: "Discount"
   }
 }

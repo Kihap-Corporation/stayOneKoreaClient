@@ -117,7 +117,7 @@ export default function ReservationPage() {
         
         const response = await apiGet(
           `/api/user/reserve/page/${params.reservationId}?languageCode=${languageCode}`
-        )
+        ) 
         
         if (response.code === 200 && response.data) {
           const apiData: ReservationAPIResponse = response.data

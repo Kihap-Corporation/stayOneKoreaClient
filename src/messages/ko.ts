@@ -221,7 +221,8 @@ header: {
     roomNotFound: "존재하지 않는 방입니다",
     invalidInput: "잘못된 입력을 했습니다",
     loadError: "예약 정보를 불러오는 중 오류가 발생했습니다",
-    reservationNotAvailable: "예약 가능한 상태가 아닙니다"
+    reservationNotAvailable: "예약 가능한 상태가 아닙니다",
+    consentRequired: "모든 동의사항에 체크해주세요."
   },
   bookings: {
     title: "예약 내역",
@@ -234,6 +235,16 @@ header: {
     checkOut: "체크아웃",
     nights: "박",
     noBookings: "예약 내역이 없습니다"
+  },
+  payment: {
+    securePayment: "안전한 결제",
+    encryptedInfo: "모든 카드 정보는 완전히 암호화되고 안전하게 보호됩니다.",
+    paypalOnly: "PayPal을 통해서만 결제를 받습니다.",
+    bookWithPaypal: "PayPal로 지금 예약하기",
+    clickToComplete: "위 버튼을 클릭하여 결제를 진행하고 예약을 완료하세요.",
+    paypalProcessing: "PayPal 결제를 진행합니다...",
+    ourPrice: "정가",
+    discount: "할인"
   }
 
 }
