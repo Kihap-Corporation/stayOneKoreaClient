@@ -5,14 +5,14 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useLanguage } from "@/components/language-provider"
 import { MapPin, Calendar, Users } from "lucide-react"
-import DatePicker from "react-datepicker"
-import "react-datepicker/dist/react-datepicker.css"
+import { DateRangePickerV2 } from "./date-range-picker-v2"
 
 export function HeroSection() {
-  const { messages } = useLanguage()
+  const { messages, currentLanguage } = useLanguage()
   const [people, setPeople] = useState(1)
   const [checkIn, setCheckIn] = useState<Date | null>(null)
   const [checkOut, setCheckOut] = useState<Date | null>(null)
+  const [showDatePicker, setShowDatePicker] = useState(false)
 
   return (
     <div className="relative w-full py-20 px-4 flex items-center justify-center overflow-hidden">
@@ -55,17 +55,19 @@ export function HeroSection() {
               <label className="text-sm font-medium text-[#14151a]">
                 Check-in
               </label>
-              <div className="relative">
-                <DatePicker
-                  selected={checkIn}
-                  onChange={(date) => setCheckIn(date)}
-                  placeholderText="Select..."
-                  dateFormat="MM/dd/yyyy"
-                  className="w-full h-10 pl-10 pr-3 rounded-xl border border-[#dee0e3] focus:border-[#E91E63] focus:outline-none text-sm"
-                  minDate={new Date()}
-                  popperClassName="datepicker-popper"
-                  popperPlacement="bottom-start"
-                />
+              <div 
+                className="relative cursor-pointer"
+                onClick={() => setShowDatePicker(true)}
+              >
+                <div className="w-full h-10 pl-10 pr-3 rounded-xl border border-[#dee0e3] flex items-center">
+                  {checkIn ? (
+                    <span className="text-sm text-[#14151a]">
+                      {checkIn.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                    </span>
+                  ) : (
+                    <span className="text-sm text-gray-400">Select...</span>
+                  )}
+                </div>
                 <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
               </div>
             </div>
@@ -75,17 +77,19 @@ export function HeroSection() {
               <label className="text-sm font-medium text-[#14151a]">
                 Check-out
               </label>
-              <div className="relative">
-                <DatePicker
-                  selected={checkOut}
-                  onChange={(date) => setCheckOut(date)}
-                  placeholderText="Select..."
-                  dateFormat="MM/dd/yyyy"
-                  className="w-full h-10 pl-10 pr-3 rounded-xl border border-[#dee0e3] focus:border-[#E91E63] focus:outline-none text-sm"
-                  minDate={checkIn || new Date()}
-                  popperClassName="datepicker-popper"
-                  popperPlacement="bottom-start"
-                />
+              <div 
+                className="relative cursor-pointer"
+                onClick={() => setShowDatePicker(true)}
+              >
+                <div className="w-full h-10 pl-10 pr-3 rounded-xl border border-[#dee0e3] flex items-center">
+                  {checkOut ? (
+                    <span className="text-sm text-[#14151a]">
+                      {checkOut.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                    </span>
+                  ) : (
+                    <span className="text-sm text-gray-400">Select...</span>
+                  )}
+                </div>
                 <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
               </div>
             </div>
@@ -98,20 +102,41 @@ export function HeroSection() {
               <div className="bg-white border border-[#dee0e3] rounded-full flex items-center justify-between px-3 h-10 w-[108px]">
                 <button
                   onClick={() => setPeople(Math.max(1, people - 1))}
-                  className="h-8 w-8 flex items-center justify-center hover:bg-gray-100 rounded-xl transition-colors"
+                  className="h-8 w-8 flex items-center justify-center hover:bg-gray-100 rounded-xl transition-colors cursor-pointer"
                 >
                   <span className="text-lg">−</span>
                 </button>
                 <span className="text-sm font-medium w-7 text-center">{people}</span>
                 <button
                   onClick={() => setPeople(people + 1)}
-                  className="h-8 w-8 flex items-center justify-center hover:bg-gray-100 rounded-xl transition-colors"
+                  className="h-8 w-8 flex items-center justify-center hover:bg-gray-100 rounded-xl transition-colors cursor-pointer"
                 >
                   <span className="text-lg">+</span>
                 </button>
               </div>
             </div>
           </div>
+
+          {/* Date Range Picker */}
+          {showDatePicker && (
+            <div className="mt-4 relative">
+              <DateRangePickerV2
+                checkIn={checkIn}
+                checkOut={checkOut}
+                onCheckInChange={(date) => {
+                  setCheckIn(date)
+                }}
+                onCheckOutChange={(date) => {
+                  setCheckOut(date)
+                  // 체크아웃이 선택되면 달력 닫기
+                  if (date) {
+                    setShowDatePicker(false)
+                  }
+                }}
+                locale={currentLanguage.code}
+              />
+            </div>
+          )}
 
           {/* Search Button */}
           <Button 
