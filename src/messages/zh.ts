@@ -60,13 +60,35 @@ header: {
     }
   },
   home: {
-    title: "介绍韩国美丽住宿设施的平台。",
-    subtitle: "发现全国各地的特色住宿。",
-    explore: "浏览住宿",
-    host: "成为房东",
-    search: { title: "多样化住宿搜索", description: "根据您喜欢的地点、价格和设施找到住宿。" },
-    booking: { title: "安全的预订系统", description: "通过我们可靠的预订系统安全地预订住宿。" },
-    experience: { title: "特别体验", description: "体验韩国传统与现代完美融合的住宿体验。" }
+    hero: {
+      title: "在韩国寻找您的住宿",
+      searchButton: "搜索首尔5天住宿"
+    },
+    features: {
+      title: "考试院, K-紧凑型工作室",
+      learnMore: "了解更多",
+      deposit: {
+        title: "零保证金 & 灵活租赁",
+        description: "灵活的日租、周租和月租合同，韩国最低保证金，根据您的住宿目的量身定制。"
+      },
+      furnished: {
+        title: "全家具 & 全包",
+        description: "配备齐全的家具和电器 - 所有公用事业费用包含，无额外费用。"
+      },
+      safety: {
+        title: "安全 & 黄金地段",
+        description: "24小时安保和位于地铁站、大学和首尔各地商务区附近的黄金地段。"
+      }
+    },
+    trending: {
+      title: "热门目的地",
+      subtitle: "最受欢迎的住宿地点"
+    },
+    featuredRooms: {
+      title: "精选客房",
+      subtitle: "Stay One Korea 推荐客房",
+      freeCancellation: "免费取消"
+    }
   },
   account_check: {
     title: "登录或创建账户",

@@ -60,13 +60,35 @@ header: {
     }
   },
   home: {
-    title: "Une plateforme qui présente de belles installations d'hébergement en Corée.",
-    subtitle: "Découvrez des hébergements spéciaux dans tout le pays.",
-    explore: "Explorer les hébergements",
-    host: "Devenir hôte",
-    search: { title: "Recherche d'hébergement diversifiée", description: "Trouvez des hébergements selon votre lieu, prix et équipements préférés." },
-    booking: { title: "Système de réservation sécurisé", description: "Réservez des hébergements en toute sécurité avec notre système de réservation fiable." },
-    experience: { title: "Expérience spéciale", description: "Vivez l'expérience parfaite du mélange de la tradition et de la modernité coréennes." }
+    hero: {
+      title: "Trouvez votre séjour en Corée",
+      searchButton: "Rechercher 5 jours à Séoul"
+    },
+    features: {
+      title: "GOSIWON, Studio K-Compact",
+      learnMore: "En savoir plus",
+      deposit: {
+        title: "Dépôt quasi nul & Bail flexible",
+        description: "Contrats quotidiens, hebdomadaires et mensuels flexibles avec le dépôt le plus bas en Corée, adaptés à votre objectif de séjour."
+      },
+      furnished: {
+        title: "Entièrement meublé & Tout compris",
+        description: "Entièrement meublé avec des appareils - toutes les charges comprises, sans frais supplémentaires."
+      },
+      safety: {
+        title: "Sécurité & Emplacement de choix",
+        description: "Sécurité 24h/24 et emplacements de choix près des stations de métro, des universités et des quartiers d'affaires de Séoul."
+      }
+    },
+    trending: {
+      title: "Destinations tendances",
+      subtitle: "Emplacements de séjour les plus populaires"
+    },
+    featuredRooms: {
+      title: "Chambres vedettes",
+      subtitle: "Chambres recommandées par Stay One Korea",
+      freeCancellation: "Annulation gratuite"
+    }
   },
   account_check: {
     title: "Se connecter ou créer un compte",

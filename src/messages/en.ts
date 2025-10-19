@@ -60,13 +60,35 @@ export default {
     }
   },
   home: {
-    title: "A platform that introduces beautiful accommodations in Korea.",
-    subtitle: "Discover special accommodations throughout Korea.",
-    explore: "Explore Accommodations",
-    host: "Become a Host",
-    search: { title: "Diverse Accommodation Search", description: "Find accommodations based on your preferred location, price, and amenities." },
-    booking: { title: "Secure Booking System", description: "Book accommodations safely with our reliable booking system." },
-    experience: { title: "Special Experience", description: "Experience the perfect blend of Korean tradition and modernity." }
+    hero: {
+      title: "Find Your Stay in Korea",
+      searchButton: "Search 5days in Seoul"
+    },
+    features: {
+      title: "GOSIWON, K-Compact Studio",
+      learnMore: "Learn More",
+      deposit: {
+        title: "Near-Zero Deposit & Flexible Lease",
+        description: "Flexible daily, weekly, and monthly contracts with the lowest deposit in Korea, tailored to your stay purpose."
+      },
+      furnished: {
+        title: "Fully Furnished & All-Inclusive",
+        description: "Fully furnished with appliances — all utilities included, no extra charges."
+      },
+      safety: {
+        title: "Safety & Prime Location",
+        description: "24-hour security and prime locations near subway stations, universities, and business districts across Seoul."
+      }
+    },
+    trending: {
+      title: "Trending destinations",
+      subtitle: "Most popular stay locations"
+    },
+    featuredRooms: {
+      title: "Featured rooms",
+      subtitle: "Recommended rooms by Stay One Korea",
+      freeCancellation: "Free cancellation"
+    }
   },
   account_check: {
     title: "Sign in or create an account",
