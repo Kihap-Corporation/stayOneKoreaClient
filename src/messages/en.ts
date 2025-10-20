@@ -62,7 +62,12 @@ export default {
   home: {
     hero: {
       title: "Find Your Stay in Korea",
-      searchButton: "Search 5days in Seoul"
+      searchButton: "Search 5days in Seoul",
+      searchRequirements: {
+        selectLocation: "Please select a location",
+        selectDates: "Please select dates",
+        minimumStay: "Please select at least 3 nights"
+      }
     },
     features: {
       title: "GOSIWON, K-Compact Studio",

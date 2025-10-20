@@ -62,7 +62,12 @@ header: {
   home: {
     hero: {
       title: "在韩国寻找您的住宿",
-      searchButton: "搜索首尔5天住宿"
+      searchButton: "搜索首尔5天住宿",
+      searchRequirements: {
+        selectLocation: "请选择地点",
+        selectDates: "请选择日期",
+        minimumStay: "请至少选择3晚"
+      }
     },
     features: {
       title: "考试院, K-紧凑型工作室",

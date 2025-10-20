@@ -55,7 +55,12 @@ export default {
   home: {
     hero: {
       title: "한국에서 숙소를 찾아보세요",
-      searchButton: "서울에서 5일 숙박 검색"
+      searchButton: "서울에서 5일 숙박 검색",
+      searchRequirements: {
+        selectLocation: "위치를 선택해주세요",
+        selectDates: "날짜를 선택해주세요",
+        minimumStay: "최소 3박 이상 선택해주세요"
+      }
     },
     features: {
       title: "고시원, K-컴팩트 스튜디오",

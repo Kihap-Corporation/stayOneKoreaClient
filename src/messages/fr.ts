@@ -62,7 +62,12 @@ header: {
   home: {
     hero: {
       title: "Trouvez votre séjour en Corée",
-      searchButton: "Rechercher 5 jours à Séoul"
+      searchButton: "Rechercher 5 jours à Séoul",
+      searchRequirements: {
+        selectLocation: "Veuillez sélectionner un lieu",
+        selectDates: "Veuillez sélectionner des dates",
+        minimumStay: "Veuillez sélectionner au moins 3 nuits"
+      }
     },
     features: {
       title: "GOSIWON, Studio K-Compact",

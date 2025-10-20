@@ -36,6 +36,20 @@ export function HeroSection() {
     return selectedLocationData && checkIn && checkOut && nights >= 3
   }
 
+  // Get validation message
+  const getValidationMessage = () => {
+    if (!selectedLocationData) {
+      return messages?.home?.hero?.searchRequirements?.selectLocation || "Please select a location"
+    }
+    if (!checkIn || !checkOut) {
+      return messages?.home?.hero?.searchRequirements?.selectDates || "Please select dates"
+    }
+    if (nights < 3) {
+      return messages?.home?.hero?.searchRequirements?.minimumStay || "Please select at least 3 nights"
+    }
+    return null
+  }
+
   // Helper function to get location name based on current language
   const getLocationName = (location: SearchHit) => {
     const langMap: { [key: string]: string } = {
@@ -209,11 +223,18 @@ export function HeroSection() {
             </div>
           )}
 
+          {/* Validation Message */}
+          {!isSearchValid() && (
+            <div className="mt-4 text-xs text-gray-500 text-center">
+              {getValidationMessage()}
+            </div>
+          )}
+
           {/* Search Button */}
           <Button 
             onClick={handleSearch}
             disabled={!isSearchValid()}
-            className="w-full mt-4 bg-[#e0004d] hover:bg-[#C2185B] text-white rounded-xl h-12 text-base font-medium shadow-sm cursor-pointer disabled:bg-gray-300 disabled:cursor-not-allowed disabled:opacity-50"
+            className="w-full mt-2 bg-[#e0004d] hover:bg-[#C2185B] text-white rounded-xl h-12 text-base font-medium shadow-sm cursor-pointer disabled:bg-gray-300 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {getButtonText()}
           </Button>
