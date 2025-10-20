@@ -166,6 +166,23 @@ header: {
     accessDeniedDescription: "Vous n'avez pas la permission d'accéder à cette page.",
     goHome: "Retour à l'Accueil"
   },
+  searchResult: {
+    title: "Résultats de recherche",
+    priceFilter: "Prix",
+    priceRange: "Fourchette de prix",
+    roomsFound: "{count} hébergements trouvés",
+    mapView: "Vue carte",
+    listView: "Vue liste",
+    sortBy: "Trier par",
+    sortPriceLow: "Prix : croissant",
+    sortPriceHigh: "Prix : décroissant",
+    sortRating: "Note",
+    noResults: "Aucun résultat trouvé",
+    noResultsDesc: "Essayez de rechercher avec d'autres critères",
+    perNight: "par nuit",
+    showMap: "Afficher la carte",
+    hideMap: "Masquer la carte"
+  },
   common: {
     loading: "Chargement...",
     error: "Une erreur s'est produite",

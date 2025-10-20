@@ -159,6 +159,23 @@ export default {
     accessDeniedDescription: "이 페이지에 접근할 권한이 없습니다.",
     goHome: "홈으로 돌아가기"
   },
+  searchResult: {
+    title: "숙소 검색 결과",
+    priceFilter: "가격",
+    priceRange: "가격 범위",
+    roomsFound: "{count}개의 숙소",
+    mapView: "지도 보기",
+    listView: "목록 보기",
+    sortBy: "정렬",
+    sortPriceLow: "낮은 가격순",
+    sortPriceHigh: "높은 가격순",
+    sortRating: "평점순",
+    noResults: "검색 결과가 없습니다",
+    noResultsDesc: "다른 조건으로 검색해보세요",
+    perNight: "박당",
+    showMap: "지도 보기",
+    hideMap: "지도 숨기기"
+  },
   common: {
     loading: "로딩 중...",
     error: "오류가 발생했습니다",

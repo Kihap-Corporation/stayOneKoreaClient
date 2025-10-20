@@ -166,6 +166,23 @@ header: {
     accessDeniedDescription: "您没有权限访问此页面。",
     goHome: "返回首页"
   },
+  searchResult: {
+    title: "搜索结果",
+    priceFilter: "价格",
+    priceRange: "价格范围",
+    roomsFound: "找到 {count} 个住宿",
+    mapView: "地图视图",
+    listView: "列表视图",
+    sortBy: "排序",
+    sortPriceLow: "价格：低到高",
+    sortPriceHigh: "价格：高到低",
+    sortRating: "评分",
+    noResults: "未找到结果",
+    noResultsDesc: "尝试使用不同的条件搜索",
+    perNight: "每晚",
+    showMap: "显示地图",
+    hideMap: "隐藏地图"
+  },
   common: {
     loading: "加载中...",
     error: "发生错误",

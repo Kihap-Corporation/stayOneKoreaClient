@@ -166,6 +166,23 @@ export default {
     accessDeniedDescription: "You do not have permission to access this page.",
     goHome: "Go Home"
   },
+  searchResult: {
+    title: "Search Results",
+    priceFilter: "Price",
+    priceRange: "Price Range",
+    roomsFound: "{count} rooms found",
+    mapView: "Map View",
+    listView: "List View",
+    sortBy: "Sort by",
+    sortPriceLow: "Price: Low to High",
+    sortPriceHigh: "Price: High to Low",
+    sortRating: "Rating",
+    noResults: "No results found",
+    noResultsDesc: "Try searching with different criteria",
+    perNight: "per night",
+    showMap: "Show Map",
+    hideMap: "Hide Map"
+  },
   common: {
     loading: "Loading...",
     error: "An error occurred",
