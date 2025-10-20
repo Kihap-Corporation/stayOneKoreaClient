@@ -120,7 +120,8 @@ export const apiRequest = async (
 
       // 401 에러 처리 (토큰 만료)
       if (response.status === 401 && !skipAuth) {
-        if (data.code === "40101" || data.code === 40101) {
+        const code = String(data.code)
+        if (code === "40101") {
           // 토큰 재발급 시도
           const refreshSuccess = await refreshToken()
           if (refreshSuccess) {
@@ -130,7 +131,7 @@ export const apiRequest = async (
             // 재발급 실패
             throw new ApiError(data, response.status)
           }
-        } else if (data.code === "40102" || data.code === 40102) {
+        } else if (code === "40102") {
           // 토큰 재발급 실패 - 더 이상 시도하지 않음
           alert(globalMessages?.auth?.accountLoggedOut || "계정이 로그아웃 되었습니다. 다시 로그인 해주세요")
           await handleLogout()
@@ -147,7 +148,8 @@ export const apiRequest = async (
       // 400 에러 처리 (특별한 경우들)
       if (response.status === 400) {
         // 비밀번호 변경 시 현재 비밀번호 불일치 (40106)
-        if (data.code === "40106" || data.code === 40106) {
+        const code = String(data.code)
+        if (code === "40106") {
           alert(globalMessages?.auth?.currentPasswordIncorrect || "현재 비밀번호가 일치하지 않습니다.")
           throw new ApiError(data, response.status)
         }

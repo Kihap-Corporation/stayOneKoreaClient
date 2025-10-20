@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 import { useLanguage } from "@/components/language-provider"
 import { Header } from "@/components/header"
@@ -12,7 +12,7 @@ import { Pagination } from "@/components/search/pagination"
 import { SortSelector, SortOption } from "@/components/search/sort-selector"
 import { searchRooms, SearchRoomResult } from "@/lib/search-api"
 
-export default function SearchResultPage() {
+function SearchResultContent() {
   const { messages, currentLanguage } = useLanguage()
   const searchParams = useSearchParams()
   
@@ -267,3 +267,21 @@ export default function SearchResultPage() {
   )
 }
 
+export default function SearchResultPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex min-h-screen flex-col bg-white">
+        <Header />
+        <main className="flex-1 pt-32 flex items-center justify-center">
+          <div className="flex flex-col items-center gap-4">
+            <div className="h-8 w-8 border-4 border-[#E91E63] border-t-transparent rounded-full animate-spin"></div>
+            <p className="text-gray-500">Loading...</p>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    }>
+      <SearchResultContent />
+    </Suspense>
+  )
+}
