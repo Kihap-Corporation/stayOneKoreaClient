@@ -38,7 +38,7 @@ export function FeaturedRoomsSection() {
         // language 파라미터 추가 (ko, en, zh, fr)
         const response = await apiGet(`/api/recommend-rooms?language=${currentLanguage.code}`, { skipAuth: true })
         
-        if ((response.status === 200 || response.code === 200 || response.code === "SUCCESS") && response.data) {
+        if ((response.status === 200 || response.code === 200) && response.data) {
           // API 응답 데이터를 Room 형식으로 변환
           const recommendedRooms: RecommendedRoom[] = response.data
           const formattedRooms: Room[] = recommendedRooms.map((item) => ({
