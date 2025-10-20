@@ -157,12 +157,16 @@ header: {
     notChargedYet: "Vous ne serez pas encore facturé",
     shareTitle: "Partagez cette chambre avec des amis",
     shareButton: "Partager cette chambre",
-    roomNotFound: "Chambre introuvable",
-    cannotLoadRoom: "Impossible de charger les informations de la chambre",
+    shareSuccess: "Lien copié dans le presse-papiers !",
+    shareDescription: "Partagez avec vos amis",
+    shareError: "Échec de la copie du lien",
     hostTitle: "Hôte de cette chambre",
     yearsHosting: "{years} ans d'hébergement",
     showMoreRooms: "Afficher plus de chambres",
     readMore: "Lire la suite",
+    aboutGosiwon: "À propos du gosiwon",
+    roomNotFound: "Chambre introuvable",
+    cannotLoadRoom: "Impossible de charger les informations de la chambre",
     invalidInput: "Valeur saisie invalide",
     alreadyReserved: "Cette période est déjà réservée",
     invalidCurrency: "Devise invalide",
@@ -247,5 +251,13 @@ header: {
     paypalProcessing: "Traitement du paiement PayPal...",
     ourPrice: "Notre prix",
     discount: "Réduction"
+  },
+  like: {
+    title: "Enregistré",
+    noSavedRooms: "Aucune chambre enregistrée",
+    noSavedRoomsDesc: "Enregistrez vos chambres préférées pour les voir ici",
+    noLikedRoomsError: "Aucune chambre enregistrée n'existe",
+    verified: "Vérifié",
+    freeCancellation: "Annulation gratuite"
   }
 }

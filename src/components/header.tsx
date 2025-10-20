@@ -55,7 +55,7 @@ export function Header() {
         {/* Desktop Header */}
         <div className="hidden lg:flex flex-col gap-4">
           <div className="flex items-center justify-between w-full">
-            {/* Left: Logo + Search */}
+            {/* Left: Logo */}
             <div className="flex items-center gap-8">
               {/* Logo */}
               <Link href="/" className="flex-shrink-0">
@@ -67,21 +67,6 @@ export function Header() {
                   />
                 </div>
               </Link>
-
-              {/* Search Bar */}
-              <div className="relative w-[400px]">
-                <Input
-                  type="text"
-                  placeholder={messages?.header?.search?.placeholder || "Find your stay in Korea"}
-                  className="w-full h-10 pr-10 pl-4 rounded-full border border-[#dee0e3] hover:border-gray-300 focus:border-[#E91E63] transition-colors bg-white text-sm"
-                />
-                <Button
-                  size="icon"
-                  className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-[#e0004d] hover:bg-[#C2185B] shadow-sm transition-all"
-                >
-                  <Search className="h-4 w-4 text-white" />
-                </Button>
-              </div>
             </div>
 
             {/* Right: Language + Currency + Notification + Profile */}
@@ -159,7 +144,7 @@ export function Header() {
                               <span className="text-sm font-medium text-[#14151a] tracking-tight">Bookings</span>
                             </Link>
                             <Link
-                              href="#"
+                              href="/like"
                               className="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 rounded-lg transition-colors"
                               onClick={() => setIsProfileOpen(false)}
                             >
@@ -210,6 +195,21 @@ export function Header() {
                 className="h-4 w-4"
               />
               <span className="text-sm font-medium tracking-tight">{messages?.header?.navigation?.about || "About Gosiwon"}</span>
+            </Button>
+          </div>
+
+          {/* Desktop Search Bar */}
+          <div className="relative w-full max-w-[400px] mx-auto">
+            <Input
+              type="text"
+              placeholder={messages?.header?.search?.placeholder || "Find your stay in Korea"}
+              className="w-full h-10 pr-10 pl-4 rounded-full border border-[#dee0e3] hover:border-gray-300 focus:border-[#E91E63] transition-colors bg-white text-sm"
+            />
+            <Button
+              size="icon"
+              className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-[#e0004d] hover:bg-[#C2185B] shadow-sm transition-all"
+            >
+              <Search className="h-4 w-4 text-white" />
             </Button>
           </div>
         </div>
@@ -268,7 +268,7 @@ export function Header() {
                               <span className="text-sm font-medium text-[#14151a] tracking-tight">Bookings</span>
                             </Link>
                           <Link
-                            href="#"
+                            href="/like"
                             className="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 rounded-lg transition-colors"
                             onClick={() => setIsProfileOpen(false)}
                           >

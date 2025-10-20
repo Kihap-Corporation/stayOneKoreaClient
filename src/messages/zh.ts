@@ -157,12 +157,16 @@ header: {
     notChargedYet: "暂不收费",
     shareTitle: "与朋友分享此房间",
     shareButton: "分享此房间",
-    roomNotFound: "找不到房间",
-    cannotLoadRoom: "无法加载房间信息",
+    shareSuccess: "链接已复制到剪贴板！",
+    shareDescription: "与您的朋友分享",
+    shareError: "复制链接失败",
     hostTitle: "房东信息",
     yearsHosting: "已托管{years}年",
     showMoreRooms: "查看更多房间",
     readMore: "阅读更多",
+    aboutGosiwon: "关于高斯院",
+    roomNotFound: "找不到房间",
+    cannotLoadRoom: "无法加载房间信息",
     invalidInput: "输入的值无效",
     alreadyReserved: "该时间段已被预订",
     invalidCurrency: "货币单位无效",
@@ -247,5 +251,13 @@ header: {
     paypalProcessing: "正在处理 PayPal 付款...",
     ourPrice: "原价",
     discount: "折扣"
+  },
+  like: {
+    title: "已保存",
+    noSavedRooms: "未保存房间",
+    noSavedRoomsDesc: "保存您喜欢的房间以在此处查看",
+    noLikedRoomsError: "不存在保存的房间",
+    verified: "已验证",
+    freeCancellation: "免费取消"
   }
 }

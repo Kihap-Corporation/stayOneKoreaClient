@@ -157,12 +157,16 @@ header: {
     notChargedYet: "You won't be charged yet",
     shareTitle: "Share this room with friends",
     shareButton: "Share this room",
-    roomNotFound: "Room not found",
-    cannotLoadRoom: "Unable to load room information",
+    shareSuccess: "Link copied to clipboard!",
+    shareDescription: "Share with your friends",
+    shareError: "Failed to copy link",
     hostTitle: "Host of this room",
     yearsHosting: "{years} years hosting",
     showMoreRooms: "Show more rooms",
     readMore: "Read more",
+    aboutGosiwon: "About the gosiwon",
+    roomNotFound: "Room not found",
+    cannotLoadRoom: "Unable to load room information",
     invalidInput: "Invalid input provided",
     alreadyReserved: "This period is already reserved",
     invalidCurrency: "Invalid currency provided",
@@ -247,5 +251,13 @@ header: {
     paypalProcessing: "Processing PayPal payment...",
     ourPrice: "Our price",
     discount: "Discount"
+  },
+  like: {
+    title: "Saved",
+    noSavedRooms: "No saved rooms",
+    noSavedRoomsDesc: "Save your favorite rooms to see them here",
+    noLikedRoomsError: "No saved rooms exist",
+    verified: "Verified",
+    freeCancellation: "Free cancellation"
   }
 }
