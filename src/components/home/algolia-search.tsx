@@ -5,10 +5,12 @@ import { searchAlgoliaIndex } from "@/lib/algolia"
 import { MapPin } from "lucide-react"
 
 interface AlgoliaSearchProps {
-  onSelect?: (location: string) => void
+  onSelect?: (location: SearchHit) => void
   placeholder?: string
   className?: string
 }
+
+export type { SearchHit }
 
 interface SearchHit {
   objectID: string
@@ -130,7 +132,7 @@ export function AlgoliaSearch({
     setIsOpen(false)
     
     if (onSelect) {
-      onSelect(locationName)
+      onSelect(result)
     }
   }
 

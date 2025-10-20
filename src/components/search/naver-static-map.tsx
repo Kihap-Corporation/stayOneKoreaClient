@@ -7,6 +7,7 @@ import Script from "next/script"
 declare global {
   interface Window {
     naver: any
+    navermap_authFailure?: () => void
   }
 }
 
@@ -42,9 +43,14 @@ export function NaverStaticMap({
 
   const CLIENT_ID = process.env.NEXT_PUBLIC_NAVER_CLOUD_CLIENT_ID
 
-  // 지도 초기화
+  // 지도 초기화 (한 번만)
   useEffect(() => {
     if (!isLoaded || !mapRef.current || !CLIENT_ID) return
+    
+    // 이미 지도가 있으면 초기화하지 않음
+    if (map) return
+
+    console.log('Initializing Naver Map...')
 
     const mapOptions = {
       center: new window.naver.maps.LatLng(center.lat, center.lng),
@@ -58,13 +64,16 @@ export function NaverStaticMap({
 
     const mapInstance = new window.naver.maps.Map(mapRef.current, mapOptions)
     setMap(mapInstance)
+  }, [isLoaded, CLIENT_ID, map, center.lat, center.lng, level])
 
-    return () => {
-      if (mapInstance) {
-        mapInstance.destroy()
-      }
-    }
-  }, [isLoaded, CLIENT_ID, center.lat, center.lng, level])
+  // 지도 중심점 업데이트 (지도 재생성 없이)
+  useEffect(() => {
+    if (!map || !window.naver) return
+
+    console.log('Updating map center:', center.lat, center.lng)
+    map.setCenter(new window.naver.maps.LatLng(center.lat, center.lng))
+    map.setZoom(level)
+  }, [map, center.lat, center.lng, level])
 
   // 마커 생성
   useEffect(() => {

@@ -1,20 +1,22 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useLanguage } from "@/components/language-provider"
 import { Calendar, Users } from "lucide-react"
 import { DateRangePickerV2 } from "./date-range-picker-v2"
-import { AlgoliaSearch } from "./algolia-search"
+import { AlgoliaSearch, SearchHit } from "./algolia-search"
 
 export function HeroSection() {
   const { messages, currentLanguage } = useLanguage()
+  const router = useRouter()
   const [people, setPeople] = useState(1)
   const [checkIn, setCheckIn] = useState<Date | null>(null)
   const [checkOut, setCheckOut] = useState<Date | null>(null)
   const [showDatePicker, setShowDatePicker] = useState(false)
-  const [selectedLocation, setSelectedLocation] = useState<string>("")
+  const [selectedLocationData, setSelectedLocationData] = useState<SearchHit | null>(null)
 
   // Calculate nights
   const nights = checkIn && checkOut 
@@ -27,6 +29,64 @@ export function HeroSection() {
       return `Search ${nights}days in Seoul`
     }
     return messages?.home?.hero?.searchButton || "Search 5days in Seoul"
+  }
+
+  // Validation
+  const isSearchValid = () => {
+    return selectedLocationData && checkIn && checkOut && nights >= 3
+  }
+
+  // Helper function to get location name based on current language
+  const getLocationName = (location: SearchHit) => {
+    const langMap: { [key: string]: string } = {
+      ko: location.nameKo,
+      en: location.nameEn,
+      zh: location.nameZh,
+      fr: location.nameFr
+    }
+    return langMap[currentLanguage.code] || location.nameEn || location.nameKo
+  }
+
+  // Handle search button click
+  const handleSearch = () => {
+    // Validate location
+    if (!selectedLocationData) {
+      alert(messages?.searchResult?.validation?.selectLocation || "Please select a location from Algolia search")
+      return
+    }
+
+    // Validate dates
+    if (!checkIn || !checkOut) {
+      alert(messages?.searchResult?.validation?.selectDates || "Please select check-in and check-out dates")
+      return
+    }
+
+    // Validate minimum stay
+    if (nights < 3) {
+      alert(messages?.searchResult?.validation?.minStay || "Minimum stay is 3 days")
+      return
+    }
+
+    // Format dates as yyyy-MM-dd
+    const formatDate = (date: Date) => {
+      const year = date.getFullYear()
+      const month = String(date.getMonth() + 1).padStart(2, '0')
+      const day = String(date.getDate()).padStart(2, '0')
+      return `${year}-${month}-${day}`
+    }
+
+    // Build query params
+    const params = new URLSearchParams({
+      lat: selectedLocationData.latitude.toString(),
+      lng: selectedLocationData.longitude.toString(),
+      checkIn: formatDate(checkIn),
+      checkOut: formatDate(checkOut),
+      location: getLocationName(selectedLocationData),
+      sort: 'RECOMMEND'
+    })
+
+    // Navigate to search results page
+    router.push(`/search?${params.toString()}`)
   }
 
   return (
@@ -57,7 +117,7 @@ export function HeroSection() {
               </label>
               <AlgoliaSearch
                 placeholder="Search destinations"
-                onSelect={(location) => setSelectedLocation(location)}
+                onSelect={(location) => setSelectedLocationData(location)}
               />
             </div>
 
@@ -151,7 +211,9 @@ export function HeroSection() {
 
           {/* Search Button */}
           <Button 
-            className="w-full mt-4 bg-[#e0004d] hover:bg-[#C2185B] text-white rounded-xl h-12 text-base font-medium shadow-sm cursor-pointer"
+            onClick={handleSearch}
+            disabled={!isSearchValid()}
+            className="w-full mt-4 bg-[#e0004d] hover:bg-[#C2185B] text-white rounded-xl h-12 text-base font-medium shadow-sm cursor-pointer disabled:bg-gray-300 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {getButtonText()}
           </Button>

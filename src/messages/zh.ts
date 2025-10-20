@@ -174,6 +174,7 @@ header: {
     mapView: "地图视图",
     listView: "列表视图",
     sortBy: "排序",
+    sortRecommend: "推荐",
     sortPriceLow: "价格：低到高",
     sortPriceHigh: "价格：高到低",
     sortRating: "评分",
@@ -181,7 +182,13 @@ header: {
     noResultsDesc: "尝试使用不同的条件搜索",
     perNight: "每晚",
     showMap: "显示地图",
-    hideMap: "隐藏地图"
+    hideMap: "隐藏地图",
+    searchError: "搜索时发生错误",
+    validation: {
+      selectLocation: "请从 Algolia 搜索中选择位置",
+      selectDates: "请选择入住和退房日期",
+      minStay: "最少住宿 3 天"
+    }
   },
   common: {
     loading: "加载中...",

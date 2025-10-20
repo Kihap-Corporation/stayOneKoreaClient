@@ -174,6 +174,7 @@ export default {
     mapView: "Map View",
     listView: "List View",
     sortBy: "Sort by",
+    sortRecommend: "Recommended",
     sortPriceLow: "Price: Low to High",
     sortPriceHigh: "Price: High to Low",
     sortRating: "Rating",
@@ -181,7 +182,13 @@ export default {
     noResultsDesc: "Try searching with different criteria",
     perNight: "per night",
     showMap: "Show Map",
-    hideMap: "Hide Map"
+    hideMap: "Hide Map",
+    searchError: "An error occurred while searching",
+    validation: {
+      selectLocation: "Please select a location from Algolia search",
+      selectDates: "Please select check-in and check-out dates",
+      minStay: "Minimum stay is 3 days"
+    }
   },
   common: {
     loading: "Loading...",

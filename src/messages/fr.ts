@@ -174,6 +174,7 @@ header: {
     mapView: "Vue carte",
     listView: "Vue liste",
     sortBy: "Trier par",
+    sortRecommend: "Recommandé",
     sortPriceLow: "Prix : croissant",
     sortPriceHigh: "Prix : décroissant",
     sortRating: "Note",
@@ -181,7 +182,13 @@ header: {
     noResultsDesc: "Essayez de rechercher avec d'autres critères",
     perNight: "par nuit",
     showMap: "Afficher la carte",
-    hideMap: "Masquer la carte"
+    hideMap: "Masquer la carte",
+    searchError: "Une erreur s'est produite lors de la recherche",
+    validation: {
+      selectLocation: "Veuillez sélectionner un emplacement dans la recherche Algolia",
+      selectDates: "Veuillez sélectionner les dates d'arrivée et de départ",
+      minStay: "Séjour minimum de 3 jours"
+    }
   },
   common: {
     loading: "Chargement...",

@@ -167,6 +167,7 @@ export default {
     mapView: "지도 보기",
     listView: "목록 보기",
     sortBy: "정렬",
+    sortRecommend: "추천순",
     sortPriceLow: "낮은 가격순",
     sortPriceHigh: "높은 가격순",
     sortRating: "평점순",
@@ -174,7 +175,13 @@ export default {
     noResultsDesc: "다른 조건으로 검색해보세요",
     perNight: "박당",
     showMap: "지도 보기",
-    hideMap: "지도 숨기기"
+    hideMap: "지도 숨기기",
+    searchError: "검색 중 오류가 발생했습니다",
+    validation: {
+      selectLocation: "알고리아 검색에서 위치를 선택해주세요",
+      selectDates: "체크인/체크아웃 날짜를 선택해주세요",
+      minStay: "최소 3일 이상 숙박해야 합니다"
+    }
   },
   common: {
     loading: "로딩 중...",
