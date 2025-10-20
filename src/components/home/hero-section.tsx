@@ -179,25 +179,14 @@ export function HeroSection() {
               </div>
             </div>
 
-            {/* People */}
+            {/* People - Fixed to 1 */}
             <div className="flex flex-col gap-2">
               <label className="text-sm font-medium text-[#14151a]">
                 People
               </label>
-              <div className="bg-white border border-[#dee0e3] rounded-full flex items-center justify-between px-3 h-10 w-[108px]">
-                <button
-                  onClick={() => setPeople(Math.max(1, people - 1))}
-                  className="h-8 w-8 flex items-center justify-center hover:bg-gray-100 rounded-xl transition-colors cursor-pointer"
-                >
-                  <span className="text-lg">−</span>
-                </button>
-                <span className="text-sm font-medium w-7 text-center">{people}</span>
-                <button
-                  onClick={() => setPeople(people + 1)}
-                  className="h-8 w-8 flex items-center justify-center hover:bg-gray-100 rounded-xl transition-colors cursor-pointer"
-                >
-                  <span className="text-lg">+</span>
-                </button>
+              <div className="bg-white border border-[#dee0e3] rounded-full flex items-center justify-center h-10 w-[108px]">
+                <Users className="h-4 w-4 text-gray-400 mr-2" />
+                <span className="text-sm font-medium">1</span>
               </div>
             </div>
           </div>
