@@ -50,13 +50,40 @@ header: {
     }
   },
   home: {
-    title: "Une plateforme qui présente de belles installations d'hébergement en Corée.",
-    subtitle: "Découvrez des hébergements spéciaux dans tout le pays.",
-    explore: "Explorer les hébergements",
-    host: "Devenir hôte",
-    search: { title: "Recherche d'hébergement diversifiée", description: "Trouvez des hébergements selon votre lieu, prix et équipements préférés." },
-    booking: { title: "Système de réservation sécurisé", description: "Réservez des hébergements en toute sécurité avec notre système de réservation fiable." },
-    experience: { title: "Expérience spéciale", description: "Vivez l'expérience parfaite du mélange de la tradition et de la modernité coréennes." }
+    hero: {
+      title: "Trouvez votre séjour en Corée",
+      searchButton: "Rechercher 5 jours à Séoul",
+      searchRequirements: {
+        selectLocation: "Veuillez sélectionner un lieu",
+        selectDates: "Veuillez sélectionner des dates",
+        minimumStay: "Veuillez sélectionner au moins 3 nuits"
+      }
+    },
+    features: {
+      title: "GOSIWON, Studio K-Compact",
+      learnMore: "En savoir plus",
+      deposit: {
+        title: "Dépôt quasi nul & Bail flexible",
+        description: "Contrats quotidiens, hebdomadaires et mensuels flexibles avec le dépôt le plus bas en Corée, adaptés à votre objectif de séjour."
+      },
+      furnished: {
+        title: "Entièrement meublé & Tout compris",
+        description: "Entièrement meublé avec des appareils - toutes les charges comprises, sans frais supplémentaires."
+      },
+      safety: {
+        title: "Sécurité & Emplacement de choix",
+        description: "Sécurité 24h/24 et emplacements de choix près des stations de métro, des universités et des quartiers d'affaires de Séoul."
+      }
+    },
+    trending: {
+      title: "Destinations tendances",
+      subtitle: "Emplacements de séjour les plus populaires"
+    },
+    featuredRooms: {
+      title: "Chambres vedettes",
+      subtitle: "Chambres recommandées par Stay One Korea",
+      freeCancellation: "Annulation gratuite"
+    }
   },
   account_check: {
     title: "Se connecter ou créer un compte",
@@ -132,6 +159,30 @@ header: {
     accessDenied: "Accès refusé",
     accessDeniedDescription: "Vous n'avez pas la permission d'accéder à cette page.",
     goHome: "Aller à l'accueil"
+  },
+  searchResult: {
+    title: "Résultats de recherche",
+    priceFilter: "Prix",
+    priceRange: "Fourchette de prix",
+    roomsFound: "{count} hébergements trouvés",
+    mapView: "Vue carte",
+    listView: "Vue liste",
+    sortBy: "Trier par",
+    sortRecommend: "Recommandé",
+    sortPriceLow: "Prix : croissant",
+    sortPriceHigh: "Prix : décroissant",
+    sortRating: "Note",
+    noResults: "Aucun résultat trouvé",
+    noResultsDesc: "Essayez de rechercher avec d'autres critères",
+    perNight: "par nuit",
+    showMap: "Afficher la carte",
+    hideMap: "Masquer la carte",
+    searchError: "Une erreur s'est produite lors de la recherche",
+    validation: {
+      selectLocation: "Veuillez sélectionner un emplacement dans la recherche Algolia",
+      selectDates: "Veuillez sélectionner les dates d'arrivée et de départ",
+      minStay: "Séjour minimum de 3 jours"
+    }
   },
   common: {
     loading: "Chargement...",

@@ -50,13 +50,40 @@ header: {
     }
   },
   home: {
-    title: "A platform that introduces beautiful accommodations in Korea.",
-    subtitle: "Discover special accommodations throughout Korea.",
-    explore: "Explore Accommodations",
-    host: "Become a Host",
-    search: { title: "Diverse Accommodation Search", description: "Find accommodations based on your preferred location, price, and amenities." },
-    booking: { title: "Secure Booking System", description: "Book accommodations safely with our reliable booking system." },
-    experience: { title: "Special Experience", description: "Experience the perfect blend of Korean tradition and modernity." }
+    hero: {
+      title: "Find Your Stay in Korea",
+      searchButton: "Search 5days in Seoul",
+      searchRequirements: {
+        selectLocation: "Please select a location",
+        selectDates: "Please select dates",
+        minimumStay: "Please select at least 3 nights"
+      }
+    },
+    features: {
+      title: "GOSIWON, K-Compact Studio",
+      learnMore: "Learn More",
+      deposit: {
+        title: "Near-Zero Deposit & Flexible Lease",
+        description: "Flexible daily, weekly, and monthly contracts with the lowest deposit in Korea, tailored to your stay purpose."
+      },
+      furnished: {
+        title: "Fully Furnished & All-Inclusive",
+        description: "Fully furnished with appliances — all utilities included, no extra charges."
+      },
+      safety: {
+        title: "Safety & Prime Location",
+        description: "24-hour security and prime locations near subway stations, universities, and business districts across Seoul."
+      }
+    },
+    trending: {
+      title: "Trending destinations",
+      subtitle: "Most popular stay locations"
+    },
+    featuredRooms: {
+      title: "Featured rooms",
+      subtitle: "Recommended rooms by Stay One Korea",
+      freeCancellation: "Free cancellation"
+    }
   },
   account_check: {
     title: "Sign in or create an account",
@@ -132,6 +159,30 @@ header: {
     accessDenied: "Access denied",
     accessDeniedDescription: "You do not have permission to access this page.",
     goHome: "Go to Home"
+  },
+  searchResult: {
+    title: "Search Results",
+    priceFilter: "Price",
+    priceRange: "Price Range",
+    roomsFound: "{count} rooms found",
+    mapView: "Map View",
+    listView: "List View",
+    sortBy: "Sort by",
+    sortRecommend: "Recommended",
+    sortPriceLow: "Price: Low to High",
+    sortPriceHigh: "Price: High to Low",
+    sortRating: "Rating",
+    noResults: "No results found",
+    noResultsDesc: "Try searching with different criteria",
+    perNight: "per night",
+    showMap: "Show Map",
+    hideMap: "Hide Map",
+    searchError: "An error occurred while searching",
+    validation: {
+      selectLocation: "Please select a location from Algolia search",
+      selectDates: "Please select check-in and check-out dates",
+      minStay: "Minimum stay is 3 days"
+    }
   },
   common: {
     loading: "Loading...",

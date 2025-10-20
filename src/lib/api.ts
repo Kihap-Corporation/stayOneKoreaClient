@@ -9,10 +9,12 @@ export const setGlobalMessages = (messages: any) => {
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
 
-interface ApiResponse {
-  code: number
+// 공통 API 응답 형식
+export interface ApiResponse<T = any> {
+  status: number
+  code: string
   message: string
-  data: any
+  data: T
 }
 
 interface ApiRequestOptions extends RequestInit {
@@ -20,7 +22,7 @@ interface ApiRequestOptions extends RequestInit {
 }
 
 class ApiError extends Error {
-  constructor(public response: ApiResponse, public status: number) {
+  constructor(public response: ApiResponse<any>, public status: number) {
     super(response.message)
     this.name = 'ApiError'
   }
@@ -67,7 +69,7 @@ const refreshToken = async (): Promise<boolean> => {
 
     const data: ApiResponse = await response.json()
 
-    if (response.ok && data.code === 200) {
+    if (response.ok && (data.status === 200 || data.code === "SUCCESS")) {
       return true // 재발급 성공
     } else {
       // 재발급 실패 - 로그아웃 처리
@@ -118,7 +120,8 @@ export const apiRequest = async (
 
       // 401 에러 처리 (토큰 만료)
       if (response.status === 401 && !skipAuth) {
-        if (data.code === 40101) {
+        const code = String(data.code)
+        if (code === "40101") {
           // 토큰 재발급 시도
           const refreshSuccess = await refreshToken()
           if (refreshSuccess) {
@@ -128,7 +131,7 @@ export const apiRequest = async (
             // 재발급 실패
             throw new ApiError(data, response.status)
           }
-        } else if (data.code === 40102) {
+        } else if (code === "40102") {
           // 토큰 재발급 실패 - 더 이상 시도하지 않음
           alert(globalMessages?.auth?.accountLoggedOut || "계정이 로그아웃 되었습니다. 다시 로그인 해주세요")
           await handleLogout()
@@ -145,7 +148,8 @@ export const apiRequest = async (
       // 400 에러 처리 (특별한 경우들)
       if (response.status === 400) {
         // 비밀번호 변경 시 현재 비밀번호 불일치 (40106)
-        if (data.code === 40106) {
+        const code = String(data.code)
+        if (code === "40106") {
           alert(globalMessages?.auth?.currentPasswordIncorrect || "현재 비밀번호가 일치하지 않습니다.")
           throw new ApiError(data, response.status)
         }
