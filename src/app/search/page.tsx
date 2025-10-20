@@ -18,6 +18,7 @@ export default function SearchResultPage() {
   
   const [rooms, setRooms] = useState<SearchRoomResult[]>([])
   const [loading, setLoading] = useState(true)
+  const [isRefreshing, setIsRefreshing] = useState(false) // 재로딩 상태 추가
   const [error, setError] = useState<string | null>(null)
   const [selectedRoomIndex, setSelectedRoomIndex] = useState<number | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
@@ -25,6 +26,7 @@ export default function SearchResultPage() {
   const [totalElements, setTotalElements] = useState(0)
   const [priceRange, setPriceRange] = useState({ min: 0, max: 300 })
   const [sortOption, setSortOption] = useState<SortOption>('RECOMMEND')
+  const [isInitialLoad, setIsInitialLoad] = useState(true) // 초기 로딩 여부
 
   // Extract search params
   const latitude = searchParams.get('lat')
@@ -40,10 +42,16 @@ export default function SearchResultPage() {
       if (!latitude || !longitude || !checkInDate || !checkOutDate) {
         setError('Missing required search parameters')
         setLoading(false)
+        setIsInitialLoad(false)
         return
       }
 
-      setLoading(true)
+      // 초기 로딩이면 loading, 아니면 isRefreshing 사용
+      if (isInitialLoad) {
+        setLoading(true)
+      } else {
+        setIsRefreshing(true)
+      }
       setError(null)
 
       try {
@@ -76,11 +84,13 @@ export default function SearchResultPage() {
         setError(messages?.searchResult?.searchError || 'An error occurred while searching')
       } finally {
         setLoading(false)
+        setIsRefreshing(false)
+        setIsInitialLoad(false)
       }
     }
 
     loadRooms()
-  }, [latitude, longitude, checkInDate, checkOutDate, currentPage, sortOption, priceRange.min, priceRange.max, currentLanguage.code])
+  }, [latitude, longitude, checkInDate, checkOutDate, currentPage, sortOption, priceRange.min, priceRange.max, currentLanguage.code, isInitialLoad])
 
   // 지도 중심 좌표 (검색 위치 사용)
   const mapCenter = latitude && longitude
@@ -205,7 +215,12 @@ export default function SearchResultPage() {
               <h2 className="text-base font-bold text-[#14151a] tracking-[-0.2px]">
                 {messages?.searchResult?.roomsFound?.replace('{count}', totalElements.toString()) || `${totalElements} rooms found`}
               </h2>
-              <SortSelector value={sortOption} onChange={handleSortChange} />
+              <div className="flex items-center gap-3">
+                {isRefreshing && (
+                  <div className="h-4 w-4 border-2 border-[#4285F4] border-t-transparent rounded-full animate-spin"></div>
+                )}
+                <SortSelector value={sortOption} onChange={handleSortChange} />
+              </div>
             </div>
 
             {/* 숙소 그리드 */}
