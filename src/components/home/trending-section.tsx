@@ -1,24 +1,62 @@
 "use client"
 
+import { useRouter } from "next/navigation"
 import { useLanguage } from "@/components/language-provider"
 
 const destinations = [
   {
     name: "Gangnam, Seoul",
-    image: "/home-gangnam.png"
+    nameKey: "Gangnam",
+    image: "/home-gangnam.png",
+    latitude: 37.5110534117843,
+    longitude: 127.0354362019722
   },
   {
     name: "Myeong-dong, Seoul",
-    image: "/home-myeong-dong.png"
+    nameKey: "Myeongdong",
+    image: "/home-myeong-dong.png",
+    latitude: 37.565923566825326,
+    longitude: 126.98074651612093
   },
   {
     name: "Hong-dae, Seoul",
-    image: "/home-hong-dae.png"
+    nameKey: "Hongdae",
+    image: "/home-hong-dae.png",
+    latitude: 37.5488326432062,
+    longitude: 126.9129208053439
   }
 ]
 
 export function TrendingSection() {
   const { messages } = useLanguage()
+  const router = useRouter()
+
+  // Format date as yyyy-MM-dd
+  const formatDate = (date: Date) => {
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
+  }
+
+  const handleDestinationClick = (destination: typeof destinations[0]) => {
+    // Get today and 5 days later (4 nights)
+    const today = new Date()
+    const checkOutDate = new Date(today)
+    checkOutDate.setDate(checkOutDate.getDate() + 5)
+
+    // Build query params
+    const params = new URLSearchParams({
+      lat: destination.latitude.toString(),
+      lng: destination.longitude.toString(),
+      checkIn: formatDate(today),
+      checkOut: formatDate(checkOutDate),
+      location: destination.nameKey
+    })
+
+    // Navigate to search page
+    router.push(`/search?${params.toString()}`)
+  }
 
   return (
     <div className="w-full bg-white py-10 px-4">
@@ -38,7 +76,8 @@ export function TrendingSection() {
           {destinations.map((destination, index) => (
             <div
               key={index}
-              className="relative h-[200px] rounded-lg overflow-hidden group cursor-pointer"
+              onClick={() => handleDestinationClick(destination)}
+              className="relative h-[200px] rounded-lg overflow-hidden group cursor-pointer transition-transform hover:scale-[1.02]"
             >
               <img
                 src={destination.image}

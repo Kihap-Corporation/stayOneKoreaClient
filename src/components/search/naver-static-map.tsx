@@ -43,6 +43,14 @@ export function NaverStaticMap({
 
   const CLIENT_ID = process.env.NEXT_PUBLIC_NAVER_CLOUD_CLIENT_ID
 
+  // Check if script is already loaded
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.naver && window.naver.maps && !isLoaded) {
+      console.log('Naver Maps already loaded')
+      setIsLoaded(true)
+    }
+  }, [isLoaded])
+
   // 지도 초기화 (한 번만)
   useEffect(() => {
     if (!isLoaded || !mapRef.current || !CLIENT_ID) return
