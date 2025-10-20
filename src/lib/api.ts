@@ -176,6 +176,83 @@ export const apiRequest = async (
   throw new Error('최대 재시도 횟수를 초과했습니다.')
 }
 
+// 응답 객체를 포함한 API 요청 함수 (응답 코드 확인용)
+export const apiRequestWithResponse = async (
+  endpoint: string,
+  options: ApiRequestOptions = {}
+): Promise<{ response: Response; data: any }> => {
+  const { skipAuth = false, ...fetchOptions } = options
+
+  // 기본 옵션 설정
+  const defaultOptions: RequestInit = {
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+      ...fetchOptions.headers,
+    },
+    ...fetchOptions,
+  }
+
+  // 최대 재시도 횟수 설정 (무한 루프 방지)
+  const maxRetries = 2
+  let retryCount = 0
+
+  while (retryCount < maxRetries) {
+    try {
+      let response = await fetch(`${BASE_URL}${endpoint}`, defaultOptions)
+      let data: ApiResponse = await response.json()
+
+      // 401 에러 처리 (토큰 만료)
+      if (response.status === 401 && !skipAuth) {
+        if (data.code === 40101) {
+          // 토큰 재발급 시도
+          const refreshSuccess = await refreshToken()
+          if (refreshSuccess) {
+            retryCount++
+            continue // 재시도
+          } else {
+            // 재발급 실패
+            throw new ApiError(data, response.status)
+          }
+        } else if (data.code === 40102) {
+          // 토큰 재발급 실패 - 더 이상 시도하지 않음
+          alert(globalMessages?.auth?.accountLoggedOut || "계정이 로그아웃 되었습니다. 다시 로그인 해주세요")
+          await handleLogout()
+          throw new ApiError(data, response.status)
+        }
+      }
+
+      // 403 에러 처리 (접근 권한 없음)
+      if (response.status === 403) {
+        handleForbidden()
+        throw new ApiError(data, response.status)
+      }
+
+      // 400 에러 처리 (특별한 경우들)
+      if (response.status === 400) {
+        // 비밀번호 변경 시 현재 비밀번호 불일치 (40106)
+        if (data.code === 40106) {
+          alert(globalMessages?.auth?.currentPasswordIncorrect || "현재 비밀번호가 일치하지 않습니다.")
+          throw new ApiError(data, response.status)
+        }
+      }
+
+      // 응답 객체와 데이터 모두 반환
+      return { response, data }
+
+    } catch (error) {
+      if (error instanceof ApiError) {
+        throw error
+      }
+      // 네트워크 에러 등
+      throw new Error(globalMessages?.common?.error || '요청 중 오류가 발생했습니다.')
+    }
+  }
+
+  // 최대 재시도 횟수 초과
+  throw new Error('최대 재시도 횟수를 초과했습니다.')
+}
+
 // 편의 함수들
 export const apiGet = (endpoint: string, options: ApiRequestOptions = {}) =>
   apiRequest(endpoint, { ...options, method: 'GET' })
@@ -186,6 +263,15 @@ export const apiPost = (endpoint: string, data?: any, options: ApiRequestOptions
     method: 'POST',
     body: data ? JSON.stringify(data) : undefined
   })
+
+// 응답 객체를 포함한 POST 요청 함수 (응답 코드 확인용)
+export const apiPostWithResponse = async (endpoint: string, data?: any, options: ApiRequestOptions = {}) => {
+  return apiRequestWithResponse(endpoint, {
+    ...options,
+    method: 'POST',
+    body: data ? JSON.stringify(data) : undefined
+  })
+}
 
 export const apiPut = (endpoint: string, data?: any, options: ApiRequestOptions = {}) =>
   apiRequest(endpoint, {
