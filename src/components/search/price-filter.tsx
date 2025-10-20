@@ -1,41 +1,28 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect } from "react"
+import Slider from "rc-slider"
+import "rc-slider/assets/index.css"
 import { useLanguage } from "@/components/language-provider"
 
 interface PriceFilterProps {
-  minPrice: number
-  maxPrice: number
-  onPriceChange: (min: number, max: number) => void
-  onSearch: () => void
+  onSearch: (min: number, max: number) => void
 }
 
-export function PriceFilter({ minPrice, maxPrice, onPriceChange, onSearch }: PriceFilterProps) {
+export function PriceFilter({ onSearch }: PriceFilterProps) {
   const { messages } = useLanguage()
-  const [localMin, setLocalMin] = useState(minPrice)
-  const [localMax, setLocalMax] = useState(maxPrice)
-  const minRef = useRef<HTMLInputElement>(null)
-  const maxRef = useRef<HTMLInputElement>(null)
+  const [localValues, setLocalValues] = useState<[number, number]>([0, 300])
 
-  useEffect(() => {
-    setLocalMin(minPrice)
-    setLocalMax(maxPrice)
-  }, [minPrice, maxPrice])
-
-  const handleMinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = Number(e.target.value)
-    if (value <= localMax) {
-      setLocalMin(value)
-      onPriceChange(value, localMax)
+  const handleSliderChange = (value: number | number[]) => {
+    if (Array.isArray(value) && value.length === 2) {
+      // 슬라이더 변경 시 로컬 상태만 업데이트 (API 호출 안 함)
+      setLocalValues([value[0], value[1]])
     }
   }
 
-  const handleMaxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = Number(e.target.value)
-    if (value >= localMin) {
-      setLocalMax(value)
-      onPriceChange(localMin, value)
-    }
+  const handleSearchClick = () => {
+    // Search 버튼 클릭 시에만 부모에게 값 전달
+    onSearch(localValues[0], localValues[1])
   }
 
   const formatPrice = (price: number) => {
@@ -55,86 +42,49 @@ export function PriceFilter({ minPrice, maxPrice, onPriceChange, onSearch }: Pri
         
         <div className="px-5 py-4 bg-white rounded-2xl border border-[#dee0e3]">
           {/* Range Slider */}
-          <div className="relative mb-6 h-8">
-            {/* Track */}
-            <div className="absolute top-1/2 left-0 right-0 h-1 bg-[#dee0e3] rounded-full -translate-y-1/2"></div>
-            
-            {/* Active Range */}
-            <div 
-              className="absolute top-1/2 h-1 bg-[#4285F4] rounded-full -translate-y-1/2"
-              style={{
-                left: `${(localMin / 300) * 100}%`,
-                width: `${((localMax - localMin) / 300) * 100}%`
-              }}
-            ></div>
-
-            {/* Min Slider - 왼쪽 절반 영역 */}
-            <input
-              ref={minRef}
-              type="range"
-              min="0"
-              max="300"
-              step="5"
-              value={localMin}
-              onChange={handleMinChange}
-              className="absolute w-full h-8 top-0 left-0 opacity-0 cursor-pointer z-10"
-              style={{
-                pointerEvents: 'auto',
-                clipPath: `polygon(0 0, ${(localMin / 300) * 100 + 10}% 0, ${(localMin / 300) * 100 + 10}% 100%, 0 100%)`
-              }}
+          <div className="mb-6 px-2">
+            <Slider
+              range
+              min={0}
+              max={300}
+              step={5}
+              value={localValues}
+              onChange={handleSliderChange}
+              trackStyle={[{ backgroundColor: '#4285F4', height: 4 }]}
+              railStyle={{ backgroundColor: '#dee0e3', height: 4 }}
+              handleStyle={[
+                {
+                  backgroundColor: 'white',
+                  border: '2px solid #4285F4',
+                  width: 16,
+                  height: 16,
+                  marginTop: -6,
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                  opacity: 1
+                },
+                {
+                  backgroundColor: 'white',
+                  border: '2px solid #4285F4',
+                  width: 16,
+                  height: 16,
+                  marginTop: -6,
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                  opacity: 1
+                }
+              ]}
             />
-            
-            {/* Max Slider - 오른쪽 절반 영역 */}
-            <input
-              ref={maxRef}
-              type="range"
-              min="0"
-              max="300"
-              step="5"
-              value={localMax}
-              onChange={handleMaxChange}
-              className="absolute w-full h-8 top-0 left-0 opacity-0 cursor-pointer z-10"
-              style={{
-                pointerEvents: 'auto',
-                clipPath: `polygon(${(localMax / 300) * 100 - 10}% 0, 100% 0, 100% 100%, ${(localMax / 300) * 100 - 10}% 100%)`
-              }}
-            />
-
-            {/* Min Handle */}
-            <div 
-              className="absolute w-4 h-4 bg-white border-2 border-[#4285F4] rounded-full top-1/2 -translate-y-1/2 cursor-pointer shadow-md hover:scale-110 transition-transform z-20"
-              style={{
-                left: `calc(${(localMin / 300) * 100}% - 8px)`
-              }}
-              onMouseDown={(e) => {
-                e.preventDefault()
-                minRef.current?.focus()
-              }}
-            ></div>
-
-            {/* Max Handle */}
-            <div 
-              className="absolute w-4 h-4 bg-white border-2 border-[#4285F4] rounded-full top-1/2 -translate-y-1/2 cursor-pointer shadow-md hover:scale-110 transition-transform z-20"
-              style={{
-                left: `calc(${(localMax / 300) * 100}% - 8px)`
-              }}
-              onMouseDown={(e) => {
-                e.preventDefault()
-                maxRef.current?.focus()
-              }}
-            ></div>
           </div>
 
           {/* Price Display */}
           <div className="flex justify-between items-center text-sm font-medium text-[#14151a]">
-            <span>{formatPrice(localMin)}</span>
-            <span>{formatPrice(localMax)}</span>
+            <span>{formatPrice(localValues[0])}</span>
+            <span>{formatPrice(localValues[1])}</span>
           </div>
         </div>
 
         {/* Search Button */}
         <button
-          onClick={onSearch}
+          onClick={handleSearchClick}
           className="w-full mt-4 h-12 bg-[#E91E63] hover:bg-[#c2185b] text-white font-semibold rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-2"
         >
           <svg 

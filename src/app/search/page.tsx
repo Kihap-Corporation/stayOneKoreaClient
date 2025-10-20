@@ -117,14 +117,9 @@ export default function SearchResultPage() {
     }
   }
 
-  const handlePriceChange = (min: number, max: number) => {
+  const handlePriceSearch = (min: number, max: number) => {
+    // Search 버튼 클릭 시 가격 범위 업데이트 및 API 호출
     setPriceRange({ min, max })
-    // Reset to first page when filter changes
-    setCurrentPage(1)
-  }
-
-  const handleSearch = () => {
-    // Reload with new price filters
     setCurrentPage(1)
     setSelectedRoomIndex(null)
   }
@@ -187,12 +182,7 @@ export default function SearchResultPage() {
           <div className="w-full lg:w-[480px] flex-shrink-0">
             {/* 가격 필터 */}
             <div className="mb-6">
-              <PriceFilter
-                minPrice={priceRange.min}
-                maxPrice={priceRange.max}
-                onPriceChange={handlePriceChange}
-                onSearch={handleSearch}
-              />
+              <PriceFilter onSearch={handlePriceSearch} />
             </div>
 
             {/* 지도 */}
