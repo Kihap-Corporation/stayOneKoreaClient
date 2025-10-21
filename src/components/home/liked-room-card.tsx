@@ -32,7 +32,8 @@ export function LikedRoomCard({
   }
 
   const handleLikeClick = (e: React.MouseEvent) => {
-    e.stopPropagation()
+    e.preventDefault() // 기본 동작 방지
+    e.stopPropagation() // 이벤트 버블링 방지
     if (onLikeToggle) {
       onLikeToggle(roomIdentifier, e)
     }

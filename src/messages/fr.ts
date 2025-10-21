@@ -154,7 +154,8 @@ header: {
     logoutError: "Une erreur s'est produite lors de la déconnexion.",
     currentPasswordIncorrect: "Le mot de passe actuel est incorrect.",
     sessionExpired: "La session a expiré. Veuillez vous reconnecter.",
-    loginRequired: "La connexion est requise pour ce service. Souhaitez-vous aller à la page de connexion ?"
+    loginRequired: "La connexion est requise pour ce service",
+    loginRequiredDesc: "Souhaitez-vous aller à la page de connexion ?"
   },
   error: {
     accessDenied: "Accès refusé",

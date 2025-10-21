@@ -275,3 +275,19 @@
 .swiper-pagination-bullet-active {
   background: #ffffff !important;
 }
+
+/* 네이버 지도 z-index 제어 */
+/* 네이버 지도 컨테이너의 모든 자식 요소 z-index 낮추기 */
+.naver-map-container,
+.naver-map-container * {
+  position: relative;
+  z-index: 1 !important;
+}
+
+/* 네이버 지도 컨트롤 버튼들 (일반/위성 등) */
+.nmsc,
+.nmap_control_button,
+.nmap_control_compass,
+.nmap_control_zoom {
+  z-index: 10 !important;
+}
