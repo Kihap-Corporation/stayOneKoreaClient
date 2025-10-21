@@ -16,6 +16,7 @@ export interface SearchRoomsParams {
 
 export interface SearchRoomResult {
   roomIdentifier: string
+  residenceIdentifier?: string // optional for backward compatibility
   firstGalleryImageUrl: string
   residenceName: string
   fullAddress: string
@@ -23,6 +24,7 @@ export interface SearchRoomResult {
   totalPrice: number
   latitude: number
   longitude: number
+  isLiked: boolean
 }
 
 export interface SearchRoomsResponse {
