@@ -12,7 +12,7 @@ const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
 // 공통 API 응답 형식
 export interface ApiResponse<T = any> {
   status: number
-  code: string
+  code: number | string
   message: string
   data: T
 }

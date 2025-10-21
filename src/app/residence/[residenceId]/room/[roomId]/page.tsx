@@ -66,6 +66,7 @@ interface RoomDetail {
   roomImages: RoomImage[]
   roomFacilities: RoomFacility[]
   reservedDates: ReservedDate[]
+  roomLikeCheck: boolean
 }
 
 interface RelatedRoom {
@@ -75,7 +76,7 @@ interface RelatedRoom {
   pricePerNight: number
   mainImageUrl: string
   residenceIdentifier: string
-  isLiked?: boolean
+  roomLikeCheck: boolean
 }
 
 // 시설 아이콘 매핑
@@ -184,7 +185,7 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
         const languageCode = currentLanguage.code
         
         const response = await apiGet(
-          `/api/user/room/detail?residenceIdentifier=${params.residenceId}&roomIdentifier=${params.roomId}&languageCode=${languageCode}`
+          `/api/room/detail?residenceIdentifier=${params.residenceId}&roomIdentifier=${params.roomId}&languageCode=${languageCode}`
         )
 
         if (response.code === 200 && response.data) {
@@ -215,7 +216,7 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
         const languageCode = currentLanguage.code
         
         const response = await apiGet(
-          `/api/user/room/list?residenceIdentifier=${params.residenceId}&excludeRoomIdentifier=${params.roomId}&languageCode=${languageCode}&page=${currentRoomPage}&size=5`
+          `/api/room/list?residenceIdentifier=${params.residenceId}&excludeRoomIdentifier=${params.roomId}&languageCode=${languageCode}&page=${currentRoomPage}&size=5`
         )
 
         if (response.code === 200 && response.data) {
@@ -281,7 +282,7 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
     setRelatedRooms(prevRooms =>
       prevRooms.map(room =>
         room.roomIdentifier === roomIdentifier
-          ? { ...room, isLiked: !room.isLiked }
+          ? { ...room, roomLikeCheck: !room.roomLikeCheck }
           : room
       )
     )
@@ -294,7 +295,7 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
         setRelatedRooms(prevRooms =>
           prevRooms.map(room =>
             room.roomIdentifier === roomIdentifier
-              ? { ...room, isLiked: !room.isLiked }
+              ? { ...room, roomLikeCheck: !room.roomLikeCheck }
               : room
           )
         )
@@ -305,7 +306,7 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
       setRelatedRooms(prevRooms =>
         prevRooms.map(room =>
           room.roomIdentifier === roomIdentifier
-            ? { ...room, isLiked: !room.isLiked }
+            ? { ...room, roomLikeCheck: !room.roomLikeCheck }
             : room
         )
       )
@@ -867,6 +868,7 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
                   onGuestsChange={handleGuestsChange}
                   roomId={params.roomId}
                   filterDate={filterReservedDates}
+                  roomLikeCheck={roomData.roomLikeCheck}
                 />
               </div>
             </div>

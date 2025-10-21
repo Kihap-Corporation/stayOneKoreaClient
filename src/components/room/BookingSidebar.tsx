@@ -59,6 +59,7 @@ interface BookingSidebarProps {
   onGuestsChange?: (guests: number) => void
   roomId?: string
   filterDate?: (date: Date) => boolean
+  roomLikeCheck?: boolean
 }
 
 /**
@@ -99,7 +100,8 @@ export function BookingSidebar({
   onCheckOutDateChange,
   onGuestsChange,
   roomId,
-  filterDate
+  filterDate,
+  roomLikeCheck = false
 }: BookingSidebarProps) {
   const { currentLanguage, messages } = useLanguage()
   const language = currentLanguage.code
@@ -107,7 +109,7 @@ export function BookingSidebar({
   const [isCalendarOpen, setIsCalendarOpen] = useState(false)
   const [isReserving, setIsReserving] = useState(false)
   const [datePickerLocale, setDatePickerLocale] = useState<any>(undefined)
-  const [isLiked, setIsLiked] = useState(false)
+  const [isLiked, setIsLiked] = useState(roomLikeCheck)
   const calendarRef = useRef<HTMLDivElement>(null)
 
   // 숙박일수 계산
@@ -126,6 +128,11 @@ export function BookingSidebar({
 
   const calculatedNights = calculateNights()
   const calculatedTotalPrice = calculateTotalPrice()
+
+  // roomLikeCheck prop이 변경되면 isLiked 상태 업데이트
+  useEffect(() => {
+    setIsLiked(roomLikeCheck)
+  }, [roomLikeCheck])
 
   // 로케일 로드
   useEffect(() => {
