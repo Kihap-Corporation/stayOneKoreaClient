@@ -7,9 +7,17 @@ import { Footer } from "@/components/footer"
 import { useLanguage } from "@/components/language-provider"
 import { Button } from "@/components/ui/button"
 import { BookingSidebar } from "@/components/room/BookingSidebar"
-import { apiGet } from "@/lib/api"
-import { Wifi, WashingMachine, Car, AirVent, Bell, Flame, ChevronRight, Camera, ChevronLeft } from "lucide-react"
+import { RelatedRoomCard } from "@/components/room/RelatedRoomCard"
+import { apiGet, apiPost } from "@/lib/api"
+import { Wifi, WashingMachine, Car, AirVent, Bell, Flame, ChevronRight, Camera, ChevronLeft, X, Heart, Share2, Calendar } from "lucide-react"
 import "react-datepicker/dist/react-datepicker.css"
+import DatePicker from "react-datepicker"
+import Script from 'next/script'
+import { Swiper, SwiperSlide } from 'swiper/react'
+import { Pagination, Navigation } from 'swiper/modules'
+import 'swiper/css'
+import 'swiper/css/pagination'
+import 'swiper/css/navigation'
 
 interface RoomDetailPageProps {
   params: {
@@ -67,6 +75,7 @@ interface RelatedRoom {
   pricePerNight: number
   mainImageUrl: string
   residenceIdentifier: string
+  isLiked?: boolean
 }
 
 // 시설 아이콘 매핑
@@ -96,6 +105,10 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
   const [currentRoomPage, setCurrentRoomPage] = useState(0)
   const [totalRoomPages, setTotalRoomPages] = useState(0)
   const [error, setError] = useState<string | null>(null)
+  const [showImageModal, setShowImageModal] = useState(false)
+  const [currentImageIndex, setCurrentImageIndex] = useState(0)
+  const [isMobileCalendarOpen, setIsMobileCalendarOpen] = useState(false)
+  const [datePickerLocale, setDatePickerLocale] = useState<any>(undefined)
 
   const handleGuestsChange = (newGuests: number) => {
     setGuests(Math.max(1, Math.min(1, newGuests)))
@@ -107,6 +120,58 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
     const now = new Date()
     const years = now.getFullYear() - start.getFullYear()
     return years > 0 ? years : 1
+  }
+
+  // 모바일용 달력 로케일 로드
+  useEffect(() => {
+    const loadLocale = async () => {
+      try {
+        const { ko } = await import('date-fns/locale/ko')
+        setDatePickerLocale(ko)
+      } catch (error) {
+        console.error('Failed to load locale:', error)
+        setDatePickerLocale(undefined)
+      }
+    }
+    loadLocale()
+  }, [])
+
+  // 모바일용 날짜 포맷 함수
+  const formatMobileDate = (date: Date | null) => {
+    if (!date) return 'Select date'
+    const year = date.getFullYear()
+    const month = date.getMonth() + 1
+    const day = date.getDate()
+    return `${month}/${day}/${year}`
+  }
+
+  // 모바일용 체크인 날짜 변경 핸들러
+  const handleMobileCheckInChange = (date: Date | null) => {
+    setCheckInDate(date)
+
+    // 체크인을 선택하지 않으면 체크아웃 초기화
+    if (!date) {
+      setCheckOutDate(null)
+      return
+    }
+
+    // 체크인 날짜가 체크아웃 날짜보다 늦으면 체크아웃 초기화
+    if (checkOutDate && date >= checkOutDate) {
+      setCheckOutDate(null)
+    }
+
+    setIsMobileCalendarOpen(false)
+  }
+
+  // 모바일용 체크아웃 날짜 변경 핸들러
+  const handleMobileCheckOutChange = (date: Date | null) => {
+    // 체크인이 선택되지 않으면 체크아웃 선택 불가
+    if (!checkInDate) {
+      return
+    }
+
+    setCheckOutDate(date)
+    setIsMobileCalendarOpen(false)
   }
 
   // 방 상세 정보 조회
@@ -184,7 +249,7 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
       const currentDate = new Date(dateStr)
       
       // 체크인과 체크아웃 사이의 날짜는 선택 불가
-      if (currentDate >= checkIn && currentDate <= checkOut) {
+      if (currentDate >= checkIn && currentDate < checkOut) {
         return false
       }
     }
@@ -206,6 +271,45 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
 
   const handleRoomClick = (residenceIdentifier: string, roomIdentifier: string) => {
     router.push(`/residence/${residenceIdentifier}/room/${roomIdentifier}`)
+  }
+
+  // 좋아요 토글 함수 (낙관적 업데이트)
+  const toggleRelatedRoomLike = async (roomIdentifier: string, e: React.MouseEvent) => {
+    e.stopPropagation() // 카드 클릭 이벤트 전파 방지
+
+    // 낙관적 업데이트: 먼저 UI 업데이트
+    setRelatedRooms(prevRooms =>
+      prevRooms.map(room =>
+        room.roomIdentifier === roomIdentifier
+          ? { ...room, isLiked: !room.isLiked }
+          : room
+      )
+    )
+
+    try {
+      const response = await apiPost(`/api/user/like?roomIdentifier=${roomIdentifier}`)
+      
+      // 응답 코드가 200이 아닌 경우 롤백
+      if (response.code !== 200) {
+        setRelatedRooms(prevRooms =>
+          prevRooms.map(room =>
+            room.roomIdentifier === roomIdentifier
+              ? { ...room, isLiked: !room.isLiked }
+              : room
+          )
+        )
+      }
+    } catch (error) {
+      console.error('좋아요 토글 실패:', error)
+      // 에러 발생 시 롤백
+      setRelatedRooms(prevRooms =>
+        prevRooms.map(room =>
+          room.roomIdentifier === roomIdentifier
+            ? { ...room, isLiked: !room.isLiked }
+            : room
+        )
+      )
+    }
   }
 
   if (loading) {
@@ -248,8 +352,8 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
       <Header />
 
       <main className="flex-1">
-        {/* 타이틀 섹션 */}
-        <div className="bg-[#f7f7f8] pt-10 pb-0">
+        {/* 타이틀 섹션 - 데스크톱만 표시 */}
+        <div className="hidden lg:block bg-[#f7f7f8] pt-10 pb-0">
           <div className="mx-auto max-w-[1200px] px-4">
             <div className="flex flex-col gap-1">
               <h1 className="text-[24px] font-extrabold leading-[32px] tracking-[-0.3px] text-[#14151a]">
@@ -262,100 +366,379 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
           </div>
         </div>
 
-        {/* 이미지 갤러리 섹션 */}
-        <div className="bg-[#f7f7f8] pt-[18px]">
+        {/* 이미지 갤러리 섹션 - 데스크톱 */}
+        <div className="hidden lg:block bg-[#f7f7f8] pt-[18px]">
           <div className="mx-auto max-w-[1200px] px-4">
-            <div className="bg-white rounded-[16px] overflow-hidden flex gap-1">
-              {/* 메인 이미지 */}
-              <div className="flex-1 relative">
-                {sortedImages[0] && (
+            {/* 이미지 1개 */}
+            {sortedImages.length === 1 && (
+              <div className="bg-white rounded-[16px] overflow-hidden">
+                <img
+                  src={sortedImages[0].imageUrl}
+                  alt={roomData.roomNameI18n}
+                  className="w-full h-[404px] object-cover cursor-pointer"
+                  onClick={() => {
+                    setCurrentImageIndex(0)
+                    setShowImageModal(true)
+                  }}
+                />
+              </div>
+            )}
+
+            {/* 이미지 2개 */}
+            {sortedImages.length === 2 && (
+              <div className="bg-white rounded-[16px] overflow-hidden flex gap-1">
+                {sortedImages.map((image, index) => (
+                  <div key={index} className="flex-1 relative">
+                    <img
+                      src={image.imageUrl}
+                      alt={roomData.roomNameI18n}
+                      className="w-full h-[404px] object-cover cursor-pointer"
+                      onClick={() => {
+                        setCurrentImageIndex(index)
+                        setShowImageModal(true)
+                      }}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* 이미지 3개 */}
+            {sortedImages.length === 3 && (
+              <div className="bg-white rounded-[16px] overflow-hidden flex gap-1">
+                <div className="flex-1 relative">
                   <img
                     src={sortedImages[0].imageUrl}
                     alt={roomData.roomNameI18n}
-                    className="w-full h-[404px] object-cover"
+                    className="w-full h-[404px] object-cover cursor-pointer"
+                    onClick={() => {
+                      setCurrentImageIndex(0)
+                      setShowImageModal(true)
+                    }}
                   />
-                )}
-              </div>
-              
-              {/* 작은 이미지 그리드 */}
-              <div className="flex flex-col gap-1 w-[290px]">
-                <div className="flex gap-1">
-                  <div className="flex-1 h-[200px] relative">
-                    {sortedImages[1] && (
+                </div>
+                <div className="flex flex-col gap-1 w-[550px]">
+                  {sortedImages.slice(1).map((image, index) => (
+                    <div key={index + 1} className="flex-1 relative">
                       <img
-                        src={sortedImages[1].imageUrl}
+                        src={image.imageUrl}
                         alt=""
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover cursor-pointer"
+                        onClick={() => {
+                          setCurrentImageIndex(index + 1)
+                          setShowImageModal(true)
+                        }}
                       />
-                    )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* 이미지 4개 */}
+            {sortedImages.length === 4 && (
+              <div className="bg-white rounded-[16px] overflow-hidden flex gap-1">
+                <div className="flex-1 relative">
+                  <img
+                    src={sortedImages[0].imageUrl}
+                    alt={roomData.roomNameI18n}
+                    className="w-full h-[404px] object-cover cursor-pointer"
+                    onClick={() => {
+                      setCurrentImageIndex(0)
+                      setShowImageModal(true)
+                    }}
+                  />
+                </div>
+                <div className="flex flex-col gap-1 w-[550px]">
+                  <div className="flex gap-1">
+                    {sortedImages.slice(1, 3).map((image, index) => (
+                      <div key={index + 1} className="flex-1 h-[200px] relative">
+                        <img
+                          src={image.imageUrl}
+                          alt=""
+                          className="w-full h-full object-cover cursor-pointer"
+                          onClick={() => {
+                            setCurrentImageIndex(index + 1)
+                            setShowImageModal(true)
+                          }}
+                        />
+                      </div>
+                    ))}
                   </div>
                   <div className="flex-1 h-[200px] relative">
-                    {sortedImages[2] && (
-                      <img
-                        src={sortedImages[2].imageUrl}
-                        alt=""
-                        className="w-full h-full object-cover"
-                      />
-                    )}
+                    <img
+                      src={sortedImages[3].imageUrl}
+                      alt=""
+                      className="w-full h-full object-cover cursor-pointer"
+                      onClick={() => {
+                        setCurrentImageIndex(3)
+                        setShowImageModal(true)
+                      }}
+                    />
                   </div>
                 </div>
-                <div className="flex gap-1">
-                  <div className="flex-1 h-[200px] relative">
-                    {sortedImages[3] && (
+              </div>
+            )}
+
+            {/* 이미지 5개 이상 */}
+            {sortedImages.length >= 5 && (
+              <div className="rounded-[16px] overflow-hidden flex gap-1">
+                <div className="flex-1 relative">
+                  <img
+                    src={sortedImages[0].imageUrl}
+                    alt={roomData.roomNameI18n}
+                    className="w-full h-[404px] object-cover cursor-pointer"
+                    onClick={() => {
+                      setCurrentImageIndex(0)
+                      setShowImageModal(true)
+                    }}
+                  />
+                </div>
+                <div className="flex flex-col gap-1 w-[550px]">
+                  <div className="flex gap-1">
+                    {sortedImages.slice(1, 3).map((image, index) => (
+                      <div key={index + 1} className="flex-1 h-[200px] relative">
+                        <img
+                          src={image.imageUrl}
+                          alt=""
+                          className="w-full h-full object-cover cursor-pointer"
+                          onClick={() => {
+                            setCurrentImageIndex(index + 1)
+                            setShowImageModal(true)
+                          }}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex gap-1">
+                    <div className="flex-1 h-[200px] relative">
                       <img
                         src={sortedImages[3].imageUrl}
                         alt=""
+                        className="w-full h-full object-cover cursor-pointer"
+                        onClick={() => {
+                          setCurrentImageIndex(3)
+                          setShowImageModal(true)
+                        }}
+                      />
+                    </div>
+                    <div className="flex-1 h-[200px] relative">
+                      <img
+                        src={sortedImages[4].imageUrl}
+                        alt=""
                         className="w-full h-full object-cover"
                       />
-                    )}
-                  </div>
-                  <div className="flex-1 h-[200px] relative">
-                    <div className="relative w-full h-full">
-                      {sortedImages[4] && (
-                        <img
-                          src={sortedImages[4].imageUrl}
-                          alt=""
-                          className="w-full h-full object-cover"
-                        />
-                      )}
-                      {sortedImages.length > 5 && (
-                        <button className="absolute inset-0 bg-[rgba(224,0,77,0.7)] backdrop-blur-[6px] flex flex-col items-center justify-center gap-2 cursor-pointer">
-                          <Camera className="h-8 w-8 text-white" />
-                          <span className="text-[24px] font-bold leading-[32px] tracking-[-0.3px] text-white">
-                            Show all photos
-                          </span>
-                        </button>
-                      )}
+                      <button 
+                        className="absolute inset-0 bg-[rgba(224,0,77,0.7)] backdrop-blur-[6px] flex flex-col items-center justify-center gap-2 cursor-pointer"
+                        onClick={() => {
+                          setCurrentImageIndex(0)
+                          setShowImageModal(true)
+                        }}
+                      >
+                        <Camera className="h-8 w-8 text-white" />
+                        <span className="text-[24px] font-bold leading-[32px] tracking-[-0.3px] text-white">
+                          Show all photos
+                        </span>
+                      </button>
                     </div>
                   </div>
                 </div>
               </div>
+            )}
+
+          </div>
+        </div>
+
+        {/* 이미지 갤러리 섹션 - 모바일 (Swiper) */}
+        <div className="lg:hidden relative">
+          <div className="relative h-[300px]">
+            <Swiper
+              modules={[Pagination, Navigation]}
+              pagination={{
+                clickable: true,
+                bulletClass: 'swiper-pagination-bullet !bg-white/50 !w-2 !h-2',
+                bulletActiveClass: 'swiper-pagination-bullet-active !bg-[#e0004d]',
+              }}
+              navigation={{
+                prevEl: '.swiper-button-prev-custom',
+                nextEl: '.swiper-button-next-custom',
+              }}
+              className="h-full w-full"
+            >
+              {sortedImages.map((image, index) => (
+                <SwiperSlide key={index}>
+                  <img
+                    src={image.imageUrl}
+                    alt={`${roomData.roomNameI18n} - ${index + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+                </SwiperSlide>
+              ))}
+            </Swiper>
+
+            {/* 네비게이션 버튼 */}
+            <button className="swiper-button-prev-custom absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-white/90 border border-[#e9eaec] rounded-full p-2 hover:bg-white transition-colors">
+              <ChevronLeft className="h-4 w-4 text-[#14151a]" />
+            </button>
+            <button className="swiper-button-next-custom absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-white border border-[#dee0e3] rounded-full p-2 hover:bg-white/90 transition-colors">
+              <ChevronRight className="h-4 w-4 text-[#14151a]" />
+            </button>
+          </div>
+
+          {/* 하단 고정 예약 버튼 - 모바일 */}
+          <div className="fixed bottom-0 left-0 right-0 z-200 bg-white shadow-[0px_-3px_8px_-1px_rgba(20,21,26,0.04),0px_-2px_12px_-1px_rgba(20,21,26,0.04)] rounded-t-[24px] px-5 pt-4 pb-12">
+            <div className="flex gap-4 items-start">
+              <div className="flex-1 flex flex-col gap-[2px]">
+                <p className="text-[20px] font-bold leading-[28px] tracking-[-0.2px] text-[#14151a] underline">
+                  ${roomData.pricePerNight} per night
+                </p>
+                <div className="inline-flex items-center justify-center bg-[#fdead8] rounded-lg px-2 py-0 self-start">
+                  <p className="text-[12px] font-medium leading-[16px] tracking-[0px] text-[#ae590a] px-1">
+                    Free cancellation
+                  </p>
+                </div>
+              </div>
+              <Button 
+                onClick={() => {
+                  // 스크롤을 예약 섹션으로 이동
+                  window.scrollTo({ top: 0, behavior: 'smooth' })
+                }}
+                className="flex-1 max-w-[248px] h-10 rounded-full bg-[#e0004d] hover:bg-[#c2003f] px-4 py-3 shadow-[0px_1px_2px_0px_rgba(20,21,26,0.05)]"
+              >
+                <span className="text-[16px] font-medium leading-[24px] tracking-[-0.2px] text-white">
+                  Reserve
+                </span>
+              </Button>
             </div>
           </div>
         </div>
 
+        {/* 모바일 타이틀 및 정보 섹션 */}
+        <div className="lg:hidden bg-[#FFF] px-4 py-4 flex flex-col gap-2">
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center gap-2">
+              <p className="text-[18px] font-medium leading-[26px] tracking-[-0.2px] text-[rgba(13,17,38,0.4)]">
+                {roomData.residenceFullAddress}
+              </p>
+            </div>
+            <h1 className="text-[24px] font-extrabold leading-[32px] tracking-[-0.3px] text-[#14151a]">
+              {roomData.roomNameI18n}
+            </h1>
+          </div>
+
+          {/* Check-in and Check-out - 모바일용 */}
+          <div className="flex gap-3 items-end mt-2">
+            <div className="flex-1 flex flex-col gap-2">
+              <label className="text-[14px] font-medium leading-[20px] tracking-[-0.1px] text-[#14151a]">
+                Check-in
+              </label>
+              <div
+                className="relative h-[44px] bg-white border border-[#dee0e3] rounded-xl flex items-center px-3 cursor-pointer hover:border-gray-300"
+                onClick={() => setIsMobileCalendarOpen(true)}
+              >
+                <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                <p className="text-[14px] text-[rgba(13,17,38,0.4)] ml-7">
+                  {formatMobileDate(checkInDate)}
+                </p>
+                {checkInDate && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setCheckInDate(null)
+                      setCheckOutDate(null)
+                    }}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 hover:text-gray-600"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                )}
+              </div>
+            </div>
+            <div className="flex-1 flex flex-col gap-2">
+              <label className={`text-[14px] font-medium leading-[20px] tracking-[-0.1px] ${!checkInDate ? 'text-[rgba(13,17,38,0.3)]' : 'text-[#14151a]'}`}>
+                Check-out
+              </label>
+              <div
+                className={`relative h-[44px] bg-white border rounded-xl flex items-center px-3 ${!checkInDate ? 'border-gray-200 cursor-not-allowed' : 'border-[#dee0e3] cursor-pointer hover:border-gray-300'}`}
+                onClick={() => checkInDate && setIsMobileCalendarOpen(true)}
+              >
+                <Calendar className={`absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none ${!checkInDate ? 'text-[rgba(13,17,38,0.3)]' : 'text-gray-400'}`} />
+                <p className={`text-[14px] ml-7 ${!checkInDate ? 'text-[rgba(13,17,38,0.3)]' : 'text-[rgba(13,17,38,0.4)]'}`}>
+                  {formatMobileDate(checkOutDate)}
+                </p>
+                {checkOutDate && checkInDate && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setCheckOutDate(null)
+                    }}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 hover:text-gray-600"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Share and Save buttons */}
+          <div className="flex flex-col gap-2 mt-2">
+            <Button 
+              onClick={async () => {
+                try {
+                  const currentUrl = window.location.href
+                  await navigator.clipboard.writeText(currentUrl)
+                  alert(messages?.roomDetail?.shareSuccess || 'Link copied to clipboard!')
+                } catch (error) {
+                  console.error('링크 복사 실패:', error)
+                  alert(messages?.roomDetail?.shareError || 'Failed to copy link')
+                }
+              }}
+              className="w-full h-10 rounded-full bg-white border border-[#dee0e3] hover:bg-gray-50 px-3 py-2.5 shadow-none"
+            >
+              <Share2 className="h-5 w-5 text-[#14151a]" />
+              <span className="text-[14px] font-medium leading-[20px] tracking-[-0.1px] text-[#14151a]">
+                Share with friends
+              </span>
+            </Button>
+            <Button className="w-full h-10 rounded-full bg-white border border-[#dee0e3] hover:bg-gray-50 px-3 py-2.5 shadow-none">
+              <Heart className="h-5 w-5 text-[#14151a]" />
+              <span className="text-[14px] font-medium leading-[20px] tracking-[-0.1px] text-[#14151a]">
+                Save
+              </span>
+            </Button>
+          </div>
+        </div>
+
+        {/* 구분선 - 모바일 */}
+        <div className="lg:hidden bg-[#FFF] px-0 py-4">
+          <div className="px-4">
+            <div className="h-px bg-[#e9eaec] w-full" />
+          </div>
+        </div>
+
         {/* 메인 컨텐츠 */}
-        <div className="bg-[#f7f7f8] pt-10">
+        <div className="bg-[#FFF] pt-10 lg:pt-10 pb-32 lg:pb-0">
           <div className="mx-auto max-w-[1200px] px-4">
-            <div className="flex gap-6">
+            <div className="flex flex-col lg:flex-row gap-6">
               {/* 좌측 컨텐츠 */}
               <div className="flex-1 flex flex-col gap-4">
                 {/* Facilities */}
                 {roomData.roomFacilities.length > 0 && (
-                  <div className="bg-white rounded-[24px] px-5 py-4 flex flex-col gap-[18px]">
+                  <div className="lg:bg-white lg:rounded-[24px] lg:px-5 lg:py-4 flex flex-col gap-[18px]">
                     <p className="text-[16px] font-bold leading-[24px] tracking-[-0.2px] text-[#14151a]">
                       Facilities
                     </p>
-                    <div className="grid grid-cols-3 gap-2">
+                    <div className="grid grid-cols-2 lg:grid-cols-3 gap-2">
                       {displayedFacilities.map((facility, index) => {
                         const Icon = getFacilityIcon(facility.facilityType)
                         const facilityName = facility.customNameI18n?.[currentLanguage.code] || facility.facilityType
-                        
+
                         return (
                           <div key={index} className="flex items-center gap-2">
                             {facility.iconUrl ? (
-                              <img 
-                                src={facility.iconUrl} 
+                              <img
+                                src={facility.iconUrl}
                                 alt={facilityName}
                                 className="h-5 w-5 object-contain"
                                 onError={(e) => {
@@ -366,7 +749,7 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
                             ) : (
                               <Icon className="h-5 w-5 text-[#14151a]" />
                             )}
-                            <span className="text-[16px] font-medium leading-[24px] tracking-[-0.2px] text-[#14151a]">
+                            <span className="text-[14px] lg:text-[16px] font-medium leading-[20px] lg:leading-[24px] tracking-[-0.1px] lg:tracking-[-0.2px] text-[#14151a]">
                               {facilityName}
                             </span>
                           </div>
@@ -389,7 +772,7 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
 
                 {/* About this room */}
                 {roomData.roomDescriptionI18n && (
-                  <div className="bg-white rounded-[24px] px-5 py-4 flex flex-col gap-2">
+                  <div className="lg:bg-white lg:rounded-[24px] lg:px-5 lg:py-4 flex flex-col gap-2">
                     <p className="text-[16px] font-bold leading-[24px] tracking-[-0.2px] text-[#14151a]">
                       About this room
                     </p>
@@ -410,7 +793,7 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
 
                 {/* Rules */}
                 {roomData.roomRulesI18n && (
-                  <div className="bg-white rounded-[24px] px-5 py-4 flex flex-col gap-2">
+                  <div className="lg:bg-white lg:rounded-[24px] lg:px-5 lg:py-4 flex flex-col gap-2">
                     <p className="text-[16px] font-bold leading-[24px] tracking-[-0.2px] text-[#14151a]">
                       Rules
                     </p>
@@ -430,7 +813,7 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
                 )}
 
                 {/* Room location */}
-                <div className="bg-white rounded-[24px] px-5 py-4 flex flex-col gap-2">
+                <div className="lg:bg-white lg:rounded-[24px] lg:px-5 lg:py-4 flex flex-col gap-2">
                   <div className="flex flex-col gap-0">
                     <p className="text-[16px] font-bold leading-[24px] tracking-[-0.2px] text-[#14151a]">
                       Room location
@@ -439,14 +822,31 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
                       {roomData.residenceFullAddress}
                     </p>
                   </div>
-                  <div className="h-[200px] rounded-[12px] bg-gray-200 overflow-hidden flex items-center justify-center">
-                    {/* TODO: 지도 구현 예정 */}
-                  </div>
+                  <div id="map" className="h-[200px] rounded-[12px] bg-gray-200 overflow-hidden flex items-center justify-center" />
+                </div>
+
+                {/* About the gosiwon */}
+                <div className="lg:bg-white lg:rounded-[24px] lg:px-5 lg:py-4 flex flex-col gap-2">
+                  <p className="text-[16px] font-bold leading-[24px] tracking-[-0.2px] text-[#14151a]">
+                    {messages?.roomDetail?.aboutGosiwon || 'About the host'}
+                  </p>
+                  <p className={`text-[16px] font-normal leading-[24px] tracking-[-0.2px] text-[#14151a] whitespace-pre-wrap ${!showFullDescription ? 'line-clamp-4 max-h-[96px] overflow-hidden' : ''}`}>
+                    {roomData.residenceDescriptionI18n}
+                  </p>
+                  <button
+                    onClick={() => setShowFullDescription(!showFullDescription)}
+                    className="bg-[rgba(10,15,41,0.04)] rounded-full px-[10px] py-[6px] flex items-center justify-center gap-[2px] cursor-pointer hover:bg-[rgba(10,15,41,0.08)]"
+                  >
+                    <span className="text-[14px] font-medium leading-[20px] tracking-[-0.1px] text-[#14151a] px-1">
+                      {showFullDescription ? "Show less" : "Show more"}
+                    </span>
+                    <ChevronRight className={`h-4 w-4 text-[#14151a] transition-transform ${showFullDescription ? 'rotate-90' : ''}`} />
+                  </button>
                 </div>
               </div>
 
-              {/* 우측 예약 사이드바 */}
-              <div className="w-[368px]">
+              {/* 우측 예약 사이드바 - 데스크톱만 표시 */}
+              <div className="hidden lg:block w-[368px]">
                 <BookingSidebar
                   price={roomData.pricePerNight}
                   originalPrice={roomData.pricePerNight}
@@ -477,13 +877,13 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
         {relatedRooms.length > 0 && (
           <>
             {/* Divider */}
-            <div className="bg-[#f7f7f8] py-12">
+            <div className="bg-[#FFF] py-12">
               <div className="mx-auto max-w-[1200px] px-4">
                 <div className="h-px bg-[#e9eaec] w-full" />
               </div>
             </div>
 
-            <div className="bg-[#f7f7f8] pb-20">
+            <div className="bg-[#FFF] pb-20">
               <div className="mx-auto max-w-[1200px] px-4">
                 <div className="flex items-center justify-between mb-[18px]">
                   <div className="flex items-center gap-2">
@@ -512,42 +912,28 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
                   )}
                 </div>
 
-                <div className="grid grid-cols-5 gap-4">
+                <div className="hidden lg:grid grid-cols-5 gap-4">
                   {relatedRooms.map((room) => (
-                    <div 
-                      key={room.roomIdentifier} 
-                      className="flex flex-col gap-2 cursor-pointer"
-                      onClick={() => handleRoomClick(room.residenceIdentifier, room.roomIdentifier)}
-                    >
-                      <div className="relative aspect-square rounded-[16px] overflow-hidden bg-gray-200">
-                        {room.mainImageUrl ? (
-                          <img
-                            src={room.mainImageUrl}
-                            alt={room.roomName}
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center">
-                            <span className="text-sm text-gray-400">{messages?.common?.noImage || "No image"}</span>
-                          </div>
-                        )}
-                      </div>
-                      <div className="flex flex-col gap-2">
-                        <div className="flex flex-col">
-                          <h3 className="text-[18px] font-bold leading-[26px] tracking-[-0.2px] text-[#14151a] line-clamp-2 max-h-[52px] overflow-hidden">
-                            {room.roomName}
-                          </h3>
-                          <p className="text-[14px] font-medium leading-[20px] tracking-[-0.1px] text-[rgba(13,17,38,0.4)]">
-                            {room.residenceFullAddress}
-                          </p>
-                        </div>
-                        <div className="flex flex-col">
-                          <span className="text-[18px] font-bold leading-[26px] tracking-[-0.2px] text-[#14151a]">
-                            ${room.pricePerNight} per night
-                          </span>
-                        </div>
-                      </div>
-                    </div>
+                    <RelatedRoomCard
+                      key={room.roomIdentifier}
+                      room={room}
+                      variant="desktop"
+                      onClick={handleRoomClick}
+                      onLikeToggle={toggleRelatedRoomLike}
+                    />
+                  ))}
+                </div>
+
+                {/* 모바일용 스크롤 가능한 레이아웃 */}
+                <div className="lg:hidden flex gap-3 overflow-x-auto pb-4 -mx-4 px-4 scrollbar-hide">
+                  {relatedRooms.map((room) => (
+                    <RelatedRoomCard
+                      key={room.roomIdentifier}
+                      room={room}
+                      variant="mobile"
+                      onClick={handleRoomClick}
+                      onLikeToggle={toggleRelatedRoomLike}
+                    />
                   ))}
                 </div>
               </div>
@@ -557,6 +943,178 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
       </main>
 
       <Footer />
+
+      {/* 모바일 달력 모달 */}
+      {isMobileCalendarOpen && (
+        <div
+          className="fixed inset-0 z-150 bg-black/50 flex items-center justify-center p-4 lg:hidden"
+          onClick={() => setIsMobileCalendarOpen(false)}
+        >
+          <div
+            className="relative bg-white rounded-[24px] w-full max-w-sm mx-4 overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* 헤더 */}
+            <div className="flex items-center justify-between p-4 border-b border-[#e9eaec]">
+              <h3 className="text-[18px] font-bold text-[#14151a]">Select dates</h3>
+              <button
+                onClick={() => setIsMobileCalendarOpen(false)}
+                className="bg-[rgba(10,15,41,0.04)] hover:bg-[rgba(10,15,41,0.08)] rounded-full p-2 transition-colors"
+              >
+                <X className="h-5 w-5 text-[#14151a]" />
+              </button>
+            </div>
+
+            {/* 달력 영역 */}
+            <div className="p-4">
+              {/* 체크인 날짜 선택 */}
+              <div className="mb-4">
+                <div className="mb-2 text-sm font-semibold text-[#14151a]">Check-in</div>
+                <DatePicker
+                  selected={checkInDate}
+                  onChange={handleMobileCheckInChange}
+                  inline
+                  locale={datePickerLocale}
+                  minDate={new Date()}
+                  monthsShown={1}
+                  calendarClassName="!border-none !w-full"
+                  filterDate={(date) => {
+                    if (filterReservedDates) {
+                      return filterReservedDates(date)
+                    }
+                    return true
+                  }}
+                />
+              </div>
+
+              {/* 체크아웃 날짜 선택 */}
+              <div>
+                <div className={`mb-2 text-sm font-semibold ${!checkInDate ? 'text-[rgba(13,17,38,0.3)]' : 'text-[#14151a]'}`}>
+                  Check-out
+                </div>
+                <div className={!checkInDate ? 'opacity-50 pointer-events-none' : ''}>
+                  <DatePicker
+                    selected={checkOutDate}
+                    onChange={handleMobileCheckOutChange}
+                    inline
+                    locale={datePickerLocale}
+                    minDate={checkInDate ? new Date(checkInDate.getTime() + 86400000) : new Date()}
+                    monthsShown={1}
+                    calendarClassName="!border-none !w-full"
+                    filterDate={(date) => {
+                      if (!checkInDate) return false
+                      if (date.getTime() === checkInDate.getTime()) return false
+                      const nextDay = new Date(checkInDate.getTime() + 86400000)
+                      if (date < nextDay) return false
+                      if (filterReservedDates) {
+                        return filterReservedDates(date)
+                      }
+                      return true
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 이미지 모달 */}
+      {showImageModal && (
+        <div
+          className="fixed inset-0 z-100 bg-black/7 flex items-center justify-center p-4"
+          onClick={() => setShowImageModal(false)}
+        >
+          <div 
+            className="relative bg-white rounded-[24px] w-[1200px] h-[800px] flex flex-col overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* 헤더 */}
+            <div className="flex items-center justify-between p-6 border-b border-[#e9eaec]">
+              <div className="text-[20px] font-bold text-[#14151a]">
+                {currentImageIndex + 1} / {sortedImages.length}
+              </div>
+              <button
+                onClick={() => setShowImageModal(false)}
+                className="bg-[rgba(10,15,41,0.04)] hover:bg-[rgba(10,15,41,0.08)] rounded-full p-2 transition-colors"
+              >
+                <X className="h-5 w-5 text-[#14151a]" />
+              </button>
+            </div>
+
+            {/* 이미지 영역 */}
+            <div className="flex-1 flex items-center justify-center p-8 bg-[#f7f7f8] relative overflow-hidden">
+              <img
+                src={sortedImages[currentImageIndex]?.imageUrl}
+                alt={roomData.roomNameI18n}
+                className="max-w-full max-h-full object-contain"
+              />
+              
+              {/* 네비게이션 버튼 */}
+              {sortedImages.length > 1 && (
+                <>
+                  <button
+                    onClick={() => setCurrentImageIndex((prev) => (prev === 0 ? sortedImages.length - 1 : prev - 1))}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 bg-white hover:bg-[#f7f7f8] rounded-full p-3 shadow-lg transition-colors"
+                  >
+                    <ChevronLeft className="h-6 w-6 text-[#14151a]" />
+                  </button>
+                  <button
+                    onClick={() => setCurrentImageIndex((prev) => (prev === sortedImages.length - 1 ? 0 : prev + 1))}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 bg-white hover:bg-[#f7f7f8] rounded-full p-3 shadow-lg transition-colors"
+                  >
+                    <ChevronRight className="h-6 w-6 text-[#14151a]" />
+                  </button>
+                </>
+              )}
+            </div>
+
+            {/* 썸네일 그리드 */}
+            <div className="p-4 bg-white border-t border-[#e9eaec]">
+              <div className="flex gap-2 overflow-x-auto pb-2">
+                {sortedImages.map((image, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentImageIndex(index)}
+                    className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${
+                      currentImageIndex === index 
+                        ? 'border-[#e0004d] scale-105' 
+                        : 'border-[#e9eaec] opacity-60 hover:opacity-100 hover:border-[#14151a]'
+                    }`}
+                  >
+                    <img
+                      src={image.imageUrl}
+                      alt=""
+                      className="w-full h-full object-cover"
+                    />
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <Script
+        src={`https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${process.env.NEXT_PUBLIC_NAVER_MAPS_CLIENT_ID}`}
+        strategy="afterInteractive"
+        onLoad={() => {
+          if (roomData && (window as any).naver) {
+            const naver = (window as any).naver;
+            const map = new naver.maps.Map('map', {
+              center: new naver.maps.LatLng(roomData.residenceLatitude, roomData.residenceLongitude),
+              zoom: 15,
+              mapTypeControl: false,
+              zoomControl: false
+            });
+
+            new naver.maps.Marker({
+              position: new naver.maps.LatLng(roomData.residenceLatitude, roomData.residenceLongitude),
+              map: map
+            });
+          }
+        }}
+      />
     </div>
   )
 }

@@ -208,12 +208,16 @@ header: {
     notChargedYet: "아직 요금이 청구되지 않습니다",
     shareTitle: "친구와 함께 공유하기",
     shareButton: "이 숙소 공유하기",
-    roomNotFound: "방을 찾을 수 없습니다",
-    cannotLoadRoom: "방 정보를 조회할 수 없습니다",
+    shareSuccess: "링크가 클립보드에 복사되었습니다!",
+    shareDescription: "친구들과 공유해보세요",
+    shareError: "링크 복사에 실패했습니다",
     hostTitle: "호스트",
     yearsHosting: "{years}년부터 호스팅",
     showMoreRooms: "다른 숙소 보기",
     readMore: "더 읽어보기",
+    aboutGosiwon: "고시원 소개",
+    roomNotFound: "방을 찾을 수 없습니다",
+    cannotLoadRoom: "방 정보를 조회할 수 없습니다",
     invalidInput: "잘못된 값을 입력했습니다",
     alreadyReserved: "해당 기간에 이미 예약이 존재합니다",
     invalidCurrency: "잘못된 화폐단위를 입력했습니다",
@@ -298,6 +302,15 @@ header: {
     paypalProcessing: "PayPal 결제를 진행합니다...",
     ourPrice: "정가",
     discount: "할인"
+  },
+  like: {
+    title: "저장된 숙소",
+    noSavedRooms: "저장된 숙소가 없습니다",
+    noSavedRoomsDesc: "마음에 드는 숙소를 저장해보세요",
+    noLikedRoomsError: "저장된 룸이 존재하지 않습니다",
+    verified: "인증됨",
+    freeCancellation: "무료 취소"
   }
+
 
 }

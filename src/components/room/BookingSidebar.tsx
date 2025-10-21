@@ -6,7 +6,8 @@ import DatePicker from "react-datepicker"
 import "react-datepicker/dist/react-datepicker.css"
 import { useState, useEffect, useRef } from "react"
 import { useLanguage } from "@/components/language-provider"
-import { apiPostWithResponse } from "@/lib/api"
+import { apiPostWithResponse, apiPost } from "@/lib/api"
+import { toast } from "sonner"
 import Image from "next/image"
 
 // 로케일 맵핑 - 동적 import 사용
@@ -106,7 +107,25 @@ export function BookingSidebar({
   const [isCalendarOpen, setIsCalendarOpen] = useState(false)
   const [isReserving, setIsReserving] = useState(false)
   const [datePickerLocale, setDatePickerLocale] = useState<any>(undefined)
+  const [isLiked, setIsLiked] = useState(false)
   const calendarRef = useRef<HTMLDivElement>(null)
+
+  // 숙박일수 계산
+  const calculateNights = () => {
+    if (!checkInDate || !checkOutDate) return 0
+    const diffTime = checkOutDate.getTime() - checkInDate.getTime()
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+    return diffDays > 0 ? diffDays : 0
+  }
+
+  // 총 금액 계산
+  const calculateTotalPrice = () => {
+    const nightsCount = calculateNights()
+    return nightsCount * price
+  }
+
+  const calculatedNights = calculateNights()
+  const calculatedTotalPrice = calculateTotalPrice()
 
   // 로케일 로드
   useEffect(() => {
@@ -185,6 +204,47 @@ export function BookingSidebar({
     const month = String(date.getMonth() + 1).padStart(2, '0')
     const day = String(date.getDate()).padStart(2, '0')
     return `${year}-${month}-${day}`
+  }
+
+  // 좋아요 토글 함수 (낙관적 업데이트)
+  const handleToggleLike = async () => {
+    // 낙관적 업데이트: 먼저 UI 업데이트
+    setIsLiked(prev => !prev)
+
+    try {
+      const response = await apiPost(`/api/user/like?roomIdentifier=${roomId}`)
+      
+      // 응답 코드가 200이 아닌 경우 롤백
+      if (response.code !== 200) {
+        setIsLiked(prev => !prev)
+      }
+    } catch (error) {
+      console.error('좋아요 토글 실패:', error)
+      // 에러 발생 시 롤백
+      setIsLiked(prev => !prev)
+    }
+  }
+
+  // 링크 공유 함수
+  const handleShareLink = async () => {
+    try {
+      const currentUrl = window.location.href
+      await navigator.clipboard.writeText(currentUrl)
+
+      // 성공 메시지 alert로 표시
+      alert(messages?.roomDetail?.shareSuccess || 
+        (language === 'ko' ? '링크가 클립보드에 복사되었습니다!' :
+         language === 'en' ? 'Link copied to clipboard!' :
+         language === 'zh' ? '链接已复制到剪贴板!' :
+         'Lien copié dans le presse-papiers!'))
+    } catch (error) {
+      console.error('링크 복사 실패:', error)
+      alert(messages?.roomDetail?.shareError || 
+        (language === 'ko' ? '링크 복사에 실패했습니다' :
+         language === 'en' ? 'Failed to copy link' :
+         language === 'zh' ? '复制链接失败' :
+         'Échec de la copie du lien'))
+    }
   }
 
   // 예약 처리 함수
@@ -463,14 +523,16 @@ export function BookingSidebar({
             {/* 가격 라인 */}
             <div className="flex gap-1 items-start">
               <p className="text-[24px] font-bold leading-[32px] tracking-[-0.3px] text-[#14151a]">
-                ₩{price.toLocaleString()} {messages?.roomDetail?.perNight || 'per night'}
+                ${price.toLocaleString()} {messages?.roomDetail?.perNight || 'per night'}
               </p>
             </div>
             
-            {/* 총 금액 정보 */}
-            <p className="text-[18px] font-medium leading-[26px] tracking-[-0.2px] text-[rgba(13,17,38,0.4)]">
-              ₩{totalPrice.toLocaleString()} {messages?.roomDetail?.forNights?.replace('{nights}', nights.toString()) || `for ${nights} nights`}
-            </p>
+            {/* 총 금액 정보 - 동적 계산 */}
+            {calculatedNights > 0 && (
+              <p className="text-[18px] font-medium leading-[26px] tracking-[-0.2px] text-[rgba(13,17,38,0.4)]">
+                ${calculatedTotalPrice.toLocaleString()} {messages?.roomDetail?.forNights?.replace('{nights}', calculatedNights.toString()) || `for ${calculatedNights} nights`}
+              </p>
+            )}
           </div>
 
           {/* 무료 취소 배지 */}
@@ -483,14 +545,26 @@ export function BookingSidebar({
           {/* 버튼 섹션 */}
           <div className="flex flex-col gap-1.5 items-center">
             {/* 저장 버튼 */}
-            <Button className="w-full h-10 rounded-full bg-white border border-[#dee0e3] hover:bg-gray-50 px-3 py-2.5 shadow-none">
-              <Image 
-                src="/icons/like.png" 
-                alt="Like" 
-                width={20} 
-                height={20}
-                className="h-5 w-5"
-              />
+            <Button 
+              className="w-full h-10 rounded-full bg-white border border-[#dee0e3] hover:bg-gray-50 px-3 py-2.5 shadow-none"
+              onClick={handleToggleLike}
+            >
+              {isLiked ? (
+                <svg width="18" height="16" viewBox="0 0 18 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path 
+                    d="M15.8695 1.96415C17.7545 3.85415 17.8195 6.86415 16.0662 8.82748L8.9995 15.9041L1.9345 8.82748C0.181164 6.86415 0.246997 3.84915 2.13116 1.96415C4.01866 0.0774834 7.03783 0.0141499 9.00116 1.77415C10.9587 0.0166499 13.9837 0.0749834 15.8695 1.96415V1.96415Z" 
+                    fill="#e0004d"
+                  />
+                </svg>
+              ) : (
+                <svg width="18" height="16" viewBox="0 0 18 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path 
+                    d="M15.8695 1.96415C17.7545 3.85415 17.8195 6.86415 16.0662 8.82748L8.9995 15.9041L1.9345 8.82748C0.181164 6.86415 0.246997 3.84915 2.13116 1.96415C4.01866 0.0774834 7.03783 0.0141499 9.00116 1.77415C10.9587 0.0166499 13.9837 0.0749834 15.8695 1.96415V1.96415ZM3.31033 3.14332C2.06866 4.38498 2.00616 6.37248 3.15033 7.68582L9.00033 13.545L14.8503 7.68665C15.9953 6.37248 15.9328 4.38748 14.6895 3.14165C13.4503 1.89998 11.4553 1.83998 10.1453 2.98665L6.64366 6.48915L5.4645 5.31082L7.81866 2.95498L7.75033 2.89748C6.43783 1.84332 4.5195 1.93332 3.31033 3.14332V3.14332Z" 
+                    fill="#0F1324" 
+                    fillOpacity="0.6"
+                  />
+                </svg>
+              )}
               <span className="text-[14px] font-medium leading-[20px] tracking-[-0.1px] text-[#14151a]">
                 {messages?.roomDetail?.save || 'Save'}
               </span>
@@ -523,11 +597,14 @@ export function BookingSidebar({
         <h3 className="text-[16px] font-bold leading-[24px] tracking-[-0.2px] text-[#14151a]">
           {messages?.roomDetail?.shareTitle || 'Share this room with friends'}
         </h3>
-        <Button className="w-full h-10 rounded-full bg-white border border-[#dee0e3] hover:bg-gray-50 px-3 py-2.5 shadow-none">
-          <Image 
+        <Button
+          className="w-full h-10 rounded-full bg-white border border-[#dee0e3] hover:bg-gray-50 px-3 py-2.5 shadow-none"
+          onClick={handleShareLink}
+        >
+          <Image
             src="/icons/share.png" 
-            alt="Share" 
-            width={20} 
+            alt="Share"
+            width={20}
             height={20}
             className="h-5 w-5"
           />
@@ -574,19 +651,9 @@ export function BookingSidebar({
         </Button>
 
         {/* 호스트 설명 */}
-        <p className="text-[16px] font-normal leading-[24px] tracking-[-0.2px] text-[#14151a] line-clamp-4 max-h-[96px] overflow-hidden">
+        <p className="text-[16px] font-normal leading-[24px] tracking-[-0.2px] text-[#14151a]">
           {host.description}
         </p>
-
-        {/* 더 읽어보기 버튼 */}
-        <button className="w-full flex items-center justify-center gap-0.5 px-2.5 py-1.5 rounded-full hover:bg-gray-50">
-          <span className="text-[14px] font-medium leading-[20px] tracking-[-0.1px] text-[rgba(15,19,36,0.6)]">
-            {messages?.roomDetail?.readMore || 'Read more'}
-          </span>
-          <svg className="h-4 w-4 text-[rgba(15,19,36,0.6)]" fill="none" viewBox="0 0 16 16">
-            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 4l4 4-4 4"/>
-          </svg>
-        </button>
       </div>
     </div>
   )
