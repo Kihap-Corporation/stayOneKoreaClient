@@ -140,7 +140,7 @@ export const apiRequest = async (
       }
 
       // 403 에러 처리 (접근 권한 없음)
-      if (response.status === 403) {
+      if (response.status === 403 && !skipAuth) {
         handleForbidden()
         throw new ApiError(data, response.status)
       }
@@ -223,7 +223,7 @@ export const apiRequestWithResponse = async (
       }
 
       // 403 에러 처리 (접근 권한 없음)
-      if (response.status === 403) {
+      if (response.status === 403 && !skipAuth) {
         handleForbidden()
         throw new ApiError(data, response.status)
       }
