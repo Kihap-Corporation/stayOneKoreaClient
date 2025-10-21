@@ -153,7 +153,9 @@ header: {
     logoutSuccess: "Logout completed successfully.",
     logoutError: "An error occurred during logout.",
     currentPasswordIncorrect: "Current password is incorrect.",
-    sessionExpired: "Session has expired. Please log in again."
+    sessionExpired: "Session has expired. Please log in again.",
+    loginRequired: "Login is required for this service",
+    loginRequiredDesc: "Would you like to go to the login page?"
   },
   error: {
     accessDenied: "Access denied",

@@ -1,20 +1,22 @@
 "use client"
 
 import { useState, useEffect, Suspense } from "react"
-import { useSearchParams } from "next/navigation"
+import { useSearchParams, useRouter } from "next/navigation"
 import { useLanguage } from "@/components/language-provider"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
-import { RoomCard } from "@/components/home/room-card"
+import { LikedRoomCard } from "@/components/home/liked-room-card"
 import { NaverStaticMap } from "@/components/search/naver-static-map"
 import { PriceFilter } from "@/components/search/price-filter"
 import { Pagination } from "@/components/search/pagination"
 import { SortSelector, SortOption } from "@/components/search/sort-selector"
 import { searchRooms, SearchRoomResult } from "@/lib/search-api"
+import { apiPost } from "@/lib/api"
 
 function SearchResultContent() {
   const { messages, currentLanguage } = useLanguage()
   const searchParams = useSearchParams()
+  const router = useRouter()
   
   const [rooms, setRooms] = useState<SearchRoomResult[]>([])
   const [loading, setLoading] = useState(true)
@@ -136,6 +138,55 @@ function SearchResultContent() {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
+  // 좋아요 토글 함수 (낙관적 업데이트)
+  const handleLikeToggle = async (roomIdentifier: string, e: React.MouseEvent) => {
+    e.stopPropagation()
+
+    // 낙관적 업데이트: 먼저 UI 업데이트
+    setRooms(prevRooms =>
+      prevRooms.map(room =>
+        room.roomIdentifier === roomIdentifier
+          ? { ...room, isLiked: !room.isLiked }
+          : room
+      )
+    )
+
+    try {
+      const response = await apiPost(`/api/user/like?roomIdentifier=${roomIdentifier}`)
+      
+      // 응답 코드가 200이 아닌 경우 롤백
+      if (response.code !== 200) {
+        setRooms(prevRooms =>
+          prevRooms.map(room =>
+            room.roomIdentifier === roomIdentifier
+              ? { ...room, isLiked: !room.isLiked }
+              : room
+          )
+        )
+      }
+    } catch (error) {
+      console.error('좋아요 토글 실패:', error)
+      // 에러 발생 시 롤백
+      setRooms(prevRooms =>
+        prevRooms.map(room =>
+          room.roomIdentifier === roomIdentifier
+            ? { ...room, isLiked: !room.isLiked }
+            : room
+        )
+      )
+    }
+  }
+
+  // 방 클릭 핸들러
+  const handleRoomClick = (roomIdentifier: string) => {
+    const room = rooms.find(r => r.roomIdentifier === roomIdentifier)
+    if (room) {
+      // residenceIdentifier가 있으면 사용, 없으면 roomIdentifier 사용
+      const residenceId = room.residenceIdentifier || roomIdentifier
+      router.push(`/residence/${residenceId}/room/${roomIdentifier}`)
+    }
+  }
+
   if (loading) {
     return (
       <div className="flex min-h-screen flex-col bg-white">
@@ -225,12 +276,16 @@ function SearchResultContent() {
                         selectedRoomIndex === index ? 'ring-2 ring-[#E91E63] ring-offset-2 rounded-2xl' : ''
                       }`}
                     >
-                      <RoomCard
+                      <LikedRoomCard
+                        roomIdentifier={room.roomIdentifier}
                         image={room.firstGalleryImageUrl}
                         title={room.residenceName}
                         provider={room.residenceName}
                         location={room.fullAddress}
                         price={room.pricePerNight}
+                        isLiked={room.isLiked}
+                        onLikeToggle={handleLikeToggle}
+                        onClick={handleRoomClick}
                       />
                     </div>
                   ))}
