@@ -50,13 +50,40 @@ header: {
     }
   },
   home: {
-    title: "介绍韩国美丽住宿设施的平台。",
-    subtitle: "发现全国各地的特色住宿。",
-    explore: "浏览住宿",
-    host: "成为房东",
-    search: { title: "多样化住宿搜索", description: "根据您喜欢的地点、价格和设施找到住宿。" },
-    booking: { title: "安全的预订系统", description: "通过我们可靠的预订系统安全地预订住宿。" },
-    experience: { title: "特别体验", description: "体验韩国传统与现代完美融合的住宿体验。" }
+    hero: {
+      title: "在韩国寻找您的住宿",
+      searchButton: "搜索首尔5天住宿",
+      searchRequirements: {
+        selectLocation: "请选择地点",
+        selectDates: "请选择日期",
+        minimumStay: "请至少选择3晚"
+      }
+    },
+    features: {
+      title: "考试院, K-紧凑型工作室",
+      learnMore: "了解更多",
+      deposit: {
+        title: "零保证金 & 灵活租赁",
+        description: "灵活的日租、周租和月租合同，韩国最低保证金，根据您的住宿目的量身定制。"
+      },
+      furnished: {
+        title: "全家具 & 全包",
+        description: "配备齐全的家具和电器 - 所有公用事业费用包含，无额外费用。"
+      },
+      safety: {
+        title: "安全 & 黄金地段",
+        description: "24小时安保和位于地铁站、大学和首尔各地商务区附近的黄金地段。"
+      }
+    },
+    trending: {
+      title: "热门目的地",
+      subtitle: "最受欢迎的住宿地点"
+    },
+    featuredRooms: {
+      title: "精选客房",
+      subtitle: "Stay One Korea 推荐客房",
+      freeCancellation: "免费取消"
+    }
   },
   account_check: {
     title: "登录或创建账户",
@@ -132,6 +159,30 @@ header: {
     accessDenied: "访问被拒绝",
     accessDeniedDescription: "您没有权限访问此页面。",
     goHome: "返回首页"
+  },
+  searchResult: {
+    title: "搜索结果",
+    priceFilter: "价格",
+    priceRange: "价格范围",
+    roomsFound: "找到 {count} 个住宿",
+    mapView: "地图视图",
+    listView: "列表视图",
+    sortBy: "排序",
+    sortRecommend: "推荐",
+    sortPriceLow: "价格：低到高",
+    sortPriceHigh: "价格：高到低",
+    sortRating: "评分",
+    noResults: "未找到结果",
+    noResultsDesc: "尝试使用不同的条件搜索",
+    perNight: "每晚",
+    showMap: "显示地图",
+    hideMap: "隐藏地图",
+    searchError: "搜索时发生错误",
+    validation: {
+      selectLocation: "请从 Algolia 搜索中选择位置",
+      selectDates: "请选择入住和退房日期",
+      minStay: "最少住宿 3 天"
+    }
   },
   common: {
     loading: "加载中...",

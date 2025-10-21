@@ -50,13 +50,40 @@ header: {
     }
   },
   home: {
-    title: "한국의 아름다운 숙박시설을 소개하는 플랫폼입니다.",
-    subtitle: "전국 각지의 특별한 숙소를 만나보세요.",
-    explore: "숙소 둘러보기",
-    host: "호스트 등록하기",
-    search: { title: "다양한 숙소 검색", description: "지역, 가격, 시설 등 원하시는 조건으로 숙소를 찾아보세요." },
-    booking: { title: "안전한 예약 시스템", description: "신뢰할 수 있는 예약 시스템으로 안전하게 숙소를 예약하세요." },
-    experience: { title: "특별한 경험", description: "한국의 전통과 현대가 어우러진 특별한 숙박 경험을 제공합니다." }
+    hero: {
+      title: "한국에서 숙소를 찾아보세요",
+      searchButton: "서울에서 5일 숙박 검색",
+      searchRequirements: {
+        selectLocation: "위치를 선택해주세요",
+        selectDates: "날짜를 선택해주세요",
+        minimumStay: "최소 3박 이상 선택해주세요"
+      }
+    },
+    features: {
+      title: "고시원, K-컴팩트 스튜디오",
+      learnMore: "더 알아보기",
+      deposit: {
+        title: "최소 보증금 & 유연한 계약",
+        description: "일일, 주간, 월간 계약이 가능하며 한국 최저 보증금으로 체류 목적에 맞는 유연한 계약을 제공합니다."
+      },
+      furnished: {
+        title: "완비된 가구 & 올인클루시브",
+        description: "완전히 갖춰진 가구와 가전제품 - 모든 공과금 포함, 추가 요금 없음."
+      },
+      safety: {
+        title: "안전 & 최고의 위치",
+        description: "24시간 보안 및 지하철역, 대학교, 서울 전역의 비즈니스 지구 근처 최고의 위치."
+      }
+    },
+    trending: {
+      title: "인기 여행지",
+      subtitle: "가장 인기 있는 숙소 위치"
+    },
+    featuredRooms: {
+      title: "추천 숙소",
+      subtitle: "Stay One Korea 추천 숙소",
+      freeCancellation: "무료 취소"
+    }
   },
   account_check: {
     title: "로그인하거나 계정을 생성하세요",
@@ -132,6 +159,30 @@ header: {
     accessDenied: "접근이 불가능합니다",
     accessDeniedDescription: "이 페이지에 접근할 권한이 없습니다.",
     goHome: "홈으로 돌아가기"
+  },
+  searchResult: {
+    title: "숙소 검색 결과",
+    priceFilter: "가격",
+    priceRange: "가격 범위",
+    roomsFound: "{count}개의 숙소",
+    mapView: "지도 보기",
+    listView: "목록 보기",
+    sortBy: "정렬",
+    sortRecommend: "추천순",
+    sortPriceLow: "낮은 가격순",
+    sortPriceHigh: "높은 가격순",
+    sortRating: "평점순",
+    noResults: "검색 결과가 없습니다",
+    noResultsDesc: "다른 조건으로 검색해보세요",
+    perNight: "박당",
+    showMap: "지도 보기",
+    hideMap: "지도 숨기기",
+    searchError: "검색 중 오류가 발생했습니다",
+    validation: {
+      selectLocation: "알고리아 검색에서 위치를 선택해주세요",
+      selectDates: "체크인/체크아웃 날짜를 선택해주세요",
+      minStay: "최소 3일 이상 숙박해야 합니다"
+    }
   },
   common: {
     loading: "로딩 중...",
