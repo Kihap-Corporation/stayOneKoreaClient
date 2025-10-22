@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import { LanguageProvider } from "@/components/language-provider";
+import { Toaster } from "sonner";
 import "./globals.css";
 
 const inter = Inter({
@@ -45,6 +46,11 @@ export default function RootLayout({
       >
         <LanguageProvider>
           {children}
+          <Toaster
+            position="top-right"
+            richColors
+            closeButton
+          />
         </LanguageProvider>
       </body>
     </html>

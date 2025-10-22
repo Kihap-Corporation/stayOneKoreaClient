@@ -178,6 +178,8 @@ header: {
     showMap: "Show Map",
     hideMap: "Hide Map",
     searchError: "An error occurred while searching",
+    searchButton: "Search",
+    showAllRooms: "Show all rooms",
     validation: {
       selectLocation: "Please select a location from Algolia search",
       selectDates: "Please select check-in and check-out dates",
@@ -225,7 +227,9 @@ header: {
     pleaseSelectDates: "Please select dates",
     reservationError: "An error occurred while processing the reservation",
     checkIn: "Check-in",
-    checkOut: "Check-out"
+    checkOut: "Check-out",
+    checkOutOnly: "Check-out only",
+    selectCheckInFirst: "Please select check-in date first"
   },
   reservation: {
     facilities: "Facilities",

@@ -238,23 +238,67 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
     fetchRelatedRooms()
   }, [roomData, params.residenceId, params.roomId, currentLanguage, currentRoomPage])
 
-  // 예약된 날짜 필터링 함수
-  const filterReservedDates = (date: Date) => {
+  // 체크인 날짜 필터링 함수 (체크인 전용)
+  const filterCheckInDates = (date: Date) => {
     if (!roomData?.reservedDates) return true
 
-    const dateStr = date.toISOString().split('T')[0]
-    
+    const currentDate = new Date(date.getFullYear(), date.getMonth(), date.getDate())
+    currentDate.setHours(0, 0, 0, 0)
+
     for (const reserved of roomData.reservedDates) {
-      const checkIn = new Date(reserved.checkIn)
-      const checkOut = new Date(reserved.checkOut)
-      const currentDate = new Date(dateStr)
-      
-      // 체크인과 체크아웃 사이의 날짜는 선택 불가
-      if (currentDate >= checkIn && currentDate < checkOut) {
+      const reservedCheckIn = new Date(reserved.checkIn)
+      const reservedCheckOut = new Date(reserved.checkOut)
+      reservedCheckIn.setHours(0, 0, 0, 0)
+      reservedCheckOut.setHours(0, 0, 0, 0)
+
+      // 예약 기간 [checkIn, checkOut) 동안은 체크인 불가
+      // 예약된 체크인 날짜와 체크아웃 날짜 사이의 모든 날짜는 체크인 불가
+      if (currentDate.getTime() >= reservedCheckIn.getTime() && currentDate.getTime() < reservedCheckOut.getTime()) {
         return false
       }
     }
-    
+
+    return true
+  }
+
+  // 체크아웃 날짜 필터링 함수 (체크아웃 전용)
+  const filterCheckOutDates = (date: Date) => {
+    if (!roomData?.reservedDates || !checkInDate) return false
+
+    const currentDate = new Date(date.getFullYear(), date.getMonth(), date.getDate())
+    currentDate.setHours(0, 0, 0, 0)
+
+    const selectedCheckIn = new Date(checkInDate.getFullYear(), checkInDate.getMonth(), checkInDate.getDate())
+    selectedCheckIn.setHours(0, 0, 0, 0)
+
+    // 체크아웃은 체크인 다음날부터 시작해야 함 (최소 1박)
+    const nextDay = new Date(selectedCheckIn.getTime() + 24 * 60 * 60 * 1000)
+    if (currentDate.getTime() < nextDay.getTime()) {
+      return false
+    }
+
+    // 선택한 체크인 이후, 가장 가까운 예약의 체크인 날짜 찾기
+    let nearestReservedCheckIn: Date | null = null
+
+    for (const reserved of roomData.reservedDates) {
+      const reservedCheckIn = new Date(reserved.checkIn)
+      reservedCheckIn.setHours(0, 0, 0, 0)
+
+      // 선택한 체크인보다 이후에 있는 예약 중에서
+      if (reservedCheckIn.getTime() > selectedCheckIn.getTime()) {
+        // 가장 가까운 예약 찾기
+        if (!nearestReservedCheckIn || reservedCheckIn.getTime() < nearestReservedCheckIn.getTime()) {
+          nearestReservedCheckIn = reservedCheckIn
+        }
+      }
+    }
+
+    // 가장 가까운 예약의 체크인 날짜까지만 선택 가능
+    // 즉, 체크아웃 날짜는 다음 예약의 체크인 날짜와 같거나 이전이어야 함
+    if (nearestReservedCheckIn && currentDate.getTime() >= nearestReservedCheckIn.getTime()) {
+      return false
+    }
+
     return true
   }
 
@@ -867,7 +911,8 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
                   onCheckOutDateChange={setCheckOutDate}
                   onGuestsChange={handleGuestsChange}
                   roomId={params.roomId}
-                  filterDate={filterReservedDates}
+                  filterCheckInDate={filterCheckInDates}
+                  filterCheckOutDate={filterCheckOutDates}
                   roomLikeCheck={roomData.roomLikeCheck}
                 />
               </div>
@@ -967,53 +1012,41 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
               </button>
             </div>
 
-            {/* 달력 영역 */}
+            {/* 달력 영역 - 가로 배치 */}
             <div className="p-4">
-              {/* 체크인 날짜 선택 */}
-              <div className="mb-4">
-                <div className="mb-2 text-sm font-semibold text-[#14151a]">Check-in</div>
-                <DatePicker
-                  selected={checkInDate}
-                  onChange={handleMobileCheckInChange}
-                  inline
-                  locale={datePickerLocale}
-                  minDate={new Date()}
-                  monthsShown={1}
-                  calendarClassName="!border-none !w-full"
-                  filterDate={(date) => {
-                    if (filterReservedDates) {
-                      return filterReservedDates(date)
-                    }
-                    return true
-                  }}
-                />
-              </div>
-
-              {/* 체크아웃 날짜 선택 */}
-              <div>
-                <div className={`mb-2 text-sm font-semibold ${!checkInDate ? 'text-[rgba(13,17,38,0.3)]' : 'text-[#14151a]'}`}>
-                  Check-out
-                </div>
-                <div className={!checkInDate ? 'opacity-50 pointer-events-none' : ''}>
+              <div className="grid grid-cols-2 gap-4">
+                {/* 체크인 날짜 선택 */}
+                <div>
+                  <div className="mb-2 text-sm font-semibold text-[#14151a]">Check-in</div>
                   <DatePicker
-                    selected={checkOutDate}
-                    onChange={handleMobileCheckOutChange}
+                    selected={checkInDate}
+                    onChange={handleMobileCheckInChange}
                     inline
                     locale={datePickerLocale}
-                    minDate={checkInDate ? new Date(checkInDate.getTime() + 86400000) : new Date()}
+                    minDate={new Date()}
                     monthsShown={1}
                     calendarClassName="!border-none !w-full"
-                    filterDate={(date) => {
-                      if (!checkInDate) return false
-                      if (date.getTime() === checkInDate.getTime()) return false
-                      const nextDay = new Date(checkInDate.getTime() + 86400000)
-                      if (date < nextDay) return false
-                      if (filterReservedDates) {
-                        return filterReservedDates(date)
-                      }
-                      return true
-                    }}
+                    filterDate={filterCheckInDates}
                   />
+                </div>
+
+                {/* 체크아웃 날짜 선택 */}
+                <div>
+                  <div className={`mb-2 text-sm font-semibold ${!checkInDate ? 'text-[rgba(13,17,38,0.3)]' : 'text-[#14151a]'}`}>
+                    Check-out
+                  </div>
+                  <div className={!checkInDate ? 'opacity-50 pointer-events-none' : ''}>
+                    <DatePicker
+                      selected={checkOutDate}
+                      onChange={handleMobileCheckOutChange}
+                      inline
+                      locale={datePickerLocale}
+                      minDate={checkInDate ? new Date(checkInDate.getTime() + 86400000) : new Date()}
+                      monthsShown={1}
+                      calendarClassName="!border-none !w-full"
+                      filterDate={filterCheckOutDates}
+                    />
+                  </div>
                 </div>
               </div>
             </div>

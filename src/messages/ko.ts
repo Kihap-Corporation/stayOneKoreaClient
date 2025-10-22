@@ -178,6 +178,8 @@ header: {
     showMap: "지도 보기",
     hideMap: "지도 숨기기",
     searchError: "검색 중 오류가 발생했습니다",
+    searchButton: "검색",
+    showAllRooms: "모든 방 보기",
     validation: {
       selectLocation: "알고리아 검색에서 위치를 선택해주세요",
       selectDates: "체크인/체크아웃 날짜를 선택해주세요",
@@ -225,7 +227,9 @@ header: {
     pleaseSelectDates: "날짜를 선택해주세요",
     reservationError: "예약 처리 중 오류가 발생했습니다",
     checkIn: "체크인",
-    checkOut: "체크아웃"
+    checkOut: "체크아웃",
+    checkOutOnly: "체크아웃만 가능",
+    selectCheckInFirst: "체크인을 먼저 선택해주세요"
   },
   reservation: {
     facilities: "편의시설",

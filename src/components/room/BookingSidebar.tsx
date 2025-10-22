@@ -58,7 +58,8 @@ interface BookingSidebarProps {
   onCheckOutDateChange?: (date: Date | null) => void
   onGuestsChange?: (guests: number) => void
   roomId?: string
-  filterDate?: (date: Date) => boolean
+  filterCheckInDate?: (date: Date) => boolean
+  filterCheckOutDate?: (date: Date) => boolean
   roomLikeCheck?: boolean
 }
 
@@ -100,13 +101,15 @@ export function BookingSidebar({
   onCheckOutDateChange,
   onGuestsChange,
   roomId,
-  filterDate,
+  filterCheckInDate,
+  filterCheckOutDate,
   roomLikeCheck = false
 }: BookingSidebarProps) {
   const { currentLanguage, messages } = useLanguage()
   const language = currentLanguage.code
   const currency = 'USD' // 항상 USD로 고정
-  const [isCalendarOpen, setIsCalendarOpen] = useState(false)
+  const [isCheckInCalendarOpen, setIsCheckInCalendarOpen] = useState(false)
+  const [isCheckOutCalendarOpen, setIsCheckOutCalendarOpen] = useState(false)
   const [isReserving, setIsReserving] = useState(false)
   const [datePickerLocale, setDatePickerLocale] = useState<any>(undefined)
   const [isLiked, setIsLiked] = useState(roomLikeCheck)
@@ -150,19 +153,20 @@ export function BookingSidebar({
         // DatePicker의 내부 요소 클릭인지 확인
         const target = event.target as HTMLElement
         if (!target.closest('.react-datepicker') && !target.closest('.react-datepicker-popper')) {
-          setIsCalendarOpen(false)
+          setIsCheckInCalendarOpen(false)
+          setIsCheckOutCalendarOpen(false)
         }
       }
     }
 
-    if (isCalendarOpen) {
+    if (isCheckInCalendarOpen || isCheckOutCalendarOpen) {
       document.addEventListener('mousedown', handleClickOutside)
     }
-    
+
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
     }
-  }, [isCalendarOpen])
+  }, [isCheckInCalendarOpen, isCheckOutCalendarOpen])
 
   // 체크인 날짜 변경 핸들러
   const handleCheckInChange = (date: Date | null) => {
@@ -370,10 +374,10 @@ export function BookingSidebar({
             {messages?.roomDetail?.schedule || 'Schedule'}
           </label>
 
-          {/* 체크인/체크아웃 한 줄 배치 */}
-          <div className="flex gap-3 items-end">
+          {/* 체크인/체크아웃 가로 배치 */}
+          <div className="grid grid-cols-2 gap-3">
             {/* Check-in (체크인 날짜 선택) */}
-            <div className="flex-1 flex flex-col gap-2" ref={calendarRef}>
+            <div className="flex flex-col gap-2" ref={calendarRef}>
               <label className="text-[12px] font-normal leading-[16px] tracking-[-0.1px] text-[rgba(13,17,38,0.6)]">
                 {messages?.roomDetail?.checkIn || 'Check-in'}
               </label>
@@ -382,7 +386,10 @@ export function BookingSidebar({
                 <input
                   type="text"
                   value={checkInDate ? formatDate(checkInDate) : ''}
-                  onClick={() => setIsCalendarOpen(!isCalendarOpen)}
+                  onClick={() => {
+                    setIsCheckInCalendarOpen(!isCheckInCalendarOpen)
+                    setIsCheckOutCalendarOpen(false) // 체크인 달력을 열 때 체크아웃 달력 닫기
+                  }}
                   readOnly
                   className="w-full rounded-xl border border-[#dee0e3] bg-white pl-10 pr-10 py-2.5 text-[14px] leading-[20px] tracking-[-0.1px] text-[#14151a] focus:border-[#E91E63] focus:outline-none hover:border-gray-300 cursor-pointer"
                   placeholder="Select..."
@@ -401,8 +408,8 @@ export function BookingSidebar({
                   </button>
                 )}
 
-                {isCalendarOpen && (
-                  <div className="absolute top-full left-0 mt-2 z-50 bg-white rounded-xl shadow-lg border border-[#dee0e3] p-4">
+                {isCheckInCalendarOpen && (
+                  <div className="absolute top-full left-0 mt-2 z-50 bg-white rounded-xl shadow-lg border border-[#dee0e3] p-4 w-[280px]">
                     <div className="mb-3 text-sm font-semibold text-[#14151a]">
                       {messages?.roomDetail?.checkIn || 'Check-in'}
                     </div>
@@ -415,77 +422,20 @@ export function BookingSidebar({
                       monthsShown={1}
                       calendarClassName="!border-none"
                       filterDate={(date) => {
-                        // 체크인 선택 시 필터링 로직:
-                        // - 예약된 기간 [checkIn, checkOut) 구간은 선택 불가
-                        // - 체크인은 예약이 끝나는 날(checkOut 날짜)이나 예약이 시작하기 전날 이후 날짜만 가능
-                        // - 외부 filterDate 함수에서 다음 로직 구현 필요:
-                        //   * 선택된 날짜가 다른 예약의 체크아웃 날짜와 같거나 크면 안 됨 (checkIn >= other.checkOut)
-                        //
-                        // 예시: 기존 예약 [2025-12-26, 2025-12-27)
-                        // - 2025-12-26: 선택 불가 (예약된 기간)
-                        // - 2025-12-27: 선택 불가 (예약된 기간)
-                        // - 2025-12-28: 선택 가능 (예약 종료 다음날)
-                        if (filterDate) {
-                          return filterDate(date)
+                        // 체크인 전용 필터링 로직
+                        if (filterCheckInDate) {
+                          return filterCheckInDate(date)
                         }
                         return true
                       }}
                     />
-
-                    <div className={`mt-4 mb-3 text-sm font-semibold ${!checkInDate ? 'text-[rgba(13,17,38,0.3)]' : 'text-[#14151a]'}`}>
-                      {messages?.roomDetail?.checkOut || 'Check-out'}
-                    </div>
-                    <div className={!checkInDate ? 'opacity-50 pointer-events-none' : ''}>
-                      <DatePicker
-                        selected={checkOutDate}
-                        onChange={handleCheckOutChange}
-                        inline
-                        locale={datePickerLocale}
-                        minDate={checkInDate ? new Date(checkInDate.getTime() + 86400000) : new Date()}
-                        monthsShown={1}
-                        calendarClassName="!border-none"
-                        filterDate={(date) => {
-                          // 체크인이 선택되지 않으면 모든 날짜 비활성화
-                          if (!checkInDate) {
-                            return false
-                          }
-
-                          // 체크인 날짜와 같은 날은 선택 불가 (당일 체크아웃 불가)
-                          if (date.getTime() === checkInDate.getTime()) {
-                            return false
-                          }
-
-                          // 체크인 다음날부터 선택 가능 (최소 1박 필수)
-                          const nextDay = new Date(checkInDate.getTime() + 86400000)
-                          if (date < nextDay) {
-                            return false
-                          }
-
-                          // 외부에서 제공된 filterDate 함수 적용 (예약된 날짜 필터링)
-                          // 체크아웃 선택 시 다음 로직 구현 필요:
-                          // - 해당 날짜가 다른 예약의 체크인 날짜와 같거나 작으면 안 됨 (checkOut <= other.checkIn)
-                          // - 이는 예약 기간 [checkIn, checkOut)이 겹치지 않도록 하기 위함
-                          // - 체크아웃 날짜와 다른 사용자의 체크인 날짜가 겹치는 것은 허용됨
-                          //
-                          // 예시: 기존 예약 [2025-12-26, 2025-12-27)
-                          // - 체크인 2025-12-26 선택 시:
-                          //   * 체크아웃 2025-12-27: 선택 불가 (기존 예약 체크인과 같음)
-                          //   * 체크아웃 2025-12-28: 선택 가능 (기존 예약 체크인보다 큼)
-                          if (filterDate) {
-                            return filterDate(date)
-                          }
-
-                          return true
-                        }}
-                      />
-                    </div>
                   </div>
                 )}
               </div>
             </div>
 
-            {/* Check-out (체크아웃 날짜 표시) */}
-            <div className="flex-1 flex flex-col gap-2">
+            {/* Check-out (체크아웃 날짜 선택) */}
+            <div className="flex flex-col gap-2">
               <label className={`text-[12px] font-normal leading-[16px] tracking-[-0.1px] ${!checkInDate ? 'text-[rgba(13,17,38,0.3)]' : 'text-[rgba(13,17,38,0.6)]'}`}>
                 {messages?.roomDetail?.checkOut || 'Check-out'}
               </label>
@@ -494,7 +444,7 @@ export function BookingSidebar({
                 <input
                   type="text"
                   value={checkOutDate ? formatDate(checkOutDate) : ''}
-                  onClick={() => checkInDate && setIsCalendarOpen(!isCalendarOpen)}
+                  onClick={() => checkInDate && (setIsCheckOutCalendarOpen(!isCheckOutCalendarOpen), setIsCheckInCalendarOpen(false))}
                   readOnly
                   disabled={!checkInDate}
                   className={`w-full rounded-xl border pl-10 pr-10 py-2.5 text-[14px] leading-[20px] tracking-[-0.1px] ${!checkInDate
@@ -514,6 +464,30 @@ export function BookingSidebar({
                   >
                     <X className="h-4 w-4" />
                   </button>
+                )}
+
+                {isCheckOutCalendarOpen && checkInDate && (
+                  <div className="absolute top-full left-0 mt-2 z-50 bg-white rounded-xl shadow-lg border border-[#dee0e3] p-4 w-[280px]">
+                    <div className="mb-3 text-sm font-semibold text-[#14151a]">
+                      {messages?.roomDetail?.checkOut || 'Check-out'}
+                    </div>
+                    <DatePicker
+                      selected={checkOutDate}
+                      onChange={handleCheckOutChange}
+                      inline
+                      locale={datePickerLocale}
+                      minDate={new Date(checkInDate.getTime() + 86400000)}
+                      monthsShown={1}
+                      calendarClassName="!border-none"
+                      filterDate={(date) => {
+                        // 체크아웃 전용 필터링 로직
+                        if (filterCheckOutDate) {
+                          return filterCheckOutDate(date)
+                        }
+                        return false
+                      }}
+                    />
+                  </div>
                 )}
               </div>
             </div>

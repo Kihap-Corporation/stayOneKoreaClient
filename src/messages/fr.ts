@@ -178,6 +178,8 @@ header: {
     showMap: "Afficher la carte",
     hideMap: "Masquer la carte",
     searchError: "Une erreur s'est produite lors de la recherche",
+    searchButton: "Rechercher",
+    showAllRooms: "Afficher toutes les chambres",
     validation: {
       selectLocation: "Veuillez sélectionner un emplacement dans la recherche Algolia",
       selectDates: "Veuillez sélectionner les dates d'arrivée et de départ",
@@ -225,7 +227,9 @@ header: {
     pleaseSelectDates: "Veuillez sélectionner des dates",
     reservationError: "Une erreur s'est produite lors du traitement de la réservation",
     checkIn: "Arrivée",
-    checkOut: "Départ"
+    checkOut: "Départ",
+    checkOutOnly: "Départ seulement",
+    selectCheckInFirst: "Veuillez d'abord sélectionner la date d'arrivée"
   },
   reservation: {
     facilities: "Équipements",

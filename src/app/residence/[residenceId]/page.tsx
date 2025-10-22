@@ -6,7 +6,7 @@ import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { useLanguage } from "@/components/language-provider"
 import { apiGet, apiPost } from "@/lib/api"
-import { Search, ChevronLeft, ChevronRight } from "lucide-react"
+import { Search, ChevronLeft, ChevronRight, Calendar, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -14,6 +14,9 @@ import { Pagination, Navigation } from 'swiper/modules'
 import 'swiper/css'
 import 'swiper/css/pagination'
 import 'swiper/css/navigation'
+import DatePicker from "react-datepicker"
+import "react-datepicker/dist/react-datepicker.css"
+import { toast } from "sonner"
 
 interface ResidencePageProps {
   params: {
@@ -60,15 +63,72 @@ export default function ResidencePage({ params }: ResidencePageProps) {
   const router = useRouter()
   const { messages, currentLanguage } = useLanguage()
   const [currentPage, setCurrentPage] = useState(0)
-  const [guests, setGuests] = useState(1)
   const [residenceData, setResidenceData] = useState<ResidenceDetail | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [showFullDescription, setShowFullDescription] = useState(false)
   const [checkIn, setCheckIn] = useState<string>("")
   const [checkOut, setCheckOut] = useState<string>("")
-  
+  const [checkInDate, setCheckInDate] = useState<Date | null>(null)
+  const [checkOutDate, setCheckOutDate] = useState<Date | null>(null)
+  const [isCheckInCalendarOpen, setIsCheckInCalendarOpen] = useState(false)
+  const [isCheckOutCalendarOpen, setIsCheckOutCalendarOpen] = useState(false)
+  const [datePickerLocale, setDatePickerLocale] = useState<any>(undefined)
+
   const pageSize = 12
+
+  // 날짜 포맷 함수
+  const formatDate = (date: Date | null) => {
+    if (!date) return ''
+
+    const year = date.getFullYear()
+    const month = date.getMonth() + 1
+    const day = date.getDate()
+
+    if (currentLanguage.code === 'ko') return `${year}년 ${month}월 ${day}일`
+    if (currentLanguage.code === 'zh') return `${year}年${month}月${day}日`
+    if (currentLanguage.code === 'fr') return `${day}/${month}/${year}`
+    return `${month}/${day}/${year}`
+  }
+
+  // 체크인 날짜 변경 핸들러
+  const handleCheckInChange = (date: Date | null) => {
+    setCheckInDate(date)
+
+    // 체크인을 선택하지 않으면 체크아웃 초기화
+    if (!date) {
+      setCheckOutDate(null)
+      setCheckOut("")
+      return
+    }
+
+    // 체크인 날짜가 체크아웃 날짜보다 늦으면 체크아웃 초기화
+    if (checkOutDate && date >= checkOutDate) {
+      setCheckOutDate(null)
+      setCheckOut("")
+    }
+
+    // API용 날짜 형식으로 변환
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    setCheckIn(`${year}-${month}-${day}`)
+  }
+
+  // 체크아웃 날짜 변경 핸들러
+  const handleCheckOutChange = (date: Date | null) => {
+    setCheckOutDate(date)
+
+    if (date) {
+      // API용 날짜 형식으로 변환
+      const year = date.getFullYear()
+      const month = String(date.getMonth() + 1).padStart(2, '0')
+      const day = String(date.getDate()).padStart(2, '0')
+      setCheckOut(`${year}-${month}-${day}`)
+    } else {
+      setCheckOut("")
+    }
+  }
 
   // 호스팅 시작 연도 계산
   const getHostingYears = (startDate: string) => {
@@ -79,40 +139,105 @@ export default function ResidencePage({ params }: ResidencePageProps) {
     return years > 0 ? years : 1
   }
 
-  // 레지던스 상세 정보 조회
+  // 로케일 로드
   useEffect(() => {
-    const fetchResidenceDetail = async () => {
+    const loadLocale = async () => {
       try {
-        setLoading(true)
-        setError(null)
-
-        const queryParams = new URLSearchParams({
-          residenceIdentifier: params.residenceId,
-          page: currentPage.toString(),
-          size: pageSize.toString(),
-          languageCode: currentLanguage.code
-        })
-
-        if (checkIn) queryParams.append('checkIn', checkIn)
-        if (checkOut) queryParams.append('checkOut', checkOut)
-
-        const response = await apiGet(`/api/residence/detail?${queryParams.toString()}`)
-
-        if (response.code === 200 && response.data) {
-          setResidenceData(response.data)
-        } else {
-          setError("Failed to load residence data")
+        switch (currentLanguage.code) {
+          case 'ko':
+            const { ko } = await import('date-fns/locale/ko')
+            setDatePickerLocale(ko)
+            break
+          case 'en':
+            const { enUS } = await import('date-fns/locale/en-US')
+            setDatePickerLocale(enUS)
+            break
+          case 'zh':
+            const { zhCN } = await import('date-fns/locale/zh-CN')
+            setDatePickerLocale(zhCN)
+            break
+          case 'fr':
+            const { fr } = await import('date-fns/locale/fr')
+            setDatePickerLocale(fr)
+            break
+          default:
+            const { ko: defaultKo } = await import('date-fns/locale/ko')
+            setDatePickerLocale(defaultKo)
         }
       } catch (error) {
-        console.error('Error fetching residence detail:', error)
-        setError("Failed to load residence data")
-      } finally {
-        setLoading(false)
+        console.error('Failed to load locale:', error)
+        setDatePickerLocale(undefined)
+      }
+    }
+    loadLocale()
+  }, [currentLanguage])
+
+  // 달력 외부 클릭 감지
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement
+      if (!target.closest('.calendar-container') && !target.closest('.react-datepicker') && !target.closest('.react-datepicker-popper')) {
+        setIsCheckInCalendarOpen(false)
+        setIsCheckOutCalendarOpen(false)
       }
     }
 
-    fetchResidenceDetail()
-  }, [params.residenceId, currentPage, checkIn, checkOut, currentLanguage])
+    if (isCheckInCalendarOpen || isCheckOutCalendarOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [isCheckInCalendarOpen, isCheckOutCalendarOpen])
+
+  // 페이지가 변경될 때마다 체크인/체크아웃 초기화
+  useEffect(() => {
+    setCheckInDate(null)
+    setCheckOutDate(null)
+    setCheckIn("")
+    setCheckOut("")
+    setCurrentPage(0)
+  }, [params.residenceId])
+
+  // 검색 실행 함수
+  const executeSearch = async () => {
+    try {
+      setLoading(true)
+      setError(null)
+
+      const queryParams = new URLSearchParams({
+        residenceIdentifier: params.residenceId,
+        page: currentPage.toString(),
+        size: pageSize.toString(),
+        languageCode: currentLanguage.code
+      })
+
+      if (checkIn) queryParams.append('checkIn', checkIn)
+      if (checkOut) queryParams.append('checkOut', checkOut)
+
+      const response = await apiGet(`/api/residence/detail?${queryParams.toString()}`)
+
+      if (response.code === 200 && response.data) {
+        setResidenceData(response.data)
+        toast.success(messages?.common?.success || '검색이 완료되었습니다')
+      } else {
+        setError("Failed to load residence data")
+        toast.error(messages?.searchResult?.searchError || '검색 중 오류가 발생했습니다')
+      }
+    } catch (error) {
+      console.error('Error fetching residence detail:', error)
+      setError("Failed to load residence data")
+      toast.error(messages?.searchResult?.searchError || '검색 중 오류가 발생했습니다')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // 레지던스 상세 정보 조회 (초기 로딩 시에만 실행)
+  useEffect(() => {
+    executeSearch()
+  }, [params.residenceId, currentPage, currentLanguage])
 
   const handleRoomClick = (roomId: string) => {
     router.push(`/residence/${params.residenceId}/room/${roomId}`)
@@ -294,7 +419,27 @@ export default function ResidencePage({ params }: ResidencePageProps) {
                   </div>
 
                   {/* Share Button */}
-                  <Button className="w-full h-12 rounded-full bg-[#e0004d] hover:bg-[#c2003f] shadow-sm">
+                  <Button
+                    className="w-full h-12 rounded-full bg-[#e0004d] hover:bg-[#c2003f] shadow-sm"
+                    onClick={async () => {
+                      try {
+                        const currentUrl = window.location.href
+                        await navigator.clipboard.writeText(currentUrl)
+                        toast.success(messages?.roomDetail?.shareSuccess ||
+                          (currentLanguage.code === 'ko' ? '링크가 클립보드에 복사되었습니다!' :
+                           currentLanguage.code === 'en' ? 'Link copied to clipboard!' :
+                           currentLanguage.code === 'zh' ? '链接已复制到剪贴板!' :
+                           'Lien copié dans le presse-papiers!'))
+                      } catch (error) {
+                        console.error('링크 복사 실패:', error)
+                        toast.error(messages?.roomDetail?.shareError ||
+                          (currentLanguage.code === 'ko' ? '링크 복사에 실패했습니다' :
+                           currentLanguage.code === 'en' ? 'Failed to copy link' :
+                           currentLanguage.code === 'zh' ? '复制链接失败' :
+                           'Échec de la copie du lien'))
+                      }
+                    }}
+                  >
                     <span className="text-[16px] font-medium leading-[24px] tracking-[-0.2px] text-white">
                       Share with friends
                     </span>
@@ -307,50 +452,162 @@ export default function ResidencePage({ params }: ResidencePageProps) {
             <div className="flex-1 flex flex-col gap-4">
               {/* 검색 필드 */}
               <div className="bg-white border border-[#dee0e3] rounded-[16px] px-4 py-4 flex flex-col lg:flex-row gap-4 items-stretch lg:items-end z-100 mt-32">
-                {/* Schedule Input */}
+              {/* 체크인/체크아웃 날짜 선택 및 검색 */}
+              <div className="flex gap-3 items-end">
                 <div className="flex-1 flex flex-col gap-2">
                   <label className="text-[14px] font-medium leading-[20px] tracking-[-0.1px] text-[#14151a]">
                     Schedule
                   </label>
-                  <div className="relative">
-                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
-                      <path d="M6 2V5M14 2V5M3 9H17M5 4H15C16.1046 4 17 4.89543 17 6V16C17 17.1046 16.1046 18 15 18H5C3.89543 18 3 17.1046 3 16V6C3 4.89543 3.89543 4 5 4Z" stroke="rgba(13,17,38,0.4)" strokeWidth="1.5" fill="none" />
-                    </svg>
-                    <Input
-                      type="text"
-                      placeholder="Select..."
-                      className="w-full h-10 pl-10 pr-3 rounded-xl border border-[#dee0e3] text-[14px] text-[rgba(13,17,38,0.4)]"
-                    />
+                  <div className="grid grid-cols-2 gap-3">
+                    {/* Check-in */}
+                    <div className="relative">
+                      <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none z-10" />
+                      <input
+                        type="text"
+                        value={checkInDate ? formatDate(checkInDate) : ''}
+                        onClick={() => {
+                          setIsCheckInCalendarOpen(!isCheckInCalendarOpen)
+                          setIsCheckOutCalendarOpen(false) // 체크인 달력을 열 때 체크아웃 달력 닫기
+                        }}
+                        readOnly
+                        className="w-full rounded-xl border border-[#dee0e3] bg-white pl-10 pr-10 py-2.5 text-[14px] leading-[20px] tracking-[-0.1px] text-[#14151a] focus:border-[#E91E63] focus:outline-none hover:border-gray-300 cursor-pointer"
+                        placeholder="Check-in"
+                      />
+                      {checkInDate && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            setCheckInDate(null)
+                            setCheckOutDate(null)
+                            setCheckIn("")
+                            setCheckOut("")
+                          }}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 hover:text-gray-600 cursor-pointer"
+                          type="button"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      )}
+
+                      {isCheckInCalendarOpen && (
+                        <div className="absolute top-full left-0 mt-2 z-50 bg-white rounded-xl shadow-lg border border-[#dee0e3] p-4 w-[280px] calendar-container">
+                          <div className="mb-3 text-sm font-semibold text-[#14151a]">
+                            Check-in
+                          </div>
+                          <DatePicker
+                            selected={checkInDate}
+                            onChange={(date) => {
+                              handleCheckInChange(date)
+                              if (date) {
+                                // 체크인을 선택하면 체크인 달력을 닫고 체크아웃 입력 필드를 활성화
+                                setIsCheckInCalendarOpen(false)
+                              }
+                            }}
+                            inline
+                            locale={datePickerLocale}
+                            minDate={new Date()}
+                            monthsShown={1}
+                            calendarClassName="!border-none"
+                          />
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Check-out */}
+                    <div className="relative">
+                      <Calendar className={`absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none z-10 ${!checkInDate ? 'text-[rgba(13,17,38,0.3)]' : 'text-gray-400'}`} />
+                      <input
+                        type="text"
+                        value={checkOutDate ? formatDate(checkOutDate) : ''}
+                        onClick={() => checkInDate && (setIsCheckOutCalendarOpen(!isCheckOutCalendarOpen), setIsCheckInCalendarOpen(false))}
+                        readOnly
+                        disabled={!checkInDate}
+                        className={`w-full rounded-xl border pl-10 pr-10 py-2.5 text-[14px] leading-[20px] tracking-[-0.1px] ${!checkInDate
+                          ? 'bg-gray-50 text-[rgba(13,17,38,0.3)] border-gray-200 cursor-not-allowed'
+                          : 'bg-white text-[#14151a] border-[#dee0e3] focus:border-[#E91E63] focus:outline-none hover:border-gray-300 cursor-pointer'
+                        }`}
+                        placeholder="Check-out"
+                      />
+                      {checkOutDate && checkInDate && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            setCheckOutDate(null)
+                            setCheckOut("")
+                          }}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 hover:text-gray-600 cursor-pointer"
+                          type="button"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      )}
+
+                      {isCheckOutCalendarOpen && (
+                        <div className="absolute top-full left-0 mt-2 z-50 bg-white rounded-xl shadow-lg border border-[#dee0e3] p-4 w-[280px] calendar-container">
+                          <div className="mb-3 text-sm font-semibold text-[#14151a]">
+                            Check-out
+                          </div>
+                          <DatePicker
+                            selected={checkOutDate}
+                            onChange={(date) => {
+                              handleCheckOutChange(date)
+                              if (date) {
+                                // 체크아웃을 선택하면 체크아웃 달력을 닫음
+                                setIsCheckOutCalendarOpen(false)
+                              }
+                            }}
+                            inline
+                            locale={datePickerLocale}
+                            minDate={checkInDate ? new Date(checkInDate.getTime() + 86400000) : new Date()}
+                            monthsShown={1}
+                            calendarClassName="!border-none"
+                          />
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
 
-                {/* People Stepper */}
-                <div className="flex flex-col gap-2">
-                  <label className="text-[14px] font-medium leading-[20px] tracking-[-0.1px] text-[#14151a]">
-                    People
-                  </label>
-                  <div className="bg-white border border-[#dee0e3] rounded-full flex items-center justify-between w-[108px] h-10 px-2">
-                    <button
-                      onClick={() => setGuests(Math.max(1, guests - 1))}
-                      className="flex items-center justify-center w-6 h-6 rounded-lg hover:bg-gray-100 cursor-pointer"
-                    >
-                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                        <path d="M3 8H13" stroke="#14151a" strokeWidth="2" />
-                      </svg>
-                    </button>
-                    <span className="text-[14px] font-medium leading-[20px] text-[#14151a] w-7 text-center">
-                      {guests}
+                {/* 검색 및 모든 방 보기 버튼들 */}
+                <div className="flex gap-2">
+                  {/* 검색 버튼 */}
+                  <Button
+                    onClick={() => {
+                      if (!checkInDate || !checkOutDate) {
+                        toast.error(messages?.common?.error || '체크인과 체크아웃 날짜를 모두 선택해주세요')
+                        return
+                      }
+                      executeSearch()
+                    }}
+                    disabled={!checkInDate || !checkOutDate}
+                    className="flex-1 h-10 px-4 rounded-xl bg-[#e0004d] hover:bg-[#c2003f] disabled:bg-gray-300 disabled:cursor-not-allowed"
+                  >
+                    <Search className="h-4 w-4 mr-2" />
+                    <span className="text-[14px] font-medium leading-[20px] tracking-[-0.1px] text-white">
+                      {messages?.searchResult?.searchButton || '검색'}
                     </span>
-                    <button
-                      onClick={() => setGuests(guests + 1)}
-                      className="flex items-center justify-center w-6 h-6 rounded-lg hover:bg-gray-100 cursor-pointer"
-                    >
-                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                        <path d="M8 3V13M3 8H13" stroke="#14151a" strokeWidth="2" />
-                      </svg>
-                    </button>
-                  </div>
+                  </Button>
+
+                  {/* 모든 방 보기 버튼 */}
+                  <Button
+                    onClick={() => {
+                      // 체크인/체크아웃 데이터 초기화
+                      setCheckInDate(null)
+                      setCheckOutDate(null)
+                      setCheckIn("")
+                      setCheckOut("")
+                      setCurrentPage(0)
+                      // 모든 방을 보기 위해 검색 실행 (체크인/체크아웃 없이)
+                      executeSearch()
+                    }}
+                    className="flex-1 h-10 px-4 rounded-xl bg-white border border-[#dee0e3] hover:bg-gray-50"
+                  >
+                    <span className="text-[14px] font-medium leading-[20px] tracking-[-0.1px] text-[#14151a]">
+                      {messages?.searchResult?.showAllRooms || '모든 방 보기'}
+                    </span>
+                  </Button>
                 </div>
+              </div>
               </div>
 
               {/* 방 목록 헤더 */}
@@ -358,14 +615,6 @@ export default function ResidencePage({ params }: ResidencePageProps) {
                 <h2 className="text-[20px] font-extrabold leading-[28px] tracking-[-0.2px] text-[#14151a]">
                   Available rooms ({residenceData.rooms.totalElements})
                 </h2>
-                <div className="bg-white border border-[#dee0e3] rounded-lg px-2 py-1 flex items-center gap-2">
-                  <span className="text-[14px] font-medium leading-[20px] tracking-[-0.1px] text-[#14151a]">
-                    Sort by
-                  </span>
-                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                    <path d="M3 5L7 9L11 5" stroke="#14151a" strokeWidth="2" fill="none" />
-                  </svg>
-                </div>
               </div>
 
               {/* 방 카드 그리드 */}
