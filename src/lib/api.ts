@@ -292,5 +292,71 @@ export const apiPatch = (endpoint: string, data?: any, options: ApiRequestOption
 export const apiDelete = (endpoint: string, options: ApiRequestOptions = {}) =>
   apiRequest(endpoint, { ...options, method: 'DELETE' })
 
+/**
+ * FormData를 사용하는 POST 요청 (multipart/form-data)
+ * 이미지 업로드 등에 사용
+ */
+export const apiPostFormData = async (endpoint: string, formData: FormData, options: ApiRequestOptions = {}) => {
+  const { skipAuth = false, ...fetchOptions } = options
+
+  const defaultOptions: RequestInit = {
+    credentials: 'include',
+    method: 'POST',
+    body: formData,
+    // Content-Type을 설정하지 않음 (브라우저가 자동으로 multipart/form-data 설정)
+    ...fetchOptions,
+  }
+
+  // 최대 재시도 횟수 설정
+  const maxRetries = 2
+  let retryCount = 0
+
+  while (retryCount < maxRetries) {
+    try {
+      let response = await fetch(`${BASE_URL}${endpoint}`, defaultOptions)
+      let data: ApiResponse = await response.json()
+
+      // 401 에러 처리 (토큰 만료)
+      if (response.status === 401 && !skipAuth) {
+        const code = String(data.code)
+        if (code === "40101") {
+          const refreshSuccess = await refreshToken()
+          if (refreshSuccess) {
+            retryCount++
+            continue
+          } else {
+            throw new ApiError(data, response.status)
+          }
+        } else if (code === "40102") {
+          alert(globalMessages?.auth?.accountLoggedOut || "계정이 로그아웃 되었습니다. 다시 로그인 해주세요")
+          await handleLogout()
+          throw new ApiError(data, response.status)
+        }
+      }
+
+      // 403 에러 처리
+      if (response.status === 403 && !skipAuth) {
+        handleForbidden()
+        throw new ApiError(data, response.status)
+      }
+
+      // 기타 에러 처리
+      if (!response.ok) {
+        throw new ApiError(data, response.status)
+      }
+
+      return data
+
+    } catch (error) {
+      if (error instanceof ApiError) {
+        throw error
+      }
+      throw new Error(globalMessages?.common?.error || '요청 중 오류가 발생했습니다.')
+    }
+  }
+
+  throw new Error('최대 재시도 횟수를 초과했습니다.')
+}
+
 // 로그아웃 함수 (외부에서 사용할 수 있도록 export)
 export const logout = handleLogout
