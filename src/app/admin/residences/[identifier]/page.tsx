@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useRouter, useParams } from "next/navigation"
-import { apiGet, apiPutFormData } from "@/lib/api"
+import { apiGet, apiPutFormData, apiDelete } from "@/lib/api"
 
 interface I18nField {
   ko: string
@@ -56,6 +56,7 @@ export default function ResidenceDetailPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [isEditMode, setIsEditMode] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
 
   // 고시원 데이터
   const [residence, setResidence] = useState<ResidenceDetail | null>(null)
@@ -156,6 +157,28 @@ export default function ResidenceDetailPage() {
       router.push("/admin/residences")
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  // 고시원 삭제
+  const handleDelete = async () => {
+    if (!residence) return
+    
+    const confirmed = confirm(
+      `"${residence.nameI18n.ko}" 고시원을 삭제하시겠습니까?\n\n이 작업은 되돌릴 수 없으며, 관련된 모든 룸 정보도 함께 삭제됩니다.`
+    )
+    if (!confirmed) return
+
+    setIsDeleting(true)
+    try {
+      await apiDelete(`/api/v1/admin/residences/${identifier}`)
+      alert("고시원이 삭제되었습니다.")
+      router.push("/admin/residences")
+    } catch (error) {
+      console.error("고시원 삭제 실패:", error)
+      alert("고시원 삭제에 실패했습니다.")
+    } finally {
+      setIsDeleting(false)
     }
   }
 
@@ -440,12 +463,30 @@ export default function ResidenceDetailPage() {
                   variant="outline"
                   onClick={() => router.push("/admin/residences")}
                   className="cursor-pointer"
+                  disabled={isDeleting}
                 >
                   목록으로
                 </Button>
                 <Button
+                  variant="outline"
+                  onClick={() => router.push(`/admin/residences/${identifier}/rooms`)}
+                  className="cursor-pointer border-blue-500 text-blue-500 hover:bg-blue-50"
+                  disabled={isDeleting}
+                >
+                  룸 관리
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={handleDelete}
+                  className="cursor-pointer text-red-600 hover:text-red-700 hover:bg-red-50 border-red-300"
+                  disabled={isDeleting}
+                >
+                  {isDeleting ? "삭제 중..." : "삭제"}
+                </Button>
+                <Button
                   onClick={() => setIsEditMode(true)}
                   className="cursor-pointer bg-[#E91E63] hover:bg-[#C2185B] text-white"
+                  disabled={isDeleting}
                 >
                   수정
                 </Button>
@@ -641,7 +682,7 @@ export default function ResidenceDetailPage() {
                         type="button"
                         onClick={() => {
                           setProfileImage(null)
-                          setProfileImagePreview(residence?.profileImageUrl || "")
+                          setProfileImagePreview(residence?.profileImage?.imageUrl || "")
                         }}
                         className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 cursor-pointer"
                       >
