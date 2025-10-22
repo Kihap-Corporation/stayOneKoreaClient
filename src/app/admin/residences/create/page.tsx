@@ -51,6 +51,35 @@ export default function CreateResidencePage() {
     { code: "fr" as const, label: "Français" }
   ]
 
+  // 필수 필드 검증
+  const validateRequiredFields = () => {
+    const missing: string[] = []
+
+    if (!name.ko.trim()) missing.push("고시원명(한국어)")
+    if (!name.en.trim()) missing.push("고시원명(English)")
+    if (!name.zh.trim()) missing.push("고시원명(中文)")
+    if (!name.fr.trim()) missing.push("고시원명(Français)")
+    
+    if (!description.ko.trim()) missing.push("설명(한국어)")
+    if (!description.en.trim()) missing.push("설명(English)")
+    if (!description.zh.trim()) missing.push("설명(中文)")
+    if (!description.fr.trim()) missing.push("설명(Français)")
+    
+    if (!address.trim()) missing.push("주소")
+    if (!addressDetail.trim()) missing.push("상세 주소")
+    if (!hostingStartDate) missing.push("호스팅 시작일")
+    if (!contactNumber.trim()) missing.push("연락처")
+    if (!email.trim()) missing.push("이메일")
+    if (!profileImage) missing.push("프로필 이미지")
+
+    return missing
+  }
+
+  // 폼이 유효한지 확인
+  const isFormValid = () => {
+    return validateRequiredFields().length === 0
+  }
+
   // 프로필 이미지 선택
   const handleProfileImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -136,21 +165,10 @@ export default function CreateResidencePage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
-    // 필수 필드 검증 - 모든 언어 필수
-    if (!name.ko.trim() || !name.en.trim() || !name.zh.trim() || !name.fr.trim()) {
-      alert("고시원명을 모든 언어로 입력해주세요.")
-      return
-    }
-    if (!description.ko.trim() || !description.en.trim() || !description.zh.trim() || !description.fr.trim()) {
-      alert("설명을 모든 언어로 입력해주세요.")
-      return
-    }
-    if (!hostingStartDate) {
-      alert("호스팅 시작일을 입력해주세요.")
-      return
-    }
-    if (!profileImage) {
-      alert("프로필 이미지를 선택해주세요.")
+    // 필수 필드 검증
+    const missingFields = validateRequiredFields()
+    if (missingFields.length > 0) {
+      alert(`다음 필수 항목을 입력해주세요:\n\n${missingFields.join('\n')}`)
       return
     }
 
@@ -176,10 +194,12 @@ export default function CreateResidencePage() {
       formData.append("addressDetail", addressDetail)
       formData.append("hostingStartDate", hostingStartDate)
       formData.append("contactNumber", contactNumber)
-      formData.append("email", email)
-      
-      // 프로필 이미지
-      formData.append("profileImage", profileImage)
+          formData.append("email", email)
+          
+          // 프로필 이미지 (검증을 통과했으므로 반드시 존재함)
+          if (profileImage) {
+            formData.append("profileImage", profileImage)
+          }
       
       // 갤러리 이미지
       galleryImages.forEach((img, index) => {
@@ -250,7 +270,11 @@ export default function CreateResidencePage() {
                   placeholder="고시원명을 입력하세요"
                   required
                   disabled={isLoading}
+                  className={!name[activeTab].trim() ? 'border-red-300' : ''}
                 />
+                {!name[activeTab].trim() && (
+                  <p className="text-xs text-red-500 mt-1">필수 입력 항목입니다</p>
+                )}
               </div>
 
               {/* 설명 */}
@@ -266,8 +290,13 @@ export default function CreateResidencePage() {
                   required
                   disabled={isLoading}
                   rows={4}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#E91E63] focus:border-transparent"
+                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#E91E63] focus:border-transparent ${
+                    !description[activeTab].trim() ? 'border-red-300' : 'border-gray-300'
+                  }`}
                 />
+                {!description[activeTab].trim() && (
+                  <p className="text-xs text-red-500 mt-1">필수 입력 항목입니다</p>
+                )}
               </div>
             </div>
           </div>
@@ -279,24 +308,36 @@ export default function CreateResidencePage() {
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="address">주소</Label>
+                  <Label htmlFor="address">
+                    주소 <span className="text-red-500">*</span>
+                  </Label>
                   <Input
                     id="address"
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
                     placeholder="서울특별시 강남구 테헤란로 123"
                     disabled={isLoading}
+                    className={!address.trim() ? 'border-red-300' : ''}
                   />
+                  {!address.trim() && (
+                    <p className="text-xs text-red-500 mt-1">필수 입력 항목입니다</p>
+                  )}
                 </div>
                 <div>
-                  <Label htmlFor="addressDetail">상세 주소</Label>
+                  <Label htmlFor="addressDetail">
+                    상세 주소 <span className="text-red-500">*</span>
+                  </Label>
                   <Input
                     id="addressDetail"
                     value={addressDetail}
                     onChange={(e) => setAddressDetail(e.target.value)}
                     placeholder="2floor 201ho"
                     disabled={isLoading}
+                    className={!addressDetail.trim() ? 'border-red-300' : ''}
                   />
+                  {!addressDetail.trim() && (
+                    <p className="text-xs text-red-500 mt-1">필수 입력 항목입니다</p>
+                  )}
                 </div>
               </div>
 
@@ -312,22 +353,34 @@ export default function CreateResidencePage() {
                     onChange={(e) => setHostingStartDate(e.target.value)}
                     required
                     disabled={isLoading}
+                    className={!hostingStartDate ? 'border-red-300' : ''}
                   />
+                  {!hostingStartDate && (
+                    <p className="text-xs text-red-500 mt-1">필수 입력 항목입니다</p>
+                  )}
                 </div>
                 <div>
-                  <Label htmlFor="contactNumber">연락처</Label>
+                  <Label htmlFor="contactNumber">
+                    연락처 <span className="text-red-500">*</span>
+                  </Label>
                   <Input
                     id="contactNumber"
                     value={contactNumber}
                     onChange={(e) => setContactNumber(e.target.value)}
                     placeholder="+82 10-5017-2468"
                     disabled={isLoading}
+                    className={!contactNumber.trim() ? 'border-red-300' : ''}
                   />
+                  {!contactNumber.trim() && (
+                    <p className="text-xs text-red-500 mt-1">필수 입력 항목입니다</p>
+                  )}
                 </div>
               </div>
 
               <div>
-                <Label htmlFor="email">이메일</Label>
+                <Label htmlFor="email">
+                  이메일 <span className="text-red-500">*</span>
+                </Label>
                 <Input
                   id="email"
                   type="email"
@@ -335,7 +388,11 @@ export default function CreateResidencePage() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="stayone@example.com"
                   disabled={isLoading}
+                  className={!email.trim() ? 'border-red-300' : ''}
                 />
+                {!email.trim() && (
+                  <p className="text-xs text-red-500 mt-1">필수 입력 항목입니다</p>
+                )}
               </div>
             </div>
           </div>
@@ -468,10 +525,10 @@ export default function CreateResidencePage() {
             </Button>
             <Button
               type="submit"
-              disabled={isLoading}
-              className="cursor-pointer bg-[#E91E63] hover:bg-[#C2185B] text-white"
+              disabled={isLoading || !isFormValid()}
+              className="cursor-pointer bg-[#E91E63] hover:bg-[#C2185B] text-white disabled:bg-gray-400 disabled:cursor-not-allowed"
             >
-              {isLoading ? "등록 중..." : "등록하기"}
+              {isLoading ? "등록 중..." : isFormValid() ? "등록하기" : `필수 항목 ${validateRequiredFields().length}개 미입력`}
             </Button>
           </div>
         </form>
