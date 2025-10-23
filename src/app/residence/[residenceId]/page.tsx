@@ -220,7 +220,6 @@ export default function ResidencePage({ params }: ResidencePageProps) {
 
       if (response.code === 200 && response.data) {
         setResidenceData(response.data)
-        toast.success(messages?.common?.success || '검색이 완료되었습니다')
       } else {
         setError("Failed to load residence data")
         toast.error(messages?.searchResult?.searchError || '검색 중 오류가 발생했습니다')
@@ -558,7 +557,7 @@ export default function ResidencePage({ params }: ResidencePageProps) {
                             }}
                             inline
                             locale={datePickerLocale}
-                            minDate={checkInDate ? new Date(checkInDate.getTime() + 86400000) : new Date()}
+                            minDate={checkInDate ? new Date(checkInDate.getFullYear(), checkInDate.getMonth(), checkInDate.getDate()) : new Date()}
                             monthsShown={1}
                             calendarClassName="!border-none"
                           />
