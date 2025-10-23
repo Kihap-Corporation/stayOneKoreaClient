@@ -293,9 +293,9 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
       }
     }
 
-    // 가장 가까운 예약의 체크인 날짜까지만 선택 가능
-    // 즉, 체크아웃 날짜는 다음 예약의 체크인 날짜와 같거나 이전이어야 함
-    if (nearestReservedCheckIn && currentDate.getTime() >= nearestReservedCheckIn.getTime()) {
+    // 가장 가까운 예약의 체크인 날짜까지 선택 가능 (체크인 날짜 포함)
+    // 즉, 체크아웃 날짜는 다음 예약의 체크인 날짜까지 가능
+    if (nearestReservedCheckIn && currentDate.getTime() > nearestReservedCheckIn.getTime()) {
       return false
     }
 
