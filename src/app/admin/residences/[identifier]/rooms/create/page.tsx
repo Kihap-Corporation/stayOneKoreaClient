@@ -148,7 +148,32 @@ export default function CreateRoomPage() {
     if (!name.zh.trim()) missing.push("룸명(中文)")
     if (!name.fr.trim()) missing.push("룸명(Français)")
     
+    if (!description.ko.trim()) missing.push("설명(한국어)")
+    if (!description.en.trim()) missing.push("설명(English)")
+    if (!description.zh.trim()) missing.push("설명(中文)")
+    if (!description.fr.trim()) missing.push("설명(Français)")
+    
+    if (!rules.ko.trim()) missing.push("규칙(한국어)")
+    if (!rules.en.trim()) missing.push("규칙(English)")
+    if (!rules.zh.trim()) missing.push("규칙(中文)")
+    if (!rules.fr.trim()) missing.push("규칙(Français)")
+    
     if (!pricePerNight || Number(pricePerNight) <= 0) missing.push("1박 가격")
+
+    // 커스텀 시설 검증 - 추가한 경우 모든 언어 필수
+    customAvailableFacilities.forEach((facility, index) => {
+      if (!facility.customNameI18n.ko.trim()) missing.push(`커스텀 시설(이용 가능) ${index + 1} - 한국어`)
+      if (!facility.customNameI18n.en.trim()) missing.push(`커스텀 시설(이용 가능) ${index + 1} - English`)
+      if (!facility.customNameI18n.zh.trim()) missing.push(`커스텀 시설(이용 가능) ${index + 1} - 中文`)
+      if (!facility.customNameI18n.fr.trim()) missing.push(`커스텀 시설(이용 가능) ${index + 1} - Français`)
+    })
+
+    customUnavailableFacilities.forEach((facility, index) => {
+      if (!facility.customNameI18n.ko.trim()) missing.push(`커스텀 시설(이용 불가) ${index + 1} - 한국어`)
+      if (!facility.customNameI18n.en.trim()) missing.push(`커스텀 시설(이용 불가) ${index + 1} - English`)
+      if (!facility.customNameI18n.zh.trim()) missing.push(`커스텀 시설(이용 불가) ${index + 1} - 中文`)
+      if (!facility.customNameI18n.fr.trim()) missing.push(`커스텀 시설(이용 불가) ${index + 1} - Français`)
+    })
 
     return missing
   }
@@ -269,21 +294,17 @@ export default function CreateRoomPage() {
       formData.append("nameI18n[zh]", name.zh)
       formData.append("nameI18n[fr]", name.fr)
       
-      // 설명 (선택)
-      if (description.ko || description.en || description.zh || description.fr) {
-        formData.append("descriptionI18n[ko]", description.ko)
-        formData.append("descriptionI18n[en]", description.en)
-        formData.append("descriptionI18n[zh]", description.zh)
-        formData.append("descriptionI18n[fr]", description.fr)
-      }
+      // 설명 (필수)
+      formData.append("descriptionI18n[ko]", description.ko)
+      formData.append("descriptionI18n[en]", description.en)
+      formData.append("descriptionI18n[zh]", description.zh)
+      formData.append("descriptionI18n[fr]", description.fr)
       
-      // 규칙 (선택)
-      if (rules.ko || rules.en || rules.zh || rules.fr) {
-        formData.append("rulesI18n[ko]", rules.ko)
-        formData.append("rulesI18n[en]", rules.en)
-        formData.append("rulesI18n[zh]", rules.zh)
-        formData.append("rulesI18n[fr]", rules.fr)
-      }
+      // 규칙 (필수)
+      formData.append("rulesI18n[ko]", rules.ko)
+      formData.append("rulesI18n[en]", rules.en)
+      formData.append("rulesI18n[zh]", rules.zh)
+      formData.append("rulesI18n[fr]", rules.fr)
       
       // 가격 (필수)
       formData.append("pricePerNight", pricePerNight)
@@ -301,25 +322,37 @@ export default function CreateRoomPage() {
         formData.append(`facilities[${index}].facilityType`, facilityType)
       })
 
-      // 시설 - 커스텀 AVAILABLE
+      // 시설 - 커스텀 AVAILABLE (검증 통과한 것만)
       let facilityIndex = selectedFacilities.length
       customAvailableFacilities.forEach((facility) => {
-        formData.append(`facilities[${facilityIndex}].facilityType`, "AVAILABLE")
-        formData.append(`facilities[${facilityIndex}].customNameI18n[ko]`, facility.customNameI18n.ko)
-        formData.append(`facilities[${facilityIndex}].customNameI18n[en]`, facility.customNameI18n.en)
-        formData.append(`facilities[${facilityIndex}].customNameI18n[zh]`, facility.customNameI18n.zh)
-        formData.append(`facilities[${facilityIndex}].customNameI18n[fr]`, facility.customNameI18n.fr)
-        facilityIndex++
+        // 모든 언어가 입력된 경우만 전송
+        if (facility.customNameI18n.ko.trim() && 
+            facility.customNameI18n.en.trim() && 
+            facility.customNameI18n.zh.trim() && 
+            facility.customNameI18n.fr.trim()) {
+          formData.append(`facilities[${facilityIndex}].facilityType`, "AVAILABLE")
+          formData.append(`facilities[${facilityIndex}].customNameI18n[ko]`, facility.customNameI18n.ko)
+          formData.append(`facilities[${facilityIndex}].customNameI18n[en]`, facility.customNameI18n.en)
+          formData.append(`facilities[${facilityIndex}].customNameI18n[zh]`, facility.customNameI18n.zh)
+          formData.append(`facilities[${facilityIndex}].customNameI18n[fr]`, facility.customNameI18n.fr)
+          facilityIndex++
+        }
       })
 
-      // 시설 - 커스텀 UN_AVAILABLE
+      // 시설 - 커스텀 UN_AVAILABLE (검증 통과한 것만)
       customUnavailableFacilities.forEach((facility) => {
-        formData.append(`facilities[${facilityIndex}].facilityType`, "UN_AVAILABLE")
-        formData.append(`facilities[${facilityIndex}].customNameI18n[ko]`, facility.customNameI18n.ko)
-        formData.append(`facilities[${facilityIndex}].customNameI18n[en]`, facility.customNameI18n.en)
-        formData.append(`facilities[${facilityIndex}].customNameI18n[zh]`, facility.customNameI18n.zh)
-        formData.append(`facilities[${facilityIndex}].customNameI18n[fr]`, facility.customNameI18n.fr)
-        facilityIndex++
+        // 모든 언어가 입력된 경우만 전송
+        if (facility.customNameI18n.ko.trim() && 
+            facility.customNameI18n.en.trim() && 
+            facility.customNameI18n.zh.trim() && 
+            facility.customNameI18n.fr.trim()) {
+          formData.append(`facilities[${facilityIndex}].facilityType`, "UN_AVAILABLE")
+          formData.append(`facilities[${facilityIndex}].customNameI18n[ko]`, facility.customNameI18n.ko)
+          formData.append(`facilities[${facilityIndex}].customNameI18n[en]`, facility.customNameI18n.en)
+          formData.append(`facilities[${facilityIndex}].customNameI18n[zh]`, facility.customNameI18n.zh)
+          formData.append(`facilities[${facilityIndex}].customNameI18n[fr]`, facility.customNameI18n.fr)
+          facilityIndex++
+        }
       })
 
       // API 호출
@@ -391,33 +424,45 @@ export default function CreateRoomPage() {
               {/* 설명 */}
               <div>
                 <Label htmlFor={`description-${activeTab}`}>
-                  설명
+                  설명 <span className="text-red-500">*</span>
                 </Label>
                 <textarea
                   id={`description-${activeTab}`}
                   value={description[activeTab]}
                   onChange={(e) => setDescription({ ...description, [activeTab]: e.target.value })}
                   placeholder="룸 설명을 입력하세요"
+                  required
                   disabled={isLoading}
                   rows={4}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#E91E63] focus:border-transparent"
+                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#E91E63] focus:border-transparent ${
+                    !description[activeTab].trim() ? 'border-red-300' : 'border-gray-300'
+                  }`}
                 />
+                {!description[activeTab].trim() && (
+                  <p className="text-xs text-red-500 mt-1">필수 입력 항목입니다</p>
+                )}
               </div>
 
               {/* 규칙 */}
               <div>
                 <Label htmlFor={`rules-${activeTab}`}>
-                  규칙
+                  규칙 <span className="text-red-500">*</span>
                 </Label>
                 <textarea
                   id={`rules-${activeTab}`}
                   value={rules[activeTab]}
                   onChange={(e) => setRules({ ...rules, [activeTab]: e.target.value })}
                   placeholder="룸 규칙을 입력하세요"
+                  required
                   disabled={isLoading}
                   rows={4}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#E91E63] focus:border-transparent"
+                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#E91E63] focus:border-transparent ${
+                    !rules[activeTab].trim() ? 'border-red-300' : 'border-gray-300'
+                  }`}
                 />
+                {!rules[activeTab].trim() && (
+                  <p className="text-xs text-red-500 mt-1">필수 입력 항목입니다</p>
+                )}
               </div>
             </div>
           </div>
