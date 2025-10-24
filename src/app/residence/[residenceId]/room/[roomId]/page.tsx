@@ -146,33 +146,18 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
     return `${month}/${day}/${year}`
   }
 
-  // 모바일용 체크인 날짜 변경 핸들러
-  const handleMobileCheckInChange = (date: Date | null) => {
-    setCheckInDate(date)
-
-    // 체크인을 선택하지 않으면 체크아웃 초기화
-    if (!date) {
-      setCheckOutDate(null)
-      return
+  // 모바일용 Range 달력 날짜 변경 핸들러
+  const handleMobileDateRangeChange = (dates: [Date | null, Date | null] | Date | null) => {
+    if (Array.isArray(dates)) {
+      const [start, end] = dates
+      setCheckInDate(start)
+      setCheckOutDate(end)
+      
+      // 체크인과 체크아웃이 모두 선택되면 달력 닫기
+      if (start && end) {
+        setIsMobileCalendarOpen(false)
+      }
     }
-
-    // 체크인 날짜가 체크아웃 날짜보다 늦으면 체크아웃 초기화
-    if (checkOutDate && date >= checkOutDate) {
-      setCheckOutDate(null)
-    }
-
-    setIsMobileCalendarOpen(false)
-  }
-
-  // 모바일용 체크아웃 날짜 변경 핸들러
-  const handleMobileCheckOutChange = (date: Date | null) => {
-    // 체크인이 선택되지 않으면 체크아웃 선택 불가
-    if (!checkInDate) {
-      return
-    }
-
-    setCheckOutDate(date)
-    setIsMobileCalendarOpen(false)
   }
 
   // 방 상세 정보 조회
@@ -998,7 +983,7 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
           onClick={() => setIsMobileCalendarOpen(false)}
         >
           <div
-            className="relative bg-white rounded-[24px] w-full max-w-sm mx-4 overflow-hidden"
+            className="relative bg-white rounded-[24px] w-full max-w-md mx-4 overflow-hidden max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             {/* 헤더 */}
@@ -1012,43 +997,34 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
               </button>
             </div>
 
-            {/* 달력 영역 - 가로 배치 */}
+            {/* 달력 영역 - Range 달력으로 통합 */}
             <div className="p-4">
-              <div className="grid grid-cols-2 gap-4">
-                {/* 체크인 날짜 선택 */}
-                <div>
-                  <div className="mb-2 text-sm font-semibold text-[#14151a]">Check-in</div>
-                  <DatePicker
-                    selected={checkInDate}
-                    onChange={handleMobileCheckInChange}
-                    inline
-                    locale={datePickerLocale}
-                    minDate={new Date()}
-                    monthsShown={1}
-                    calendarClassName="!border-none !w-full"
-                    filterDate={filterCheckInDates}
-                  />
-                </div>
-
-                {/* 체크아웃 날짜 선택 */}
-                <div>
-                  <div className={`mb-2 text-sm font-semibold ${!checkInDate ? 'text-[rgba(13,17,38,0.3)]' : 'text-[#14151a]'}`}>
-                    Check-out
-                  </div>
-                  <div className={!checkInDate ? 'opacity-50 pointer-events-none' : ''}>
-                    <DatePicker
-                      selected={checkOutDate}
-                      onChange={handleMobileCheckOutChange}
-                      inline
-                      locale={datePickerLocale}
-                      minDate={checkInDate ? new Date(checkInDate.getTime() + 86400000) : new Date()}
-                      monthsShown={1}
-                      calendarClassName="!border-none !w-full"
-                      filterDate={filterCheckOutDates}
-                    />
-                  </div>
-                </div>
-              </div>
+              <DatePicker
+                selected={checkInDate}
+                onChange={handleMobileDateRangeChange}
+                startDate={checkInDate}
+                endDate={checkOutDate}
+                selectsRange
+                inline
+                locale={datePickerLocale}
+                minDate={new Date()}
+                monthsShown={2}
+                calendarClassName="!border-none !w-full"
+                filterDate={(date) => {
+                  // 체크인과 체크아웃이 모두 선택되어 있으면 새로운 체크인 선택 중
+                  if (checkInDate && checkOutDate) {
+                    return filterCheckInDates(date)
+                  }
+                  // 체크인만 선택되어 있으면 체크아웃 선택 중
+                  else if (checkInDate && !checkOutDate) {
+                    return filterCheckOutDates(date)
+                  }
+                  // 아무것도 선택되지 않았으면 체크인 선택 중
+                  else {
+                    return filterCheckInDates(date)
+                  }
+                }}
+              />
             </div>
           </div>
         </div>
