@@ -18,6 +18,7 @@ export interface SearchRoomResult {
   roomIdentifier: string
   residenceIdentifier?: string // optional for backward compatibility
   firstGalleryImageUrl: string
+  roomName: string
   residenceName: string
   fullAddress: string
   pricePerNight: number

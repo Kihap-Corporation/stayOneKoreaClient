@@ -280,7 +280,7 @@ function SearchResultContent() {
                       <LikedRoomCard
                         roomIdentifier={room.roomIdentifier}
                         image={room.firstGalleryImageUrl}
-                        title={room.residenceName}
+                        title={room.roomName}
                         provider={room.residenceName}
                         location={room.fullAddress}
                         price={room.pricePerNight}
