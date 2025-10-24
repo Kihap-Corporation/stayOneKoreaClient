@@ -867,7 +867,7 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
                       {roomData.residenceFullAddress}
                     </p>
                   </div>
-                  <div id="map" className="h-[200px] rounded-[12px] bg-gray-200 overflow-hidden flex items-center justify-center" />
+                  <div id="map" className="h-[200px] rounded-[12px] bg-gray-200 overflow-hidden flex items-center justify-center naver-map-container" style={{ position: 'relative', zIndex: 1 }} />
                 </div>
 
                 {/* About the gosiwon */}

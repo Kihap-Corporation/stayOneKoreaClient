@@ -158,11 +158,13 @@ export function NaverStaticMap({
 
       <div
         ref={mapRef}
-        className="w-full h-full rounded-2xl overflow-hidden"
+        className="w-full h-full rounded-2xl overflow-hidden naver-map-container"
         style={{
           minHeight: `${height}px`,
           maxHeight: `${height}px`,
-          width: `${width}px`
+          width: `${width}px`,
+          position: 'relative',
+          zIndex: 1
         }}
       >
         {!isLoaded && (
