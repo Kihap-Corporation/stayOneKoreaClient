@@ -11,7 +11,7 @@ import { ChevronRight, Clock, CheckCircle, XCircle, Calendar, AlertTriangle } fr
 
 // Booking 타입 정의 (API 응답에 맞게 수정)
 interface Booking {
-  reservationId: number
+  reservationIdentifier: string
   checkInDate: string
   checkOutDate: string
   totalNights: number
@@ -142,13 +142,13 @@ export default function BookingsPage() {
     fetchBookings()
   }, [currentPage, currentLanguage])
 
-  const handleBookingClick = (reservationId: number, status: string) => {
+  const handleBookingClick = (reservationIdentifier: string, status: string) => {
     if (status === 'RESERVATION_UNDER_WAY') {
       // 예약 진행 중인 상태 - 예약 페이지로 이동
-      router.push(`/reservation/${reservationId}`)
+      router.push(`/reservation/${reservationIdentifier}`)
     } else {
       // 예약 완료된 상태 - 예약 상세 페이지로 이동
-      router.push(`/bookings/${reservationId}`)
+      router.push(`/bookings/${reservationIdentifier}`)
     }
   }
 
@@ -200,9 +200,9 @@ export default function BookingsPage() {
 
                   return (
                     <div
-                      key={booking.reservationId}
+                      key={booking.reservationIdentifier}
                       className="bg-white border border-[#dee0e3] rounded-[16px] overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
-                      onClick={() => handleBookingClick(booking.reservationId, booking.reservationStatus)}
+                      onClick={() => handleBookingClick(booking.reservationIdentifier, booking.reservationStatus)}
                     >
                       {/* Status Header */}
                       <div className={`${statusInfo.color} border ${statusInfo.color.includes('border') ? '' : 'border-transparent'} px-4 py-2 flex items-center justify-between`}>

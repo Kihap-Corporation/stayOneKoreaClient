@@ -26,14 +26,13 @@ const facilityIcons: Record<string, React.ReactNode> = {
 
 interface RoomFacility {
   facilityType: string
-  iconUrl: string
-  nameI18n: {
+  customNameI18n: {
     [key: string]: string
   }
 }
 
 interface ReservationAPIResponse {
-  reservationId: number
+  reservationIdentifier: string
   checkInDate: string
   checkOutDate: string
   totalNights: number
@@ -42,6 +41,7 @@ interface ReservationAPIResponse {
   startToReserve: string
   endToReserve: string
   reservationStatus: string
+  curUnit: string
   roomName: string
   roomIdentifier: string
   residenceName: string
@@ -426,15 +426,11 @@ export default function ReservationPage() {
   // Facility 이름 가져오기 (다국어 지원)
   const getFacilityName = (facility: RoomFacility) => {
     const languageCode = currentLanguage.code === 'ko' ? 'ko' : currentLanguage.code
-    return facility.nameI18n?.[languageCode] || facility.facilityType
+    return facility.customNameI18n?.[languageCode] || facility.facilityType
   }
   
-  // Facility 아이콘 가져오기 (서버 URL 우선, 폴백으로 로컬 아이콘 사용)
+  // Facility 아이콘 가져오기 (로컬 아이콘 사용)
   const getFacilityIcon = (facility: RoomFacility) => {
-    if (facility.iconUrl) {
-      return <img src={facility.iconUrl} alt={facility.facilityType} className="h-5 w-5" />
-    }
-    
     const typeMap: Record<string, string> = {
       'WIFI': 'wifi',
       'WASHING_MACHINE': 'washingMachine',

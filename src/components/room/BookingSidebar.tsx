@@ -606,7 +606,19 @@ export function BookingSidebar({
         </div>
 
         {/* 다른 숙소 보기 버튼 */}
-        <Button className="w-full h-10 rounded-xl bg-white border border-[#dee0e3] hover:bg-gray-50 px-3 py-2.5 shadow-none">
+        <Button
+          className="w-full h-10 rounded-xl bg-white border border-[#dee0e3] hover:bg-gray-50 px-3 py-2.5 shadow-none"
+          onClick={() => {
+            // 현재 URL에서 residenceId를 추출하여 고시원 페이지로 이동
+            const currentPath = window.location.pathname
+            const pathParts = currentPath.split('/')
+            // /residence/[residenceId]/room/[roomId] 구조에서 residenceId 추출
+            if (pathParts.length >= 3 && pathParts[1] === 'residence') {
+              const residenceId = pathParts[2]
+              window.location.href = `/residence/${residenceId}`
+            }
+          }}
+        >
           <span className="text-[14px] font-medium leading-[20px] tracking-[-0.1px] text-[#14151a]">
             {messages?.roomDetail?.showMoreRooms || 'Show more rooms'}
           </span>

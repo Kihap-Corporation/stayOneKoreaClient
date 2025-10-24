@@ -11,14 +11,13 @@ import { apiGet } from "@/lib/api"
 
 interface RoomFacility {
   facilityType: string
-  iconUrl: string
-  nameI18n: {
+  customNameI18n: {
     [key: string]: string
   }
 }
 
 interface ReservationAPIResponse {
-  reservationId: number
+  reservationIdentifier: string
   checkInDate: string
   checkOutDate: string
   totalNights: number
@@ -27,6 +26,7 @@ interface ReservationAPIResponse {
   startToReserve: string
   endToReserve: string
   reservationStatus: string
+  curUnit: string
   roomName: string
   roomIdentifier: string
   residenceName: string
