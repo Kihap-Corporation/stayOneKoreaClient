@@ -26,6 +26,11 @@ const menuItems: MenuItem[] = [
     href: "/admin/rooms"
   },
   {
+    icon: "⭐",
+    label: "추천룸 관리",
+    href: "/admin/recommend-rooms"
+  },
+  {
     icon: "📅",
     label: "예약 관리",
     href: "/admin/bookings"

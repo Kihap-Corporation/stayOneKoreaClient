@@ -22,6 +22,13 @@ export default function AdminHomePage() {
       color: "purple"
     },
     {
+      icon: "⭐",
+      title: "추천룸 관리",
+      description: "홈페이지에 노출될 추천룸을 관리합니다",
+      href: "/admin/recommend-rooms",
+      color: "yellow"
+    },
+    {
       icon: "📅",
       title: "예약 관리",
       description: "예약 내역을 조회하고 관리합니다",
@@ -48,6 +55,7 @@ export default function AdminHomePage() {
     const colors: Record<string, { bg: string; hover: string; icon: string }> = {
       blue: { bg: "bg-blue-600", hover: "hover:bg-blue-700", icon: "bg-blue-100" },
       purple: { bg: "bg-purple-600", hover: "hover:bg-purple-700", icon: "bg-purple-100" },
+      yellow: { bg: "bg-yellow-600", hover: "hover:bg-yellow-700", icon: "bg-yellow-100" },
       green: { bg: "bg-green-600", hover: "hover:bg-green-700", icon: "bg-green-100" },
       orange: { bg: "bg-orange-600", hover: "hover:bg-orange-700", icon: "bg-orange-100" },
       pink: { bg: "bg-pink-600", hover: "hover:bg-pink-700", icon: "bg-pink-100" }

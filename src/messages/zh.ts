@@ -312,5 +312,29 @@ header: {
     noLikedRoomsError: "不存在保存的房间",
     verified: "已验证",
     freeCancellation: "免费取消"
+  },
+  admin: {
+    users: {
+      title: "用户管理",
+      totalUsers: "总用户数",
+      email: "邮箱",
+      fullName: "姓名",
+      phoneNumber: "电话号码",
+      createdAt: "注册日期",
+      status: "状态",
+      active: "活跃",
+      deleted: "已删除",
+      page: "页",
+      of: "/",
+      sortBy: "排序",
+      sortByCreatedAt: "注册日期",
+      sortByName: "姓名",
+      direction: "方向",
+      asc: "升序",
+      desc: "降序",
+      noUsers: "未找到用户",
+      loadError: "加载用户列表失败",
+      perPage: "每页"
+    }
   }
 }

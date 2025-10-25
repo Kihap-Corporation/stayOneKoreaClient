@@ -312,5 +312,29 @@ header: {
     noLikedRoomsError: "No saved rooms exist",
     verified: "Verified",
     freeCancellation: "Free cancellation"
+  },
+  admin: {
+    users: {
+      title: "User Management",
+      totalUsers: "Total Users",
+      email: "Email",
+      fullName: "Full Name",
+      phoneNumber: "Phone Number",
+      createdAt: "Created At",
+      status: "Status",
+      active: "Active",
+      deleted: "Deleted",
+      page: "Page",
+      of: "of",
+      sortBy: "Sort By",
+      sortByCreatedAt: "Created Date",
+      sortByName: "Name",
+      direction: "Direction",
+      asc: "Ascending",
+      desc: "Descending",
+      noUsers: "No users found",
+      loadError: "Failed to load user list",
+      perPage: "Per page"
+    }
   }
 }

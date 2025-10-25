@@ -312,5 +312,29 @@ header: {
     noLikedRoomsError: "Aucune chambre enregistrée n'existe",
     verified: "Vérifié",
     freeCancellation: "Annulation gratuite"
+  },
+  admin: {
+    users: {
+      title: "Gestion des utilisateurs",
+      totalUsers: "Total des utilisateurs",
+      email: "Email",
+      fullName: "Nom complet",
+      phoneNumber: "Numéro de téléphone",
+      createdAt: "Date d'inscription",
+      status: "Statut",
+      active: "Actif",
+      deleted: "Supprimé",
+      page: "Page",
+      of: "sur",
+      sortBy: "Trier par",
+      sortByCreatedAt: "Date d'inscription",
+      sortByName: "Nom",
+      direction: "Direction",
+      asc: "Croissant",
+      desc: "Décroissant",
+      noUsers: "Aucun utilisateur trouvé",
+      loadError: "Échec du chargement de la liste des utilisateurs",
+      perPage: "Par page"
+    }
   }
 }

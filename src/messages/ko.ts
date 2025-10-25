@@ -312,6 +312,30 @@ header: {
     noLikedRoomsError: "저장된 룸이 존재하지 않습니다",
     verified: "인증됨",
     freeCancellation: "무료 취소"
+  },
+  admin: {
+    users: {
+      title: "유저 관리",
+      totalUsers: "전체 유저",
+      email: "이메일",
+      fullName: "이름",
+      phoneNumber: "연락처",
+      createdAt: "가입일",
+      status: "상태",
+      active: "활성",
+      deleted: "삭제됨",
+      page: "페이지",
+      of: "/",
+      sortBy: "정렬",
+      sortByCreatedAt: "가입일순",
+      sortByName: "이름순",
+      direction: "방향",
+      asc: "오름차순",
+      desc: "내림차순",
+      noUsers: "유저가 없습니다",
+      loadError: "유저 목록을 불러오는 중 오류가 발생했습니다",
+      perPage: "페이지당"
+    }
   }
 
 
