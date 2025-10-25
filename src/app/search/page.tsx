@@ -192,7 +192,7 @@ function SearchResultContent() {
     return (
       <div className="flex min-h-screen flex-col bg-white">
         <Header />
-        <main className="flex-1 pt-20 lg:pt-32 flex items-center justify-center">
+        <main className="flex-1 pt-10 flex items-center justify-center">
           <div className="flex flex-col items-center gap-4">
             <div className="h-8 w-8 border-4 border-[#E91E63] border-t-transparent rounded-full animate-spin"></div>
             <p className="text-gray-500">{messages?.common?.loading || "Loading..."}</p>
@@ -207,7 +207,7 @@ function SearchResultContent() {
     return (
       <div className="flex min-h-screen flex-col bg-white">
         <Header />
-        <main className="flex-1 pt-20 lg:pt-32 flex items-center justify-center">
+        <main className="flex-1 pt-20 flex items-center justify-center">
           <div className="flex flex-col items-center gap-4">
             <p className="text-red-500 text-lg">{error}</p>
             <button
@@ -227,7 +227,7 @@ function SearchResultContent() {
     <div className="flex min-h-screen flex-col bg-white">
       <Header />
 
-      <main className="flex-1 pt-10 lg:pt-32">
+      <main className="flex-1 pt-10 pb-10">
         <div className="max-w-7xl xl:max-w-[1200px] mx-auto px-4 lg:px-6 xl:px-8">
           <div className="flex flex-col lg:flex-row gap-6">
           {/* 왼쪽: 지도 & 필터 */}
