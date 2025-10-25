@@ -221,15 +221,15 @@ export function BookingSidebar({
       const currentUrl = window.location.href
       await navigator.clipboard.writeText(currentUrl)
 
-      // 성공 메시지 alert로 표시
-      alert(messages?.roomDetail?.shareSuccess || 
+      // 성공 메시지 toast로 표시
+      toast.success(messages?.roomDetail?.shareSuccess || 
         (language === 'ko' ? '링크가 클립보드에 복사되었습니다!' :
          language === 'en' ? 'Link copied to clipboard!' :
          language === 'zh' ? '链接已复制到剪贴板!' :
          'Lien copié dans le presse-papiers!'))
     } catch (error) {
       console.error('링크 복사 실패:', error)
-      alert(messages?.roomDetail?.shareError || 
+      toast.error(messages?.roomDetail?.shareError || 
         (language === 'ko' ? '링크 복사에 실패했습니다' :
          language === 'en' ? 'Failed to copy link' :
          language === 'zh' ? '复制链接失败' :
@@ -285,7 +285,7 @@ export function BookingSidebar({
       })
 
       if (response.ok && data.code === 200) {
-        const reservationId = data.data?.id
+        const reservationId = data.data?.identifier
         if (reservationId) {
           window.location.href = `/reservation/${reservationId}`
         } else {

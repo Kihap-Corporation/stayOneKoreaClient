@@ -9,10 +9,12 @@ import { Button } from "@/components/ui/button"
 import { apiGet } from "@/lib/api"
 import { ChevronLeft, ChevronRight, Wifi, WashingMachine, AirVent, Bell, Flame, Globe, Clock, CheckCircle, XCircle, AlertTriangle } from "lucide-react"
 
-// Room Facility 타입 정의 (새로운 응답 구조)
+// Room Facility 타입 정의 (새로운 응답 구조에 맞게 수정)
 interface RoomFacility {
   facilityType: string
-  customNameI18n: Record<string, string>
+  nameI18n?: Record<string, string>
+  customNameI18n?: Record<string, string>
+  iconUrl?: string
 }
 
 // Booking Detail 타입 정의 (새로운 API 응답 구조에 맞게 수정)
@@ -69,12 +71,24 @@ const formatDate = (dateString: string) => {
 }
 
 // Facility Item 컴포넌트
-const FacilityItem = ({ facility }: { facility: { iconComponent: any; name: string; type: string } }) => {
+const FacilityItem = ({ facility }: { facility: { iconComponent: any; name: string; type: string; iconUrl?: string } }) => {
   const IconComponent = facility.iconComponent
 
   return (
     <div className="flex items-center gap-2 px-0 py-0">
-      <IconComponent className="h-5 w-5 text-[#14151a]" />
+      {facility.iconUrl ? (
+        <img
+          src={facility.iconUrl}
+          alt={facility.name}
+          className="h-5 w-5 object-contain"
+          onError={(e) => {
+            const target = e.target as HTMLImageElement
+            target.style.display = 'none'
+          }}
+        />
+      ) : (
+        <IconComponent className="h-5 w-5 text-[#14151a]" />
+      )}
       <span className="text-sm font-medium tracking-[-0.1px] text-[#14151a]">
         {facility.name}
       </span>
@@ -210,14 +224,17 @@ export default function BookingDetailPage() {
   const checkInFormatted = formatDate(booking.checkInDate)
   const checkOutFormatted = formatDate(booking.checkOutDate)
 
-  // 시설 정보를 처리 (customNameI18n 또는 facilityType을 기반으로 아이콘과 이름 매핑)
+  // 시설 정보를 처리 (iconUrl 우선 사용, nameI18n 우선 사용)
   const processedFacilities = (booking.roomFacilities || []).map(facility => {
-    // customNameI18n에서 현재 언어에 맞는 이름 찾기, 없으면 facilityType 사용
-    const facilityName = facility.customNameI18n?.[currentLanguage.code] || facility.facilityType
+    // nameI18n 또는 customNameI18n에서 현재 언어에 맞는 이름 찾기, 없으면 facilityType 사용
+    const facilityName = facility.nameI18n?.[currentLanguage.code] ||
+                         facility.customNameI18n?.[currentLanguage.code] ||
+                         facility.facilityType
     return {
       iconComponent: getFacilityIcon(facility.facilityType),
       name: facilityName,
-      type: facility.facilityType
+      type: facility.facilityType,
+      iconUrl: facility.iconUrl
     }
   })
 

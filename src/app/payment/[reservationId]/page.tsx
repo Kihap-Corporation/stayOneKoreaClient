@@ -301,11 +301,69 @@ export default function PaymentPage() {
         </div>
       </div>
       
-      <main className="flex-1 py-10 px-4">
+      <main className="flex-1 py-4 lg:py-10 px-4">
         <div className="mx-auto max-w-[640px]">
           <div className="flex flex-col gap-4">
-            {/* Room Information Card */}
-            <div className="flex flex-col gap-0">
+            {/* Room Information Card - 모바일 */}
+            <div className="lg:hidden flex flex-col gap-0">
+              <div className="bg-white border border-[#dee0e3] rounded-t-[16px] overflow-hidden">
+                <div className="h-[200px] relative">
+                  <img
+                    src={paymentData.room.image}
+                    alt={paymentData.room.title}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="p-5">
+                  <h3 className="text-lg font-bold tracking-[-0.2px] text-[#14151a] line-clamp-2">
+                    {paymentData.room.title}
+                  </h3>
+                  <p className="text-lg font-medium tracking-[-0.2px] text-[rgba(13,17,38,0.4)]">
+                    {paymentData.room.propertyName}
+                  </p>
+                  <p className="text-sm font-medium tracking-[-0.1px] text-[rgba(13,17,38,0.4)]">
+                    {paymentData.room.location}
+                  </p>
+                </div>
+              </div>
+              
+              {/* Dates Card */}
+              <div className="bg-white border-l border-r border-b border-[#dee0e3] rounded-b-[16px] p-5 flex items-center justify-between">
+                <div className="flex gap-2 items-center flex-1">
+                  <div className="flex-1">
+                    <p className="text-sm text-[#14151a] font-medium mb-1 tracking-[-0.1px]">
+                      {messages?.reservation?.checkIn || "Check-in"}
+                    </p>
+                    <p className="text-base font-bold tracking-[-0.2px]">
+                      {checkInFormatted.weekday}, {checkInFormatted.month} {checkInFormatted.day}
+                    </p>
+                    <p className="text-xs text-[rgba(13,17,38,0.4)] font-medium">{checkInFormatted.year}</p>
+                  </div>
+                  
+                  <ChevronRight className="h-4 w-4 text-gray-400" />
+                  
+                  <div className="flex-1">
+                    <p className="text-sm text-[#14151a] font-medium mb-1 tracking-[-0.1px]">
+                      {messages?.reservation?.checkOut || "Check-out"}
+                    </p>
+                    <p className="text-base font-bold tracking-[-0.2px]">
+                      {checkOutFormatted.weekday}, {checkOutFormatted.month} {checkOutFormatted.day}
+                    </p>
+                    <p className="text-xs text-[rgba(13,17,38,0.4)] font-medium">{checkOutFormatted.year}</p>
+                  </div>
+                </div>
+                
+                <div className="bg-[#f7f7f8] rounded-xl w-16 h-16 flex flex-col items-center justify-center text-center">
+                  <p className="text-xl font-extrabold tracking-[-0.2px]">{paymentData.nights}</p>
+                  <p className="text-sm text-[rgba(13,17,38,0.4)] font-medium tracking-[-0.1px]">
+                    {messages?.reservation?.nights || "nights"}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Room Information Card - 데스크톱 */}
+            <div className="hidden lg:flex flex-col gap-0">
               <div className="bg-white border border-[#dee0e3] rounded-t-[16px] overflow-hidden">
                 <div className="flex gap-0">
                   <div className="w-1/2 h-[200px] relative">

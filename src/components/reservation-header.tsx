@@ -47,7 +47,8 @@ export function ReservationHeader({ currentStep = 1 }: ReservationHeaderProps) {
 
   return (
     <header className="sticky top-0 z-50 w-full bg-white border-b border-[#dee0e3]">
-      <div className="mx-auto max-w-7xl xl:max-w-[1200px] px-4 py-4">
+      {/* 데스크톱 헤더 */}
+      <div className="hidden lg:block mx-auto max-w-7xl xl:max-w-[1200px] px-4 py-4">
         <div className="flex items-center justify-between w-full">
           {/* Left: Logo */}
           <div className="w-[100px]">
@@ -211,6 +212,123 @@ export function ReservationHeader({ currentStep = 1 }: ReservationHeaderProps) {
                 </>
               )}
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 모바일 헤더 */}
+      <div className="lg:hidden mx-auto px-4 py-4">
+        <div className="flex items-center justify-between w-full">
+          {/* Logo */}
+          <Link href="/" className="flex-shrink-0">
+            <div className="h-8 w-[80px]">
+              <img
+                src="/logo/mobile_logo.png"
+                alt="STAY ONE KOREA"
+                className="h-full w-full object-contain"
+              />
+            </div>
+          </Link>
+
+          {/* Mobile Stepper - Simplified */}
+          <div className="flex items-center gap-1">
+            {steps.map((step, index) => (
+              <div key={step.number} className="flex items-center">
+                <div 
+                  className={`flex items-center justify-center w-6 h-6 rounded-full ${
+                    step.number <= currentStep 
+                      ? 'bg-[#e0004d]' 
+                      : 'bg-[rgba(10,15,41,0.1)]'
+                  }`}
+                >
+                  <span className={`text-[10px] font-semibold ${
+                    step.number <= currentStep ? 'text-white' : 'text-[rgba(10,15,41,0.4)]'
+                  }`}>
+                    {step.number}
+                  </span>
+                </div>
+                {index < steps.length - 1 && (
+                  <div 
+                    className={`w-6 h-px mx-1 ${
+                      step.number < currentStep 
+                        ? 'bg-[#e0004d]' 
+                        : 'bg-[#e9eaec]'
+                    }`} 
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* Profile */}
+          <div className="relative">
+            <button
+              className="h-8 w-8 p-0 rounded-full overflow-hidden hover:bg-transparent cursor-pointer"
+              onClick={() => setIsProfileOpen(!isProfileOpen)}
+            >
+              <img
+                src="/icons/profile.png"
+                alt="Profile"
+                className="h-8 w-8 rounded-full object-cover"
+              />
+            </button>
+
+            {isProfileOpen && (
+              <>
+                <div className="fixed inset-0 z-10" onClick={() => setIsProfileOpen(false)} />
+                <div className="absolute right-0 top-12 z-20 w-[220px] bg-white rounded-2xl shadow-lg border border-[#dee0e3] py-2 px-1">
+                  {isLoggedIn ? (
+                    <>
+                      <Link
+                        href="/mypage"
+                        className="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 rounded-lg transition-colors cursor-pointer"
+                        onClick={() => setIsProfileOpen(false)}
+                      >
+                        <User className="h-5 w-5 text-gray-600" />
+                        <span className="text-sm font-medium text-[#14151a] tracking-tight">My account</span>
+                      </Link>
+                      <Link
+                        href="/bookings"
+                        className="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 rounded-lg transition-colors cursor-pointer"
+                        onClick={() => setIsProfileOpen(false)}
+                      >
+                        <Calendar className="h-5 w-5 text-gray-600" />
+                        <span className="text-sm font-medium text-[#14151a] tracking-tight">Bookings</span>
+                      </Link>
+                      <Link
+                        href="#"
+                        className="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 rounded-lg transition-colors cursor-pointer"
+                        onClick={() => setIsProfileOpen(false)}
+                      >
+                        <Heart className="h-5 w-5 text-gray-600" />
+                        <span className="text-sm font-medium text-[#14151a] tracking-tight">Saved</span>
+                      </Link>
+                      <button
+                        className="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 rounded-lg transition-colors w-full text-left cursor-pointer"
+                        onClick={() => {
+                          setIsProfileOpen(false)
+                          logout()
+                        }}
+                      >
+                        <LogOut className="h-5 w-5 text-gray-600" />
+                        <span className="text-sm font-medium text-[#14151a] tracking-tight">Sign out</span>
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      className="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 rounded-lg transition-colors w-full text-left cursor-pointer"
+                      onClick={() => {
+                        setIsProfileOpen(false)
+                        window.location.href = '/account_check'
+                      }}
+                    >
+                      <LogOut className="h-5 w-5 text-gray-600" />
+                      <span className="text-sm font-medium text-[#14151a] tracking-tight">Sign in</span>
+                    </button>
+                  )}
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>
