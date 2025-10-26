@@ -171,6 +171,7 @@
   border-radius: 0 !important;
   box-shadow: none !important;
   background-color: white !important;
+  z-index: 101 !important;
 }
 
 /* 헤더 영역 - 완전히 흰색 배경 */

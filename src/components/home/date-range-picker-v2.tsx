@@ -16,6 +16,8 @@ interface DateRangePickerProps {
   onCheckInChange: (date: Date | null) => void
   onCheckOutChange: (date: Date | null) => void
   locale?: string
+  monthsShown?: number
+  showBorder?: boolean
 }
 
 export function DateRangePickerV2({
@@ -24,6 +26,8 @@ export function DateRangePickerV2({
   onCheckInChange,
   onCheckOutChange,
   locale = "en",
+  monthsShown = 2,
+  showBorder = true,
 }: DateRangePickerProps) {
   const [startDate, setStartDate] = useState(checkIn)
   const [endDate, setEndDate] = useState(checkOut)
@@ -76,14 +80,14 @@ export function DateRangePickerV2({
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg border border-[#dee0e3] w-fit">
+    <div className={showBorder ? "bg-white rounded-2xl shadow-lg border border-[#dee0e3] w-fit" : "bg-white w-fit"}>
       <DatePicker
         selected={startDate}
         onChange={handleDateChange}
         startDate={startDate}
         endDate={endDate}
         selectsRange
-        monthsShown={2}
+        monthsShown={monthsShown}
         inline
         locale={locale}
         minDate={new Date()}

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -17,6 +17,48 @@ export function HeroSection() {
   const [checkOut, setCheckOut] = useState<Date | null>(null)
   const [showDatePicker, setShowDatePicker] = useState(false)
   const [selectedLocationData, setSelectedLocationData] = useState<SearchHit | null>(null)
+  const checkInRef = useRef<HTMLDivElement>(null)
+
+  // 달력 외부 클릭 감지 (데스크톱 전용)
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      // 모바일에서는 모달이므로 외부 클릭 감지 불필요
+      if (window.innerWidth < 1024) return
+      
+      const target = event.target as HTMLElement
+      
+      // Check-in div 내부 클릭은 무시
+      if (checkInRef.current && checkInRef.current.contains(target)) {
+        return
+      }
+      
+      // DatePicker 내부 클릭인지 확인
+      if (!target.closest('.react-datepicker') && !target.closest('.react-datepicker-popper')) {
+        setShowDatePicker(false)
+      }
+    }
+
+    if (showDatePicker) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [showDatePicker])
+
+  // 모바일 모달 열릴 때 body 스크롤 막기
+  useEffect(() => {
+    if (showDatePicker && window.innerWidth < 1024) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'unset'
+    }
+
+    return () => {
+      document.body.style.overflow = 'unset'
+    }
+  }, [showDatePicker])
 
   // Calculate nights
   const nights = checkIn && checkOut 
@@ -104,7 +146,7 @@ export function HeroSection() {
   }
 
   return (
-    <div className="relative w-full py-20 px-4 flex items-center justify-center overflow-hidden">
+    <div className="relative w-full py-20 px-4 flex items-center justify-center">
       {/* Background Image */}
       <div className="absolute inset-0">
         <img 
@@ -123,9 +165,9 @@ export function HeroSection() {
 
         {/* Search Form */}
         <div className="bg-white rounded-2xl p-6 w-full shadow-lg">
-          <div className="flex flex-col lg:flex-row gap-4">
+          <div className="flex flex-col lg:flex-row gap-4 relative">
             {/* Where */}
-            <div className="flex-1 flex flex-col gap-2">
+            <div className="flex-[0.30] flex flex-col gap-2">
               <label className="text-sm font-medium text-[#14151a]">
                 Where
               </label>
@@ -135,52 +177,76 @@ export function HeroSection() {
               />
             </div>
 
-            {/* Check-in */}
-            <div className="flex-1 flex flex-col gap-2">
-              <label className="text-sm font-medium text-[#14151a]">
-                Check-in
-              </label>
-              <div 
-                className="relative cursor-pointer"
-                onClick={() => setShowDatePicker(true)}
-              >
-                <div className="w-full h-10 pl-10 pr-3 rounded-xl border border-[#dee0e3] flex items-center">
-                  {checkIn ? (
-                    <span className="text-sm text-[#14151a]">
-                      {checkIn.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
-                    </span>
-                  ) : (
-                    <span className="text-sm text-gray-400">Select...</span>
-                  )}
+            {/* Check-in & Check-out wrapper */}
+            <div className="flex-[0.60] flex flex-col lg:flex-row gap-4 relative" ref={checkInRef}>
+              {/* Check-in */}
+              <div className="flex-1 flex flex-col gap-2">
+                <label className="text-sm font-medium text-[#14151a]">
+                  Check-in
+                </label>
+                <div 
+                  className="relative cursor-pointer"
+                  onClick={() => setShowDatePicker(true)}
+                >
+                  <div className="w-full h-10 pl-10 pr-3 rounded-xl border border-[#dee0e3] flex items-center">
+                    {checkIn ? (
+                      <span className="text-sm text-[#14151a]">
+                        {checkIn.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                      </span>
+                    ) : (
+                      <span className="text-sm text-gray-400">Select...</span>
+                    )}
+                  </div>
+                  <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
                 </div>
-                <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
               </div>
-            </div>
 
-            {/* Check-out */}
-            <div className="flex-1 flex flex-col gap-2">
-              <label className="text-sm font-medium text-[#14151a]">
-                Check-out
-              </label>
-              <div 
-                className="relative cursor-pointer"
-                onClick={() => setShowDatePicker(true)}
-              >
-                <div className="w-full h-10 pl-10 pr-3 rounded-xl border border-[#dee0e3] flex items-center">
-                  {checkOut ? (
-                    <span className="text-sm text-[#14151a]">
-                      {checkOut.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
-                    </span>
-                  ) : (
-                    <span className="text-sm text-gray-400">Select...</span>
-                  )}
+              {/* Check-out */}
+              <div className="flex-1 flex flex-col gap-2">
+                <label className="text-sm font-medium text-[#14151a]">
+                  Check-out
+                </label>
+                <div 
+                  className="relative cursor-pointer"
+                  onClick={() => setShowDatePicker(true)}
+                >
+                  <div className="w-full h-10 pl-10 pr-3 rounded-xl border border-[#dee0e3] flex items-center">
+                    {checkOut ? (
+                      <span className="text-sm text-[#14151a]">
+                        {checkOut.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                      </span>
+                    ) : (
+                      <span className="text-sm text-gray-400">Select...</span>
+                    )}
+                  </div>
+                  <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
                 </div>
-                <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
               </div>
+
+              {/* Desktop Calendar - absolute positioning below check-in/check-out wrapper */}
+              {showDatePicker && (
+                <div className="hidden lg:block absolute top-full left-0 mt-2 z-50">
+                  <DateRangePickerV2
+                    checkIn={checkIn}
+                    checkOut={checkOut}
+                    onCheckInChange={(date) => {
+                      setCheckIn(date)
+                    }}
+                    onCheckOutChange={(date) => {
+                      setCheckOut(date)
+                      // 체크아웃이 선택되면 달력 닫기
+                      if (date) {
+                        setShowDatePicker(false)
+                      }
+                    }}
+                    locale={currentLanguage.code}
+                  />
+                </div>
+              )}
             </div>
 
             {/* People - Fixed to 1 */}
-            <div className="flex flex-col gap-2">
+            <div className="flex-[0.10] flex flex-col gap-2">
               <label className="text-sm font-medium text-[#14151a]">
                 People
               </label>
@@ -190,27 +256,6 @@ export function HeroSection() {
               </div>
             </div>
           </div>
-
-          {/* Date Range Picker */}
-          {showDatePicker && (
-            <div className="mt-4 relative">
-              <DateRangePickerV2
-                checkIn={checkIn}
-                checkOut={checkOut}
-                onCheckInChange={(date) => {
-                  setCheckIn(date)
-                }}
-                onCheckOutChange={(date) => {
-                  setCheckOut(date)
-                  // 체크아웃이 선택되면 달력 닫기
-                  if (date) {
-                    setShowDatePicker(false)
-                  }
-                }}
-                locale={currentLanguage.code}
-              />
-            </div>
-          )}
 
           {/* Validation Message */}
           {!isSearchValid() && (
@@ -229,6 +274,54 @@ export function HeroSection() {
           </Button>
         </div>
       </div>
+      {/* Mobile Calendar Modal */}
+      {showDatePicker && (
+      <div className="lg:hidden fixed inset-0 z-[200] flex items-center justify-center p-4">
+        {/* Backdrop */}
+        <div 
+          className="absolute inset-0 bg-black/50"
+          onClick={() => setShowDatePicker(false)}
+        />
+        
+        {/* Modal Content */}
+        <div 
+          className="relative bg-white rounded-[24px] w-full max-w-md max-h-[90vh] overflow-y-auto"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Header */}
+          <div className="flex items-center justify-between p-4 border-b border-[#e9eaec]">
+            <h3 className="text-[18px] font-bold text-[#14151a]">Select dates</h3>
+            <button
+              onClick={() => setShowDatePicker(false)}
+              className="bg-[rgba(10,15,41,0.04)] hover:bg-[rgba(10,15,41,0.08)] rounded-full p-2 transition-colors"
+            >
+              <span className="text-[20px] leading-none">✕</span>
+            </button>
+          </div>
+
+          {/* Calendar */}
+          <div className="p-4">
+            <DateRangePickerV2
+              checkIn={checkIn}
+              checkOut={checkOut}
+              onCheckInChange={(date) => {
+                setCheckIn(date)
+              }}
+              onCheckOutChange={(date) => {
+                setCheckOut(date)
+                // 체크아웃이 선택되면 달력 닫기
+                if (date) {
+                  setShowDatePicker(false)
+                }
+              }}
+              locale={currentLanguage.code}
+              monthsShown={1}
+              showBorder={false}
+            />
+          </div>
+        </div>
+      </div>
+      )}
     </div>
   )
 }
