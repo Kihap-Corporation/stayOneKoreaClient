@@ -19,6 +19,7 @@ import 'swiper/css'
 import 'swiper/css/pagination'
 import 'swiper/css/navigation'
 import { toast } from "sonner"
+import { apiPostWithResponse } from "@/lib/api"
 
 interface RoomDetailPageProps {
   params: {
@@ -111,9 +112,117 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [isMobileCalendarOpen, setIsMobileCalendarOpen] = useState(false)
   const [datePickerLocale, setDatePickerLocale] = useState<any>(undefined)
+  const [isReserving, setIsReserving] = useState(false)
 
   const handleGuestsChange = (newGuests: number) => {
     setGuests(Math.max(1, Math.min(1, newGuests)))
+  }
+
+  // 날짜를 YYYY-MM-DD 형식으로 변환
+  const formatDateForAPI = (date: Date | null) => {
+    if (!date) return ''
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
+  }
+
+  // 예약 처리 함수
+  const handleReservation = async () => {
+    if (!checkInDate || !checkOutDate) {
+      toast.error(messages?.roomDetail?.pleaseSelectDates || '날짜를 선택해주세요')
+      return
+    }
+
+    setIsReserving(true)
+
+    try {
+      // 버튼 클릭 시점의 시간 기록 (한국 시간 기준)
+      const clickTime = new Date()
+
+      // 현재 시간을 한국 시간(KST)으로 변환
+      const kstTime = new Intl.DateTimeFormat('sv-SE', {
+        timeZone: 'Asia/Seoul',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+      }).format(clickTime)
+
+      // 스웨덴 형식(ISO-like)을 표준 ISO 형식으로 변환
+      const isoKST = kstTime.replace(' ', 'T')
+      const requestTime = isoKST
+
+      // 예약 API 호출
+      const { response, data } = await apiPostWithResponse('/api/user/reserve', {
+        identifier: params.roomId,
+        checkIn: formatDateForAPI(checkInDate),
+        checkOut: formatDateForAPI(checkOutDate),
+        curUnit: 'USD',
+        requestTime,
+        languageCode: currentLanguage.code
+      })
+
+      if (response.ok && data.code === 200) {
+        const reservationId = data.data?.identifier
+        if (reservationId) {
+          window.location.href = `/reservation/${reservationId}`
+        } else {
+          // 예약 ID가 없으면 폴백으로 기존 방식 사용
+          const fallbackId = params.roomId
+          window.location.href = `/reservation/${fallbackId}`
+        }
+      } else {
+        // 에러 처리
+        switch (data.code) {
+          case 40500:
+            toast.error(messages?.roomDetail?.roomNotFound || (currentLanguage.code === 'ko' ? '존재하지 않는 방입니다' :
+                                                       currentLanguage.code === 'en' ? 'Room not found' :
+                                                       currentLanguage.code === 'zh' ? '房间不存在' :
+                                                       'Chambre introuvable'))
+            break
+          case 40000:
+            toast.error(messages?.roomDetail?.invalidInput || (currentLanguage.code === 'ko' ? '잘못된 값을 입력했습니다' :
+                                                       currentLanguage.code === 'en' ? 'Invalid input provided' :
+                                                       currentLanguage.code === 'zh' ? '输入的值无效' :
+                                                       'Valeur saisie invalide'))
+            break
+          case 40501:
+            toast.error(messages?.roomDetail?.alreadyReserved || (currentLanguage.code === 'ko' ? '해당 기간에 이미 예약이 존재합니다' :
+                                                           currentLanguage.code === 'en' ? 'This period is already reserved' :
+                                                           currentLanguage.code === 'zh' ? '该时间段已被预订' :
+                                                           'Cette période est déjà réservée'))
+            break
+          case 40110:
+            toast.error(messages?.roomDetail?.invalidCurrency || (currentLanguage.code === 'ko' ? '잘못된 화폐단위를 입력했습니다' :
+                                                           currentLanguage.code === 'en' ? 'Invalid currency provided' :
+                                                           currentLanguage.code === 'zh' ? '货币单位无效' :
+                                                           'Devise invalide'))
+            break
+          case 40300:
+            toast.error(messages?.roomDetail?.exchangeRateNotFound || (currentLanguage.code === 'ko' ? '환율정보를 찾을 수 없습니다' :
+                                                                currentLanguage.code === 'en' ? 'Exchange rate information not found' :
+                                                                currentLanguage.code === 'zh' ? '找不到汇率信息' :
+                                                                'Informations de taux de change introuvables'))
+            break
+          default:
+            toast.error(messages?.roomDetail?.invalidInput || (currentLanguage.code === 'ko' ? '잘못된 값을 입력했습니다' :
+                                                       currentLanguage.code === 'en' ? 'Invalid input provided' :
+                                                       currentLanguage.code === 'zh' ? '输入的值无效' :
+                                                       'Valeur saisie invalide'))
+        }
+      }
+    } catch (error: any) {
+      toast.error(messages?.roomDetail?.reservationError || (currentLanguage.code === 'ko' ? '예약 처리 중 오류가 발생했습니다' :
+                                                      currentLanguage.code === 'en' ? 'An error occurred while processing the reservation' :
+                                                      currentLanguage.code === 'zh' ? '预订处理过程中发生错误' :
+                                                      'Une erreur s\'est produite lors du traitement de la réservation'))
+    } finally {
+      setIsReserving(false)
+    }
   }
 
   // 호스팅 시작 연도 계산
@@ -379,10 +488,10 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
     : roomData.roomFacilities.slice(0, 6)
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#f7f7f8]">
+    <div className="flex min-h-screen flex-col">
       <Header />
 
-      <main className="flex-1">
+      <main className="flex-1 bg-[#FFF] lg:bg-[#f7f7f8]">
         {/* 타이틀 섹션 - 데스크톱만 표시 */}
         <div className="hidden lg:block bg-[#f7f7f8] pt-10 pb-0">
           <div className="mx-auto max-w-[1200px] px-4">
@@ -587,7 +696,7 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
               modules={[Pagination, Navigation]}
               pagination={{
                 clickable: true,
-                bulletClass: 'swiper-pagination-bullet !bg-white/50 !w-2 !h-2',
+                bulletClass: 'swiper-pagination-bullet bg-white/50 !w-2 !h-2',
                 bulletActiveClass: 'swiper-pagination-bullet-active !bg-[#e0004d]',
               }}
               navigation={{
@@ -616,32 +725,6 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
             </button>
           </div>
 
-          {/* 하단 고정 예약 버튼 - 모바일 */}
-          <div className="fixed bottom-0 left-0 right-0 z-200 bg-white shadow-[0px_-3px_8px_-1px_rgba(20,21,26,0.04),0px_-2px_12px_-1px_rgba(20,21,26,0.04)] rounded-t-[24px] px-5 pt-4 pb-12">
-            <div className="flex gap-4 items-start">
-              <div className="flex-1 flex flex-col gap-[2px]">
-                <p className="text-[20px] font-bold leading-[28px] tracking-[-0.2px] text-[#14151a] underline">
-                  ${roomData.pricePerNight} per night
-                </p>
-                <div className="inline-flex items-center justify-center bg-[#fdead8] rounded-lg px-2 py-0 self-start">
-                  <p className="text-[12px] font-medium leading-[16px] tracking-[0px] text-[#ae590a] px-1">
-                    Free cancellation
-                  </p>
-                </div>
-              </div>
-              <Button 
-                onClick={() => {
-                  // 스크롤을 예약 섹션으로 이동
-                  window.scrollTo({ top: 0, behavior: 'smooth' })
-                }}
-                className="flex-1 max-w-[248px] h-10 rounded-full bg-[#e0004d] hover:bg-[#c2003f] px-4 py-3 shadow-[0px_1px_2px_0px_rgba(20,21,26,0.05)]"
-              >
-                <span className="text-[16px] font-medium leading-[24px] tracking-[-0.2px] text-white">
-                  Reserve
-                </span>
-              </Button>
-            </div>
-          </div>
         </div>
 
         {/* 모바일 타이틀 및 정보 섹션 */}
@@ -714,7 +797,7 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
 
           {/* Share and Save buttons - 모바일 전용 */}
           <div className="flex flex-col gap-2 mt-2">
-            <Button 
+            <Button
               onClick={async () => {
                 try {
                   const currentUrl = window.location.href
@@ -732,14 +815,14 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
                 Share with friends
               </span>
             </Button>
-            <Button 
+            <Button
               onClick={async () => {
                 // 낙관적 업데이트: 먼저 UI 업데이트
                 setRoomData(prev => prev ? { ...prev, roomLikeCheck: !prev.roomLikeCheck } : prev)
 
                 try {
                   const response = await apiPost(`/api/user/like?roomIdentifier=${params.roomId}`)
-                  
+
                   // 응답 코드가 200이 아닌 경우 롤백
                   if (response.code !== 200) {
                     setRoomData(prev => prev ? { ...prev, roomLikeCheck: !prev.roomLikeCheck } : prev)
@@ -754,8 +837,8 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
             >
               {roomData.roomLikeCheck ? (
                 <svg width="18" height="16" viewBox="0 0 18 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path 
-                    d="M15.8695 1.96415C17.7545 3.85415 17.8195 6.86415 16.0662 8.82748L8.9995 15.9041L1.9345 8.82748C0.181164 6.86415 0.246997 3.84915 2.13116 1.96415C4.01866 0.0774834 7.03783 0.0141499 9.00116 1.77415C10.9587 0.0166499 13.9837 0.0749834 15.8695 1.96415V1.96415Z" 
+                  <path
+                    d="M15.8695 1.96415C17.7545 3.85415 17.8195 6.86415 16.0662 8.82748L8.9995 15.9041L1.9345 8.82748C0.181164 6.86415 0.246997 3.84915 2.13116 1.96415C4.01866 0.0774834 7.03783 0.0141499 9.00116 1.77415C10.9587 0.0166499 13.9837 0.0749834 15.8695 1.96415V1.96415Z"
                     fill="#e0004d"
                   />
                 </svg>
@@ -769,6 +852,36 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
           </div>
         </div>
 
+        {/* 하단에 고정된 가격 및 Reserve 버튼 - 모바일 전용 */}
+        <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-[#e9eaec] rounded-t-3xl px-4 py-3 shadow-[0px_-2px_8px_0px_rgba(20,21,26,0.1)]">
+          <div className="flex gap-4 items-center pb-5">
+            <div className="flex-1 flex flex-col gap-[2px]">
+              <p className="text-[20px] font-bold leading-[28px] tracking-[-0.2px] text-[#14151a] underline">
+                ${roomData.pricePerNight} per night
+              </p>
+            </div>
+            <Button
+              onClick={() => {
+                if (!checkInDate || !checkOutDate) {
+                  toast.error(messages?.roomDetail?.pleaseSelectDates || '날짜를 선택해주세요')
+                  return
+                }
+                // 예약 처리 로직
+                handleReservation()
+              }}
+              disabled={isReserving || !checkInDate || !checkOutDate}
+              className="flex-shrink-0 w-[160px] h-10 rounded-full bg-[#e0004d] hover:bg-[#c2003f] px-4 py-3 shadow-[0px_1px_2px_0px_rgba(20,21,26,0.05)] disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <span className="text-[16px] font-medium leading-[24px] tracking-[-0.2px] text-white">
+                {isReserving
+                  ? (messages?.common?.loading || '예약 중...')
+                  : (messages?.roomDetail?.reserve || 'Reserve')
+                }
+              </span>
+            </Button>
+          </div>
+        </div>
+
         {/* 구분선 - 모바일 */}
         <div className="lg:hidden bg-[#FFF] px-0 py-4">
           <div className="px-4">
@@ -776,62 +889,217 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
           </div>
         </div>
 
-        {/* 메인 컨텐츠 */}
-        <div className="bg-[#FFF] pt-10 lg:pt-10 pb-32 lg:pb-0">
+        {/* 메인 컨텐츠 - 모바일 */}
+        <div className="lg:hidden bg-[#FFF] pt-4 pb-4">
+          <div className="mx-auto max-w-[1200px] px-4">
+            <div className="flex flex-col gap-4">
+              {/* Facilities - 모바일 */}
+              {roomData.roomFacilities.length > 0 && (
+                <div className="flex flex-col gap-[18px]">
+                  <p className="text-[16px] font-bold leading-[24px] tracking-[-0.2px] text-[#14151a]">
+                    Facilities
+                  </p>
+                  <div className="grid grid-cols-2 gap-2">
+                    {displayedFacilities.map((facility, index) => {
+                      const Icon = getFacilityIcon(facility.facilityType)
+                      const facilityName = facility.customNameI18n?.[currentLanguage.code] || facility.facilityType
+
+                      return (
+                        <div key={index} className="flex items-center gap-2">
+                          {facility.iconUrl ? (
+                            <img
+                              src={facility.iconUrl}
+                              alt={facilityName}
+                              className="h-5 w-5 object-contain"
+                              onError={(e) => {
+                                const target = e.target as HTMLImageElement
+                                target.style.display = 'none'
+                              }}
+                            />
+                          ) : (
+                            <Icon className="h-5 w-5 text-[#14151a]" />
+                          )}
+                          <span className="text-[14px] font-medium leading-[20px] tracking-[-0.1px] text-[#14151a]">
+                            {facilityName}
+                          </span>
+                        </div>
+                      )
+                    })}
+                  </div>
+                  {roomData.roomFacilities.length > 6 && (
+                    <button
+                      onClick={() => setShowAllFacilities(!showAllFacilities)}
+                      className="bg-[rgba(10,15,41,0.04)] rounded-[10px] px-[10px] py-[6px] flex items-center justify-center gap-[2px] cursor-pointer hover:bg-[rgba(10,15,41,0.08)]"
+                    >
+                      <span className="text-[14px] font-medium leading-[20px] tracking-[-0.1px] text-[#14151a] px-1">
+                        {showAllFacilities ? "Show less" : `Show all ${roomData.roomFacilities.length} facilities`}
+                      </span>
+                      <ChevronRight className={`h-4 w-4 text-[#14151a] transition-transform ${showAllFacilities ? 'rotate-90' : ''}`} />
+                    </button>
+                  )}
+                </div>
+              )}
+
+              {/* Divider */}
+              <div className="lg:hidden bg-[#FFF] px-0 py-4">
+                <div className="px-4">
+                  <div className="h-px bg-[#e9eaec] w-full" />
+                </div>
+              </div>
+
+              {/* About this room - 모바일 */}
+              {roomData.roomDescriptionI18n && (
+                <div className="flex flex-col gap-2">
+                  <p className="text-[16px] font-bold leading-[24px] tracking-[-0.2px] text-[#14151a]">
+                    About this room
+                  </p>
+                  <p className={`text-[16px] font-normal leading-[24px] tracking-[-0.2px] text-[#14151a] whitespace-pre-wrap ${!showFullDescription ? 'line-clamp-4 max-h-[96px] overflow-hidden' : ''}`}>
+                    {roomData.roomDescriptionI18n}
+                  </p>
+                  <button
+                    onClick={() => setShowFullDescription(!showFullDescription)}
+                    className="bg-[rgba(10,15,41,0.04)] rounded-full px-[10px] py-[6px] flex items-center justify-center gap-[2px] cursor-pointer hover:bg-[rgba(10,15,41,0.08)]"
+                  >
+                    <span className="text-[14px] font-medium leading-[20px] tracking-[-0.1px] text-[#14151a] px-1">
+                      {showFullDescription ? "Show less" : "Show more"}
+                    </span>
+                    <ChevronRight className={`h-4 w-4 text-[#14151a] transition-transform ${showFullDescription ? 'rotate-90' : ''}`} />
+                  </button>
+                </div>
+              )}
+
+              {/* Divider */}
+              <div className="lg:hidden bg-[#FFF] px-0 py-4">
+                <div className="px-4">
+                  <div className="h-px bg-[#e9eaec] w-full" />
+                </div>
+              </div>
+
+              {/* Rules - 모바일 */}
+              {roomData.roomRulesI18n && (
+                <div className="flex flex-col gap-2">
+                  <p className="text-[16px] font-bold leading-[24px] tracking-[-0.2px] text-[#14151a]">
+                    Rules
+                  </p>
+                  <p className={`text-[16px] font-normal leading-[24px] tracking-[-0.2px] text-[#14151a] whitespace-pre-wrap ${!showFullRules ? 'line-clamp-4 max-h-[96px] overflow-hidden' : ''}`}>
+                    {roomData.roomRulesI18n}
+                  </p>
+                  <button
+                    onClick={() => setShowFullRules(!showFullRules)}
+                    className="bg-[rgba(10,15,41,0.04)] rounded-full px-[10px] py-[6px] flex items-center justify-center gap-[2px] cursor-pointer hover:bg-[rgba(10,15,41,0.08)]"
+                  >
+                    <span className="text-[14px] font-medium leading-[20px] tracking-[-0.1px] text-[#14151a] px-1">
+                      {showFullRules ? "Show less" : "Show more"}
+                    </span>
+                    <ChevronRight className={`h-4 w-4 text-[#14151a] transition-transform ${showFullRules ? 'rotate-90' : ''}`} />
+                  </button>
+                </div>
+              )}
+
+              {/* Divider */}
+              <div className="lg:hidden bg-[#FFF] px-0 py-4">
+                <div className="px-4">
+                  <div className="h-px bg-[#e9eaec] w-full" />
+                </div>
+              </div>
+
+              {/* Room location - 모바일 */}
+              <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-0">
+                  <p className="text-[16px] font-bold leading-[24px] tracking-[-0.2px] text-[#14151a]">
+                    Room location
+                  </p>
+                  <p className="text-[14px] font-semibold leading-[20px] tracking-[-0.1px] text-[rgba(15,19,36,0.6)]">
+                    {roomData.residenceFullAddress}
+                  </p>
+                </div>
+                <div id="map" className="h-[200px] rounded-[12px] bg-gray-200 overflow-hidden flex items-center justify-center naver-map-container" style={{ position: 'relative', zIndex: 1 }} />
+              </div>  
+
+              {/* Divider */}
+              <div className="lg:hidden bg-[#FFF] px-0 py-4">
+                <div className="px-4">
+                  <div className="h-px bg-[#e9eaec] w-full" />
+                </div>
+              </div>
+
+              {/* Host of this room - 모바일 */}
+              <div className="rounded-3xl bg-white px-5 py-4 flex flex-col gap-2">
+                <h3 className="text-[16px] font-bold leading-[24px] tracking-[-0.2px] text-[#14151a]">
+                  {messages?.roomDetail?.hostTitle || 'Host of this room'}
+                </h3>
+
+                {/* 호스트 프로필 */}
+                <div className="flex items-center gap-2 w-full">
+                  <div className="relative h-20 w-20 rounded-full border border-[#dee0e3] flex-shrink-0">
+                    <img
+                      src={roomData.residenceLogoImageUrl || "/api/placeholder/80/80"}
+                      alt={roomData.residenceNameI18n}
+                      className="h-full w-full rounded-full object-cover"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement
+                        target.src = '/api/placeholder/80/80'
+                      }}
+                    />
+                  </div>
+                  <div className="flex-1 flex flex-col gap-0.5 min-w-0">
+                    <p className="text-[18px] font-extrabold leading-[26px] tracking-[-0.2px] text-[#14151a] truncate">
+                      {roomData.residenceNameI18n}
+                    </p>
+                    <p className="text-[14px] font-medium leading-[20px] tracking-[-0.1px] text-[rgba(13,17,38,0.4)]">
+                      {messages?.roomDetail?.yearsHosting?.replace('{years}', getHostingYears(roomData.hostingStartDate).toString()) || `${getHostingYears(roomData.hostingStartDate)} years hosting`}
+                    </p>
+                  </div>
+                </div>
+
+                {/* 다른 숙소 보기 버튼 */}
+                <Button
+                  className="w-full h-10 rounded-xl bg-white border border-[#dee0e3] hover:bg-gray-50 px-3 py-2.5 shadow-none"
+                  onClick={() => {
+                    // 현재 URL에서 residenceId를 추출하여 고시원 페이지로 이동
+                    const currentPath = window.location.pathname
+                    const pathParts = currentPath.split('/')
+                    // /residence/[residenceId]/room/[roomId] 구조에서 residenceId 추출
+                    if (pathParts.length >= 3 && pathParts[1] === 'residence') {
+                      const residenceId = pathParts[2]
+                      window.location.href = `/residence/${residenceId}`
+                    }
+                  }}
+                >
+                  <span className="text-[14px] font-medium leading-[20px] tracking-[-0.1px] text-[#14151a]">
+                    {messages?.roomDetail?.showMoreRooms || 'Show more rooms'}
+                  </span>
+                </Button>
+
+                {/* 호스트 설명 - Read more 기능 추가 */}
+                <div className="flex flex-col gap-2">
+                  <p className={`text-[16px] font-normal leading-[24px] tracking-[-0.2px] text-[#14151a] whitespace-pre-wrap ${!showFullDescription ? 'line-clamp-4 max-h-[96px] overflow-hidden' : ''}`}>
+                    {roomData.residenceDescriptionI18n}
+                  </p>
+                  <button
+                    onClick={() => setShowFullDescription(!showFullDescription)}
+                    className="mx-auto rounded-full flex items-center justify-center gap-2 cursor-pointer transition-colors duration-200"
+                  >
+                    <span className="text-[16px] font-medium leading-[20px] tracking-[-0.1px] text-gray-600">
+                      {showFullDescription ? "Show less" : "Read more"}
+                    </span>
+                    <ChevronRight className={`h-5 w-5 text-gray-600 transition-transform ${showFullDescription ? 'rotate-90' : ''}`} />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* 메인 컨텐츠 - 데스크톱 */}
+        <div className="hidden lg:block bg-[#f7f7f8] pt-10 pb-20">
           <div className="mx-auto max-w-[1200px] px-4">
             <div className="flex flex-col lg:flex-row gap-6">
               {/* 좌측 컨텐츠 */}
               <div className="flex-1 flex flex-col gap-4">
-                {/* Facilities - 모바일 */}
-                {roomData.roomFacilities.length > 0 && (
-                  <div className="lg:hidden flex flex-col gap-[18px]">
-                    <p className="text-[16px] font-bold leading-[24px] tracking-[-0.2px] text-[#14151a]">
-                      Facilities
-                    </p>
-                    <div className="grid grid-cols-2 gap-2">
-                      {displayedFacilities.map((facility, index) => {
-                        const Icon = getFacilityIcon(facility.facilityType)
-                        const facilityName = facility.customNameI18n?.[currentLanguage.code] || facility.facilityType
-
-                        return (
-                          <div key={index} className="flex items-center gap-2">
-                            {facility.iconUrl ? (
-                              <img
-                                src={facility.iconUrl}
-                                alt={facilityName}
-                                className="h-5 w-5 object-contain"
-                                onError={(e) => {
-                                  const target = e.target as HTMLImageElement
-                                  target.style.display = 'none'
-                                }}
-                              />
-                            ) : (
-                              <Icon className="h-5 w-5 text-[#14151a]" />
-                            )}
-                            <span className="text-[14px] font-medium leading-[20px] tracking-[-0.1px] text-[#14151a]">
-                              {facilityName}
-                            </span>
-                          </div>
-                        )
-                      })}
-                    </div>
-                    {roomData.roomFacilities.length > 6 && (
-                      <button
-                        onClick={() => setShowAllFacilities(!showAllFacilities)}
-                        className="bg-[rgba(10,15,41,0.04)] rounded-[10px] px-[10px] py-[6px] flex items-center justify-center gap-[2px] cursor-pointer hover:bg-[rgba(10,15,41,0.08)]"
-                      >
-                        <span className="text-[14px] font-medium leading-[20px] tracking-[-0.1px] text-[#14151a] px-1">
-                          {showAllFacilities ? "Show less" : `Show all ${roomData.roomFacilities.length} facilities`}
-                        </span>
-                        <ChevronRight className={`h-4 w-4 text-[#14151a] transition-transform ${showAllFacilities ? 'rotate-90' : ''}`} />
-                      </button>
-                    )}
-                  </div>
-                )}
-
                 {/* Facilities - 데스크톱 */}
                 {roomData.roomFacilities.length > 0 && (
-                  <div className="hidden lg:flex bg-white rounded-[24px] px-5 py-4 flex-col gap-[18px]">
+                  <div className="bg-white rounded-[24px] px-5 py-4 flex-col gap-[18px] flex">
                     <p className="text-[16px] font-bold leading-[24px] tracking-[-0.2px] text-[#14151a]">
                       Facilities
                     </p>
@@ -876,30 +1144,9 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
                   </div>
                 )}
 
-                {/* About this room - 모바일 */}
-                {roomData.roomDescriptionI18n && (
-                  <div className="lg:hidden flex flex-col gap-2">
-                    <p className="text-[16px] font-bold leading-[24px] tracking-[-0.2px] text-[#14151a]">
-                      About this room
-                    </p>
-                    <p className={`text-[16px] font-normal leading-[24px] tracking-[-0.2px] text-[#14151a] whitespace-pre-wrap ${!showFullDescription ? 'line-clamp-4 max-h-[96px] overflow-hidden' : ''}`}>
-                      {roomData.roomDescriptionI18n}
-                    </p>
-                    <button
-                      onClick={() => setShowFullDescription(!showFullDescription)}
-                      className="bg-[rgba(10,15,41,0.04)] rounded-full px-[10px] py-[6px] flex items-center justify-center gap-[2px] cursor-pointer hover:bg-[rgba(10,15,41,0.08)]"
-                    >
-                      <span className="text-[14px] font-medium leading-[20px] tracking-[-0.1px] text-[#14151a] px-1">
-                        {showFullDescription ? "Show less" : "Show more"}
-                      </span>
-                      <ChevronRight className={`h-4 w-4 text-[#14151a] transition-transform ${showFullDescription ? 'rotate-90' : ''}`} />
-                    </button>
-                  </div>
-                )}
-
                 {/* About this room - 데스크톱 */}
                 {roomData.roomDescriptionI18n && (
-                  <div className="hidden lg:flex bg-white rounded-[24px] px-5 py-4 flex-col gap-2">
+                  <div className="bg-white rounded-[24px] px-5 py-4 flex-col gap-2 flex">
                     <p className="text-[16px] font-bold leading-[24px] tracking-[-0.2px] text-[#14151a]">
                       About this room
                     </p>
@@ -914,34 +1161,13 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
                         {showFullDescription ? "Show less" : "Show more"}
                       </span>
                       <ChevronRight className={`h-4 w-4 text-[#14151a] transition-transform ${showFullDescription ? 'rotate-90' : ''}`} />
-                    </button>
-                  </div>
-                )}
-
-                {/* Rules - 모바일 */}
-                {roomData.roomRulesI18n && (
-                  <div className="lg:hidden flex flex-col gap-2">
-                    <p className="text-[16px] font-bold leading-[24px] tracking-[-0.2px] text-[#14151a]">
-                      Rules
-                    </p>
-                    <p className={`text-[16px] font-normal leading-[24px] tracking-[-0.2px] text-[#14151a] whitespace-pre-wrap ${!showFullRules ? 'line-clamp-4 max-h-[96px] overflow-hidden' : ''}`}>
-                      {roomData.roomRulesI18n}
-                    </p>
-                    <button
-                      onClick={() => setShowFullRules(!showFullRules)}
-                      className="bg-[rgba(10,15,41,0.04)] rounded-full px-[10px] py-[6px] flex items-center justify-center gap-[2px] cursor-pointer hover:bg-[rgba(10,15,41,0.08)]"
-                    >
-                      <span className="text-[14px] font-medium leading-[20px] tracking-[-0.1px] text-[#14151a] px-1">
-                        {showFullRules ? "Show less" : "Show more"}
-                      </span>
-                      <ChevronRight className={`h-4 w-4 text-[#14151a] transition-transform ${showFullRules ? 'rotate-90' : ''}`} />
                     </button>
                   </div>
                 )}
 
                 {/* Rules - 데스크톱 */}
                 {roomData.roomRulesI18n && (
-                  <div className="hidden lg:flex bg-white rounded-[24px] px-5 py-4 flex-col gap-2">
+                  <div className="bg-white rounded-[24px] px-5 py-4 flex-col gap-2 flex">
                     <p className="text-[16px] font-bold leading-[24px] tracking-[-0.2px] text-[#14151a]">
                       Rules
                     </p>
@@ -960,21 +1186,8 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
                   </div>
                 )}
 
-                {/* Room location - 모바일 */}
-                <div className="lg:hidden flex flex-col gap-2">
-                  <div className="flex flex-col gap-0">
-                    <p className="text-[16px] font-bold leading-[24px] tracking-[-0.2px] text-[#14151a]">
-                      Room location
-                    </p>
-                    <p className="text-[14px] font-semibold leading-[20px] tracking-[-0.1px] text-[rgba(15,19,36,0.6)]">
-                      {roomData.residenceFullAddress}
-                    </p>
-                  </div>
-                  <div id="map" className="h-[200px] rounded-[12px] bg-gray-200 overflow-hidden flex items-center justify-center naver-map-container" style={{ position: 'relative', zIndex: 1 }} />
-                </div>
-
                 {/* Room location - 데스크톱 */}
-                <div className="hidden lg:flex bg-white rounded-[24px] px-5 py-4 flex-col gap-2">
+                <div className="bg-white rounded-[24px] px-5 py-4 flex-col gap-2 flex">
                   <div className="flex flex-col gap-0">
                     <p className="text-[16px] font-bold leading-[24px] tracking-[-0.2px] text-[#14151a]">
                       Room location
@@ -985,29 +1198,10 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
                   </div>
                   <div id="map-desktop" className="h-[200px] rounded-[12px] bg-gray-200 overflow-hidden flex items-center justify-center naver-map-container" style={{ position: 'relative', zIndex: 1 }} />
                 </div>
-
-                {/* About the host - 모바일 전용 */}
-                <div className="lg:hidden flex flex-col gap-2">
-                  <p className="text-[16px] font-bold leading-[24px] tracking-[-0.2px] text-[#14151a]">
-                    {messages?.roomDetail?.aboutGosiwon || 'About the host'}
-                  </p>
-                  <p className={`text-[16px] font-normal leading-[24px] tracking-[-0.2px] text-[#14151a] whitespace-pre-wrap ${!showFullDescription ? 'line-clamp-4 max-h-[96px] overflow-hidden' : ''}`}>
-                    {roomData.residenceDescriptionI18n}
-                  </p>
-                  <button
-                    onClick={() => setShowFullDescription(!showFullDescription)}
-                    className="bg-[rgba(10,15,41,0.04)] rounded-full px-[10px] py-[6px] flex items-center justify-center gap-[2px] cursor-pointer hover:bg-[rgba(10,15,41,0.08)]"
-                  >
-                    <span className="text-[14px] font-medium leading-[20px] tracking-[-0.1px] text-[#14151a] px-1">
-                      {showFullDescription ? "Show less" : "Show more"}
-                    </span>
-                    <ChevronRight className={`h-4 w-4 text-[#14151a] transition-transform ${showFullDescription ? 'rotate-90' : ''}`} />
-                  </button>
-                </div>
               </div>
 
               {/* 우측 예약 사이드바 - 데스크톱만 표시 */}
-              <div className="hidden lg:block w-[368px]">
+              <div className="w-[368px]">
                 <BookingSidebar
                   price={roomData.pricePerNight}
                   originalPrice={roomData.pricePerNight}
@@ -1039,14 +1233,22 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
         {/* 관련 숙소들 - content가 있을 때만 표시 */}
         {relatedRooms.length > 0 && (
           <>
-            {/* Divider */}
-            <div className="bg-[#FFF] py-12">
+            {/* Divider - 모바일 */}
+            <div className="lg:hidden bg-[#FFF] py-12">
               <div className="mx-auto max-w-[1200px] px-4">
                 <div className="h-px bg-[#e9eaec] w-full" />
               </div>
             </div>
 
-            <div className="bg-[#FFF] pb-20">
+            {/* Divider - 데스크톱 */}
+            <div className="hidden lg:block bg-[#F7F7F8] py-12">
+              <div className="mx-auto max-w-[1200px] px-4">
+                <div className="h-px bg-[#e9eaec] w-full" />
+              </div>
+            </div>
+
+            {/* Find more rooms - 모바일 */}
+            <div className="lg:hidden bg-[#FFF] pb-28">
               <div className="mx-auto max-w-[1200px] px-4">
                 <div className="flex items-center justify-between mb-[18px]">
                   <div className="flex items-center gap-2">
@@ -1054,7 +1256,7 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
                       Find more rooms by this host
                     </h2>
                   </div>
-                  
+
                   {totalRoomPages > 1 && (
                     <div className="flex items-center gap-4">
                       <button
@@ -1075,25 +1277,57 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
                   )}
                 </div>
 
-                <div className="hidden lg:grid grid-cols-5 gap-4">
-                  {relatedRooms.map((room) => (
-                    <RelatedRoomCard
-                      key={room.roomIdentifier}
-                      room={room}
-                      variant="desktop"
-                      onClick={handleRoomClick}
-                      onLikeToggle={toggleRelatedRoomLike}
-                    />
-                  ))}
-                </div>
-
                 {/* 모바일용 스크롤 가능한 레이아웃 */}
-                <div className="lg:hidden flex gap-3 overflow-x-auto pb-4 -mx-4 px-4 scrollbar-hide">
+                <div className="flex gap-3 overflow-x-auto pb-4 -mx-4 px-4 scrollbar-hide">
                   {relatedRooms.map((room) => (
                     <RelatedRoomCard
                       key={room.roomIdentifier}
                       room={room}
                       variant="mobile"
+                      onClick={handleRoomClick}
+                      onLikeToggle={toggleRelatedRoomLike}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Find more rooms - 데스크톱 */}
+            <div className="hidden lg:block bg-[#F7F7F8] pb-20">
+              <div className="mx-auto max-w-[1200px] px-4">
+                <div className="flex items-center justify-between mb-[18px]">
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-[20px] font-extrabold leading-[28px] tracking-[-0.2px] text-[#14151a]">
+                      Find more rooms by this host
+                    </h2>
+                  </div>
+
+                  {totalRoomPages > 1 && (
+                    <div className="flex items-center gap-4">
+                      <button
+                        onClick={handlePreviousPage}
+                        disabled={currentRoomPage === 0}
+                        className="bg-[rgba(10,15,41,0.04)] rounded-full p-2 cursor-pointer hover:bg-[rgba(10,15,41,0.08)] disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <ChevronLeft className="h-4 w-4 text-[#14151a]" />
+                      </button>
+                      <button
+                        onClick={handleNextPage}
+                        disabled={currentRoomPage >= totalRoomPages - 1}
+                        className="bg-[rgba(10,15,41,0.04)] rounded-full p-2 cursor-pointer hover:bg-[rgba(10,15,41,0.08)] disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <ChevronRight className="h-4 w-4 text-[#14151a]" />
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-5 gap-4">
+                  {relatedRooms.map((room) => (
+                    <RelatedRoomCard
+                      key={room.roomIdentifier}
+                      room={room}
+                      variant="desktop"
                       onClick={handleRoomClick}
                       onLikeToggle={toggleRelatedRoomLike}
                     />

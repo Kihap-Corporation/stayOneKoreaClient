@@ -110,6 +110,7 @@ export function BookingSidebar({
   const [isReserving, setIsReserving] = useState(false)
   const [datePickerLocale, setDatePickerLocale] = useState<any>(undefined)
   const [isLiked, setIsLiked] = useState(roomLikeCheck)
+  const [showFullHostDescription, setShowFullHostDescription] = useState(false)
   const calendarRef = useRef<HTMLDivElement>(null)
 
   // 숙박일수 계산
@@ -534,7 +535,7 @@ export function BookingSidebar({
 
             {/* 예약 버튼 */}
             <Button
-              className="w-full h-12 rounded-full bg-[#e0004d] hover:bg-[#c2003f] px-4 py-3 shadow-[0px_1px_2px_0px_rgba(20,21,26,0.05)]"
+              className="w-full h-12 rounded-full bg-[#e0004d] hover:bg-[#c2003f] px-4 py-3 shadow-[0px_1px_2px_0px_rgba(20,21,26,0.05)] disabled:opacity-50 disabled:cursor-not-allowed"
               onClick={handleReservation}
               disabled={isReserving || !checkInDate || !checkOutDate}
             >
@@ -625,9 +626,23 @@ export function BookingSidebar({
         </Button>
 
         {/* 호스트 설명 */}
-        <p className="text-[16px] font-normal leading-[24px] tracking-[-0.2px] text-[#14151a]">
-          {host.description}
-        </p>
+        <div className="flex flex-col gap-2">
+          <p className={`text-[16px] font-normal leading-[24px] tracking-[-0.2px] text-[#14151a] whitespace-pre-wrap ${!showFullHostDescription ? 'line-clamp-4 max-h-[96px] overflow-hidden' : ''}`}>
+            {host.description}
+          </p>
+          <button
+            onClick={() => setShowFullHostDescription(!showFullHostDescription)}
+            className="mx-auto rounded-full bg-transparent hover:bg-[rgba(10,15,41,0.04)] px-4 py-2 transition-colors duration-200 flex items-center justify-center gap-1"
+            style={{
+              borderRadius: 'var(--measurements-radius-full, 999px)',
+              background: 'var(--background-button-ghost, rgba(255, 255, 255, 0.00))'
+            }}
+          >
+            <span className="text-[14px] font-medium leading-[20px] tracking-[-0.1px] text-[#14151a] text-center">
+              {showFullHostDescription ? 'Show less' : 'Read more >'}
+            </span>
+          </button>
+        </div>
       </div>
     </div>
   )
