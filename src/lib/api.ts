@@ -1,4 +1,5 @@
 import { useLanguage } from "@/components/language-provider"
+import { toast } from "sonner"
 
 // 전역적으로 messages를 사용하기 위해 함수형으로 변경
 let globalMessages: any = null
@@ -12,7 +13,7 @@ const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
 // 공통 API 응답 형식
 export interface ApiResponse<T = any> {
   status: number
-  code: string
+  code: number | string
   message: string
   data: T
 }
@@ -69,17 +70,16 @@ const refreshToken = async (): Promise<boolean> => {
 
     const data: ApiResponse = await response.json()
 
-    if (response.ok && (data.status === 200 || data.code === "SUCCESS")) {
+    if (response.ok) {
       return true // 재발급 성공
     } else {
       // 재발급 실패 - 로그아웃 처리
-      alert(globalMessages?.auth?.accountLoggedOut || "계정이 로그아웃 되었습니다. 다시 로그인 해주세요")
+      toast.error(globalMessages?.auth?.accountLoggedOut || "계정이 로그아웃 되었습니다. 다시 로그인 해주세요")
       await handleLogout()
       return false
     }
   } catch (error) {
-    console.error('Token refresh error:', error)
-    alert(globalMessages?.auth?.accountLoggedOut || "계정이 로그아웃 되었습니다. 다시 로그인 해주세요")
+    toast.error(globalMessages?.auth?.accountLoggedOut || "계정이 로그아웃 되었습니다. 다시 로그인 해주세요")
     await handleLogout()
     return false
   }

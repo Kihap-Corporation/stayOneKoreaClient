@@ -26,14 +26,17 @@ const facilityIcons: Record<string, React.ReactNode> = {
 
 interface RoomFacility {
   facilityType: string
-  iconUrl: string
-  nameI18n: {
+  nameI18n?: {
     [key: string]: string
   }
+  customNameI18n?: {
+    [key: string]: string
+  }
+  iconUrl?: string
 }
 
 interface ReservationAPIResponse {
-  reservationId: number
+  reservationIdentifier: string
   checkInDate: string
   checkOutDate: string
   totalNights: number
@@ -42,6 +45,7 @@ interface ReservationAPIResponse {
   startToReserve: string
   endToReserve: string
   reservationStatus: string
+  curUnit: string
   roomName: string
   roomIdentifier: string
   residenceName: string
@@ -426,15 +430,11 @@ export default function ReservationPage() {
   // Facility 이름 가져오기 (다국어 지원)
   const getFacilityName = (facility: RoomFacility) => {
     const languageCode = currentLanguage.code === 'ko' ? 'ko' : currentLanguage.code
-    return facility.nameI18n?.[languageCode] || facility.facilityType
+    return facility.nameI18n?.[languageCode] || facility.customNameI18n?.[languageCode] || facility.facilityType
   }
   
-  // Facility 아이콘 가져오기 (서버 URL 우선, 폴백으로 로컬 아이콘 사용)
+  // Facility 아이콘 가져오기 (iconUrl 우선, 없으면 로컬 아이콘 사용)
   const getFacilityIcon = (facility: RoomFacility) => {
-    if (facility.iconUrl) {
-      return <img src={facility.iconUrl} alt={facility.facilityType} className="h-5 w-5" />
-    }
-    
     const typeMap: Record<string, string> = {
       'WIFI': 'wifi',
       'WASHING_MACHINE': 'washingMachine',
@@ -482,20 +482,184 @@ export default function ReservationPage() {
         </div>
       </div>
       
-      <main className="flex-1 bg-[#f7f7f8] py-10 px-4">
+      <main className="flex-1 bg-[#f7f7f8] py-4 lg:py-10 px-4">
         <div className="mx-auto max-w-7xl xl:max-w-[1200px]">
+          {/* Booking Summary - 모바일 (상단에 표시) */}
+          <div className="lg:hidden mb-4">
+            {/* Room Card */}
+            <div className="bg-white border border-[#dee0e3] rounded-[16px] overflow-hidden mb-4">
+              <div className="h-[200px] relative">
+                <img
+                  src={reservationData.room.image}
+                  alt={reservationData.room.title}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="p-5">
+                <h3 className="text-lg font-bold mb-0 tracking-[-0.2px]">{reservationData.room.title}</h3>
+                <p className="text-lg text-[rgba(13,17,38,0.4)] font-medium tracking-[-0.2px]">{reservationData.room.propertyName}</p>
+                <p className="text-sm text-[rgba(13,17,38,0.4)] font-medium tracking-[-0.1px]">{reservationData.room.location}</p>
+              </div>
+            </div>
+
+            {/* Dates Card */}
+            <div className="bg-white border border-[#dee0e3] rounded-[16px] p-5 flex items-center justify-between mb-4">
+              <div className="flex gap-2 items-center">
+                <div className="w-[116px]">
+                  <p className="text-sm text-[#14151a] font-medium mb-1 tracking-[-0.1px]">
+                    {messages?.reservation?.checkIn || "Check-in"}
+                  </p>
+                  <p className="text-base font-bold tracking-[-0.2px]">
+                    {checkInFormatted.weekday}, {checkInFormatted.month} {checkInFormatted.day}
+                  </p>
+                  <p className="text-xs text-[rgba(13,17,38,0.4)] font-medium">{checkInFormatted.year}</p>
+                </div>
+                
+                <ChevronRight className="h-4 w-4 text-gray-400" />
+                
+                <div className="w-[116px]">
+                  <p className="text-sm text-[#14151a] font-medium mb-1 tracking-[-0.1px]">
+                    {messages?.reservation?.checkOut || "Check-out"}
+                  </p>
+                  <p className="text-base font-bold tracking-[-0.2px]">
+                    {checkOutFormatted.weekday}, {checkOutFormatted.month} {checkOutFormatted.day}
+                  </p>
+                  <p className="text-xs text-[rgba(13,17,38,0.4)] font-medium">{checkOutFormatted.year}</p>
+                </div>
+              </div>
+              
+              <div className="bg-[#f7f7f8] rounded-xl w-16 h-16 flex flex-col items-center justify-center text-center">
+                <p className="text-xl font-extrabold tracking-[-0.2px]">{reservationData.nights}</p>
+                <p className="text-sm text-[rgba(13,17,38,0.4)] font-medium tracking-[-0.1px]">
+                  {messages?.reservation?.nights || "nights"}
+                </p>
+              </div>
+            </div>
+
+            {/* Price Breakdown */}
+            <div className="flex flex-col gap-2 mb-4">
+              <div className="bg-white rounded-[16px] p-5">
+                <div className="flex justify-between mb-2 text-sm">
+                  <span className="text-[rgba(13,17,38,0.4)] font-medium tracking-[-0.1px]">
+                    {messages?.reservation?.roomPricePerNight || "Room price per night"}
+                  </span>
+                  <span className="font-medium tracking-[-0.1px]">
+                    ${reservationData.room.pricePerNight.toLocaleString()}
+                  </span>
+                </div>
+                
+                <div className="flex justify-between mb-2 text-sm">
+                  <span className="text-[rgba(13,17,38,0.4)] font-medium tracking-[-0.1px]">
+                    {messages?.reservation?.nightsCount?.replace("{count}", String(reservationData.nights)) || `× ${reservationData.nights} nights`}
+                  </span>
+                  <span className="font-medium tracking-[-0.1px]">
+                    {messages?.reservation?.nightsCount?.replace("{count}", String(reservationData.nights)) || `× ${reservationData.nights} nights`}
+                  </span>
+                </div>
+                
+                <div className="flex justify-between mb-2 text-sm">
+                  <span className="text-[rgba(13,17,38,0.4)] font-medium tracking-[-0.1px]">
+                    {messages?.reservation?.roomCount?.replace("{count}", "1") || "× 1 room"}
+                  </span>
+                  <span className="font-medium tracking-[-0.1px]">
+                    {messages?.reservation?.roomCount?.replace("{count}", "1") || "× 1 room"}
+                  </span>
+                </div>
+                
+                <div className="flex justify-between mb-4 text-sm text-[#26bd6c]">
+                  <span className="font-medium tracking-[-0.1px]">
+                    {messages?.reservation?.bookingFees || "Booking fees"}
+                  </span>
+                  <span className="font-medium tracking-[-0.1px]">
+                    {messages?.reservation?.free || "FREE"}
+                  </span>
+                </div>
+                
+                <div className="border-t border-[#e9eaec] pt-2 mb-2" />
+                
+                <div className="flex justify-between text-base">
+                  <span className="font-extrabold tracking-[-0.2px]">
+                    {messages?.reservation?.price || "Price"}
+                  </span>
+                  <span className="font-extrabold tracking-[-0.2px] underline">
+                    ${reservationData.totalPrice.toLocaleString()}
+                  </span>
+                </div>
+              </div>
+              
+              <div className="text-xs text-[rgba(10,15,41,0.25)] font-medium">
+                <p className="mb-1">{messages?.reservation?.includedInPrice || "Included in price: Tax 10%"}</p>
+                <p>
+                  {messages?.reservation?.currencyNote || "Your currency selections affect the prices"}
+                </p>
+              </div>
+            </div>
+          </div>
+
           <div className="flex gap-6 flex-col lg:flex-row">
             {/* Left Column - Form Sections */}
             <div className="flex-1 flex flex-col gap-4">
-              {/* Facilities Section */}
-              <div className="bg-white rounded-[24px] p-5">
+              {/* Facilities Section - 모바일 */}
+              <div className="lg:hidden bg-white rounded-[24px] p-5">
+                <h2 className="text-base font-bold mb-4 tracking-[-0.2px]">
+                  {messages?.reservation?.facilities || "Facilities"}
+                </h2>
+                <div className="grid grid-cols-2 gap-2 mb-4">
+                  {displayFacilities.map((facility, index) => (
+                    <div key={index} className="flex items-center gap-1 text-sm">
+                      {facility.iconUrl ? (
+                        <img
+                          src={facility.iconUrl}
+                          alt={getFacilityName(facility)}
+                          className="h-5 w-5 object-contain"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement
+                            target.style.display = 'none'
+                          }}
+                        />
+                      ) : (
+                        getFacilityIcon(facility)
+                      )}
+                      <span className="font-medium tracking-[-0.2px]">{getFacilityName(facility)}</span>
+                    </div>
+                  ))}
+                </div>
+                {reservationData.facilities.length > 6 && (
+                  <Button
+                    variant="ghost"
+                    className="w-full bg-[rgba(10,15,41,0.04)] hover:bg-[rgba(10,15,41,0.08)] rounded-[10px] text-sm font-medium px-[10px] py-[6px]"
+                    onClick={() => setShowAllFacilities(!showAllFacilities)}
+                  >
+                    {showAllFacilities 
+                      ? messages?.common?.close || "Close"
+                      : messages?.reservation?.showAllFacilities?.replace("{count}", String(reservationData.facilities.length)) || `Show all ${reservationData.facilities.length} facilities`
+                    }
+                    <ChevronRight className="ml-1 h-4 w-4" />
+                  </Button>
+                )}
+              </div>
+
+              {/* Facilities Section - 데스크톱 */}
+              <div className="hidden lg:block bg-white rounded-[24px] p-5">
                 <h2 className="text-base font-bold mb-4 tracking-[-0.2px]">
                   {messages?.reservation?.facilities || "Facilities"}
                 </h2>
                 <div className="grid grid-cols-3 gap-2 mb-4">
                   {displayFacilities.map((facility, index) => (
                     <div key={index} className="flex items-center gap-1 text-sm">
-                      {getFacilityIcon(facility)}
+                      {facility.iconUrl ? (
+                        <img
+                          src={facility.iconUrl}
+                          alt={getFacilityName(facility)}
+                          className="h-5 w-5 object-contain"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement
+                            target.style.display = 'none'
+                          }}
+                        />
+                      ) : (
+                        getFacilityIcon(facility)
+                      )}
                       <span className="font-medium tracking-[-0.2px]">{getFacilityName(facility)}</span>
                     </div>
                   ))}
@@ -723,8 +887,8 @@ export default function ReservationPage() {
               </div>
             </div>
 
-            {/* Right Column - Booking Summary */}
-            <div className="lg:w-[368px] flex flex-col gap-4">
+            {/* Right Column - Booking Summary - 데스크톱만 표시 */}
+            <div className="hidden lg:flex lg:w-[368px] flex-col gap-4">
               {/* Room Card */}
               <div className="bg-white border border-[#dee0e3] rounded-[16px] overflow-hidden">
                 <div className="h-[200px] relative">

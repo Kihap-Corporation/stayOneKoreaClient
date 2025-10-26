@@ -9,7 +9,7 @@ interface RelatedRoom {
   pricePerNight: number
   mainImageUrl: string
   residenceIdentifier: string
-  isLiked?: boolean
+  roomLikeCheck: boolean
 }
 
 interface RelatedRoomCardProps {
@@ -65,7 +65,7 @@ export function RelatedRoomCard({
               className="bg-[rgba(10,15,41,0.04)] p-1 rounded-md hover:bg-[rgba(10,15,41,0.1)] transition-colors"
               onClick={handleLikeClick}
             >
-              {room.isLiked ? (
+              {room.roomLikeCheck ? (
                 <svg width="18" height="16" viewBox="0 0 18 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path
                     d="M15.8695 1.96415C17.7545 3.85415 17.8195 6.86415 16.0662 8.82748L8.9995 15.9041L1.9345 8.82748C0.181164 6.86415 0.246997 3.84915 2.13116 1.96415C4.01866 0.0774834 7.03783 0.0141499 9.00116 1.77415C10.9587 0.0166499 13.9837 0.0749834 15.8695 1.96415V1.96415Z"
@@ -127,7 +127,7 @@ export function RelatedRoomCard({
             className="bg-[rgba(10,15,41,0.04)] p-1 rounded-md hover:bg-[rgba(10,15,41,0.1)] transition-colors"
             onClick={handleLikeClick}
           >
-            {room.isLiked ? (
+            {room.roomLikeCheck ? (
               <svg width="18" height="16" viewBox="0 0 18 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path
                   d="M15.8695 1.96415C17.7545 3.85415 17.8195 6.86415 16.0662 8.82748L8.9995 15.9041L1.9345 8.82748C0.181164 6.86415 0.246997 3.84915 2.13116 1.96415C4.01866 0.0774834 7.03783 0.0141499 9.00116 1.77415C10.9587 0.0166499 13.9837 0.0749834 15.8695 1.96415V1.96415Z"

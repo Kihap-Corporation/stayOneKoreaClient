@@ -8,10 +8,10 @@ import frMessages from "@/messages/fr"
 import zhMessages from "@/messages/zh"
 
 export const languages = [
-  { code: 'en', name: 'English', flag: '🇺🇸' },
-  { code: 'fr', name: 'Français', flag: '🇫🇷' },
-  { code: 'zh', name: '中文', flag: '🇨🇳' },
-  { code: 'ko', name: '한국어', flag: '🇰🇷' },
+  { code: 'en', name: 'English', flag: '/icons/usa.png' },
+  { code: 'fr', name: 'Français', flag: '/icons/fr.png' },
+  { code: 'zh', name: '中文', flag: '/icons/zh.png' },
+  { code: 'ko', name: '한국어', flag: '/icons/kor.png' },
 ] as const
 
 // 통화는 USD로 고정
@@ -56,7 +56,7 @@ interface LanguageProviderProps {
 const phoneFormats = {
   ko: {
     countryCode: '+82',
-    flag: '🇰🇷',
+    flag: '/icons/kor.png',
     placeholder: '010-1234-5678',
     format: (value: string) => {
       const digits = value.replace(/[^\d]/g, '')
@@ -68,7 +68,7 @@ const phoneFormats = {
   },
   en: {
     countryCode: '+1',
-    flag: '🇺🇸',
+    flag: '/icons/usa.png',
     placeholder: '(123) 456-7890',
     format: (value: string) => {
       const digits = value.replace(/[^\d]/g, '')
@@ -80,7 +80,7 @@ const phoneFormats = {
   },
   zh: {
     countryCode: '+86',
-    flag: '🇨🇳',
+    flag: '/icons/zh.png',
     placeholder: '138 0013 8000',
     format: (value: string) => {
       const digits = value.replace(/[^\d]/g, '')
@@ -92,7 +92,7 @@ const phoneFormats = {
   },
   fr: {
     countryCode: '+33',
-    flag: '🇫🇷',
+    flag: '/icons/fr.png',
     placeholder: '06 12 34 56 78',
     format: (value: string) => {
       const digits = value.replace(/[^\d]/g, '')

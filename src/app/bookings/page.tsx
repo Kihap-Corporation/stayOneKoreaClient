@@ -11,7 +11,7 @@ import { ChevronRight, Clock, CheckCircle, XCircle, Calendar, AlertTriangle } fr
 
 // Booking 타입 정의 (API 응답에 맞게 수정)
 interface Booking {
-  reservationId: number
+  reservationIdentifier: string
   checkInDate: string
   checkOutDate: string
   totalNights: number
@@ -142,13 +142,13 @@ export default function BookingsPage() {
     fetchBookings()
   }, [currentPage, currentLanguage])
 
-  const handleBookingClick = (reservationId: number, status: string) => {
+  const handleBookingClick = (reservationIdentifier: string, status: string) => {
     if (status === 'RESERVATION_UNDER_WAY') {
       // 예약 진행 중인 상태 - 예약 페이지로 이동
-      router.push(`/reservation/${reservationId}`)
+      router.push(`/reservation/${reservationIdentifier}`)
     } else {
       // 예약 완료된 상태 - 예약 상세 페이지로 이동
-      router.push(`/bookings/${reservationId}`)
+      router.push(`/bookings/${reservationIdentifier}`)
     }
   }
 
@@ -200,9 +200,9 @@ export default function BookingsPage() {
 
                   return (
                     <div
-                      key={booking.reservationId}
+                      key={booking.reservationIdentifier}
                       className="bg-white border border-[#dee0e3] rounded-[16px] overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
-                      onClick={() => handleBookingClick(booking.reservationId, booking.reservationStatus)}
+                      onClick={() => handleBookingClick(booking.reservationIdentifier, booking.reservationStatus)}
                     >
                       {/* Status Header */}
                       <div className={`${statusInfo.color} border ${statusInfo.color.includes('border') ? '' : 'border-transparent'} px-4 py-2 flex items-center justify-between`}>
@@ -217,8 +217,8 @@ export default function BookingsPage() {
                         </div>
                       </div>
 
-                      {/* Content */}
-                      <div className="flex">
+                      {/* Content - 데스크톱 버전 */}
+                      <div className="hidden lg:flex">
                         {/* Image */}
                         <div className="w-[205px] h-[205px] relative flex-shrink-0">
                           <img
@@ -301,6 +301,89 @@ export default function BookingsPage() {
                           </div>
                         </div>
                       </div>
+
+                      {/* Content - 모바일 버전 */}
+                      <div className="lg:hidden">
+                        {/* Image */}
+                        <div className="w-full h-[180px] relative">
+                          <img
+                            src={booking.roomImageUrl}
+                            alt={booking.roomName}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              // 이미지 로드 실패 시 fallback
+                              const target = e.target as HTMLImageElement
+                              target.src = '/logo/desktop_logo.png' // 기본 로고로 대체
+                            }}
+                          />
+                          {/* 생성일 표시 - 좌측 상단 */}
+                          <div className="absolute top-3 left-3 bg-black bg-opacity-60 text-white px-2 py-1 rounded text-xs font-medium">
+                            {formatCreatedAt(booking.createdAt)}
+                          </div>
+                        </div>
+
+                        {/* Info */}
+                        <div className="p-4">
+                          {/* Title Section */}
+                          <div className="mb-4">
+                            <h3 className="text-xl font-bold tracking-[-0.2px] leading-[28px] mb-2">
+                              {booking.roomName}
+                            </h3>
+                            <p className="text-base text-[rgba(13,17,38,0.4)] font-medium tracking-[-0.2px] leading-[24px] mb-2">
+                              {booking.residenceName}
+                            </p>
+                            <div className="flex items-center gap-1">
+                              <span className="text-sm text-[rgba(13,17,38,0.4)] font-medium tracking-[-0.1px]">
+                                ID: {booking.roomIdentifier}
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Dates - 모바일에서는 세로 배치 */}
+                          <div className="flex gap-4 items-center mb-4">
+                            {/* Check-in */}
+                            <div className="flex-1">
+                              <span className="text-sm text-[#14151a] font-medium tracking-[-0.1px] block mb-1">
+                                {messages?.bookings?.checkIn || "Check-in"}
+                              </span>
+                              <div className="flex flex-col">
+                                <span className="text-base font-bold tracking-[-0.2px]">
+                                  {checkInFormatted.weekday}, {checkInFormatted.month} {checkInFormatted.day}
+                                </span>
+                                <span className="text-xs text-[rgba(13,17,38,0.4)] font-medium">
+                                  {checkInFormatted.year}
+                                </span>
+                              </div>
+                            </div>
+
+                            {/* Arrow */}
+                            <ChevronRight className="h-5 w-5 text-gray-400 flex-shrink-0 mt-4" />
+
+                            {/* Check-out */}
+                            <div className="flex-1">
+                              <span className="text-sm text-[#14151a] font-medium tracking-[-0.1px] block mb-1">
+                                {messages?.bookings?.checkOut || "Check-out"}
+                              </span>
+                              <div className="flex flex-col">
+                                <span className="text-base font-bold tracking-[-0.2px]">
+                                  {checkOutFormatted.weekday}, {checkOutFormatted.month} {checkOutFormatted.day}
+                                </span>
+                                <span className="text-xs text-[rgba(13,17,38,0.4)] font-medium">
+                                  {checkOutFormatted.year}
+                                </span>
+                              </div>
+                            </div>
+
+                            {/* Nights Badge */}
+                            <div className="bg-[#f7f7f8] rounded-xl w-14 h-14 flex flex-col items-center justify-center text-center">
+                              <span className="text-lg font-extrabold tracking-[-0.2px]">{booking.totalNights}</span>
+                              <span className="text-xs text-[rgba(13,17,38,0.4)] font-medium tracking-[-0.1px]">
+                                {messages?.bookings?.nights || "nights"}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   )
                 })
@@ -310,7 +393,7 @@ export default function BookingsPage() {
             {/* Pagination */}
             {totalPages > 1 && (
               <div className="flex justify-center py-8">
-                <div className="flex gap-2 items-center">
+                <div className="flex gap-2 items-center flex-wrap justify-center">
                   {Array.from({ length: totalPages }, (_, i) => i).map((pageIndex) => {
                     const pageNumber = pageIndex + 1 // UI에서는 1부터 표시
                     return (
@@ -319,7 +402,7 @@ export default function BookingsPage() {
                         variant={pageIndex === currentPage ? "default" : "outline"}
                         size="sm"
                         onClick={() => setCurrentPage(pageIndex)} // API에서는 0부터 시작
-                        className={`w-10 h-10 rounded-xl ${
+                        className={`w-10 h-10 lg:w-10 lg:h-10 rounded-xl text-sm lg:text-base ${
                           pageIndex === currentPage
                             ? 'bg-[rgba(10,15,41,0.04)] text-[#14151a] border-[#dee0e3]'
                             : 'bg-white hover:bg-[rgba(10,15,41,0.04)] border-[#dee0e3]'

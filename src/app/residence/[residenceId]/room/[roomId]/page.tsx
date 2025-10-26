@@ -18,6 +18,7 @@ import { Pagination, Navigation } from 'swiper/modules'
 import 'swiper/css'
 import 'swiper/css/pagination'
 import 'swiper/css/navigation'
+import { toast } from "sonner"
 
 interface RoomDetailPageProps {
   params: {
@@ -66,6 +67,7 @@ interface RoomDetail {
   roomImages: RoomImage[]
   roomFacilities: RoomFacility[]
   reservedDates: ReservedDate[]
+  roomLikeCheck: boolean
 }
 
 interface RelatedRoom {
@@ -75,7 +77,7 @@ interface RelatedRoom {
   pricePerNight: number
   mainImageUrl: string
   residenceIdentifier: string
-  isLiked?: boolean
+  roomLikeCheck: boolean
 }
 
 // 시설 아이콘 매핑
@@ -145,33 +147,18 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
     return `${month}/${day}/${year}`
   }
 
-  // 모바일용 체크인 날짜 변경 핸들러
-  const handleMobileCheckInChange = (date: Date | null) => {
-    setCheckInDate(date)
-
-    // 체크인을 선택하지 않으면 체크아웃 초기화
-    if (!date) {
-      setCheckOutDate(null)
-      return
+  // 모바일용 Range 달력 날짜 변경 핸들러
+  const handleMobileDateRangeChange = (dates: [Date | null, Date | null] | Date | null) => {
+    if (Array.isArray(dates)) {
+      const [start, end] = dates
+      setCheckInDate(start)
+      setCheckOutDate(end)
+      
+      // 체크인과 체크아웃이 모두 선택되면 달력 닫기
+      if (start && end) {
+        setIsMobileCalendarOpen(false)
+      }
     }
-
-    // 체크인 날짜가 체크아웃 날짜보다 늦으면 체크아웃 초기화
-    if (checkOutDate && date >= checkOutDate) {
-      setCheckOutDate(null)
-    }
-
-    setIsMobileCalendarOpen(false)
-  }
-
-  // 모바일용 체크아웃 날짜 변경 핸들러
-  const handleMobileCheckOutChange = (date: Date | null) => {
-    // 체크인이 선택되지 않으면 체크아웃 선택 불가
-    if (!checkInDate) {
-      return
-    }
-
-    setCheckOutDate(date)
-    setIsMobileCalendarOpen(false)
   }
 
   // 방 상세 정보 조회
@@ -184,7 +171,7 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
         const languageCode = currentLanguage.code
         
         const response = await apiGet(
-          `/api/user/room/detail?residenceIdentifier=${params.residenceId}&roomIdentifier=${params.roomId}&languageCode=${languageCode}`
+          `/api/room/detail?residenceIdentifier=${params.residenceId}&roomIdentifier=${params.roomId}&languageCode=${languageCode}`
         )
 
         if (response.code === 200 && response.data) {
@@ -215,7 +202,7 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
         const languageCode = currentLanguage.code
         
         const response = await apiGet(
-          `/api/user/room/list?residenceIdentifier=${params.residenceId}&excludeRoomIdentifier=${params.roomId}&languageCode=${languageCode}&page=${currentRoomPage}&size=5`
+          `/api/room/list?residenceIdentifier=${params.residenceId}&excludeRoomIdentifier=${params.roomId}&languageCode=${languageCode}&page=${currentRoomPage}&size=5`
         )
 
         if (response.code === 200 && response.data) {
@@ -237,23 +224,67 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
     fetchRelatedRooms()
   }, [roomData, params.residenceId, params.roomId, currentLanguage, currentRoomPage])
 
-  // 예약된 날짜 필터링 함수
-  const filterReservedDates = (date: Date) => {
+  // 체크인 날짜 필터링 함수 (체크인 전용)
+  const filterCheckInDates = (date: Date) => {
     if (!roomData?.reservedDates) return true
 
-    const dateStr = date.toISOString().split('T')[0]
-    
+    const currentDate = new Date(date.getFullYear(), date.getMonth(), date.getDate())
+    currentDate.setHours(0, 0, 0, 0)
+
     for (const reserved of roomData.reservedDates) {
-      const checkIn = new Date(reserved.checkIn)
-      const checkOut = new Date(reserved.checkOut)
-      const currentDate = new Date(dateStr)
-      
-      // 체크인과 체크아웃 사이의 날짜는 선택 불가
-      if (currentDate >= checkIn && currentDate < checkOut) {
+      const reservedCheckIn = new Date(reserved.checkIn)
+      const reservedCheckOut = new Date(reserved.checkOut)
+      reservedCheckIn.setHours(0, 0, 0, 0)
+      reservedCheckOut.setHours(0, 0, 0, 0)
+
+      // 예약 기간 [checkIn, checkOut) 동안은 체크인 불가
+      // 예약된 체크인 날짜와 체크아웃 날짜 사이의 모든 날짜는 체크인 불가
+      if (currentDate.getTime() >= reservedCheckIn.getTime() && currentDate.getTime() < reservedCheckOut.getTime()) {
         return false
       }
     }
-    
+
+    return true
+  }
+
+  // 체크아웃 날짜 필터링 함수 (체크아웃 전용)
+  const filterCheckOutDates = (date: Date) => {
+    if (!roomData?.reservedDates || !checkInDate) return false
+
+    const currentDate = new Date(date.getFullYear(), date.getMonth(), date.getDate())
+    currentDate.setHours(0, 0, 0, 0)
+
+    const selectedCheckIn = new Date(checkInDate.getFullYear(), checkInDate.getMonth(), checkInDate.getDate())
+    selectedCheckIn.setHours(0, 0, 0, 0)
+
+    // 체크아웃은 체크인 다음날부터 시작해야 함 (최소 1박)
+    const nextDay = new Date(selectedCheckIn.getTime() + 24 * 60 * 60 * 1000)
+    if (currentDate.getTime() < nextDay.getTime()) {
+      return false
+    }
+
+    // 선택한 체크인 이후, 가장 가까운 예약의 체크인 날짜 찾기
+    let nearestReservedCheckIn: Date | null = null
+
+    for (const reserved of roomData.reservedDates) {
+      const reservedCheckIn = new Date(reserved.checkIn)
+      reservedCheckIn.setHours(0, 0, 0, 0)
+
+      // 선택한 체크인보다 이후에 있는 예약 중에서
+      if (reservedCheckIn.getTime() > selectedCheckIn.getTime()) {
+        // 가장 가까운 예약 찾기
+        if (!nearestReservedCheckIn || reservedCheckIn.getTime() < nearestReservedCheckIn.getTime()) {
+          nearestReservedCheckIn = reservedCheckIn
+        }
+      }
+    }
+
+    // 가장 가까운 예약의 체크인 날짜까지 선택 가능 (체크인 날짜 포함)
+    // 즉, 체크아웃 날짜는 다음 예약의 체크인 날짜까지 가능
+    if (nearestReservedCheckIn && currentDate.getTime() > nearestReservedCheckIn.getTime()) {
+      return false
+    }
+
     return true
   }
 
@@ -281,7 +312,7 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
     setRelatedRooms(prevRooms =>
       prevRooms.map(room =>
         room.roomIdentifier === roomIdentifier
-          ? { ...room, isLiked: !room.isLiked }
+          ? { ...room, roomLikeCheck: !room.roomLikeCheck }
           : room
       )
     )
@@ -294,7 +325,7 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
         setRelatedRooms(prevRooms =>
           prevRooms.map(room =>
             room.roomIdentifier === roomIdentifier
-              ? { ...room, isLiked: !room.isLiked }
+              ? { ...room, roomLikeCheck: !room.roomLikeCheck }
               : room
           )
         )
@@ -305,7 +336,7 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
       setRelatedRooms(prevRooms =>
         prevRooms.map(room =>
           room.roomIdentifier === roomIdentifier
-            ? { ...room, isLiked: !room.isLiked }
+            ? { ...room, roomLikeCheck: !room.roomLikeCheck }
             : room
         )
       )
@@ -681,17 +712,17 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
             </div>
           </div>
 
-          {/* Share and Save buttons */}
+          {/* Share and Save buttons - 모바일 전용 */}
           <div className="flex flex-col gap-2 mt-2">
             <Button 
               onClick={async () => {
                 try {
                   const currentUrl = window.location.href
                   await navigator.clipboard.writeText(currentUrl)
-                  alert(messages?.roomDetail?.shareSuccess || 'Link copied to clipboard!')
+                  toast.success(messages?.roomDetail?.shareSuccess || 'Link copied to clipboard!')
                 } catch (error) {
                   console.error('링크 복사 실패:', error)
-                  alert(messages?.roomDetail?.shareError || 'Failed to copy link')
+                  toast.error(messages?.roomDetail?.shareError || 'Failed to copy link')
                 }
               }}
               className="w-full h-10 rounded-full bg-white border border-[#dee0e3] hover:bg-gray-50 px-3 py-2.5 shadow-none"
@@ -701,8 +732,36 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
                 Share with friends
               </span>
             </Button>
-            <Button className="w-full h-10 rounded-full bg-white border border-[#dee0e3] hover:bg-gray-50 px-3 py-2.5 shadow-none">
-              <Heart className="h-5 w-5 text-[#14151a]" />
+            <Button 
+              onClick={async () => {
+                // 낙관적 업데이트: 먼저 UI 업데이트
+                setRoomData(prev => prev ? { ...prev, roomLikeCheck: !prev.roomLikeCheck } : prev)
+
+                try {
+                  const response = await apiPost(`/api/user/like?roomIdentifier=${params.roomId}`)
+                  
+                  // 응답 코드가 200이 아닌 경우 롤백
+                  if (response.code !== 200) {
+                    setRoomData(prev => prev ? { ...prev, roomLikeCheck: !prev.roomLikeCheck } : prev)
+                  }
+                } catch (error) {
+                  console.error('좋아요 토글 실패:', error)
+                  // 에러 발생 시 롤백
+                  setRoomData(prev => prev ? { ...prev, roomLikeCheck: !prev.roomLikeCheck } : prev)
+                }
+              }}
+              className="w-full h-10 rounded-full bg-white border border-[#dee0e3] hover:bg-gray-50 px-3 py-2.5 shadow-none"
+            >
+              {roomData.roomLikeCheck ? (
+                <svg width="18" height="16" viewBox="0 0 18 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path 
+                    d="M15.8695 1.96415C17.7545 3.85415 17.8195 6.86415 16.0662 8.82748L8.9995 15.9041L1.9345 8.82748C0.181164 6.86415 0.246997 3.84915 2.13116 1.96415C4.01866 0.0774834 7.03783 0.0141499 9.00116 1.77415C10.9587 0.0166499 13.9837 0.0749834 15.8695 1.96415V1.96415Z" 
+                    fill="#e0004d"
+                  />
+                </svg>
+              ) : (
+                <Heart className="h-5 w-5 text-[#14151a]" />
+              )}
               <span className="text-[14px] font-medium leading-[20px] tracking-[-0.1px] text-[#14151a]">
                 Save
               </span>
@@ -723,13 +782,13 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
             <div className="flex flex-col lg:flex-row gap-6">
               {/* 좌측 컨텐츠 */}
               <div className="flex-1 flex flex-col gap-4">
-                {/* Facilities */}
+                {/* Facilities - 모바일 */}
                 {roomData.roomFacilities.length > 0 && (
-                  <div className="lg:bg-white lg:rounded-[24px] lg:px-5 lg:py-4 flex flex-col gap-[18px]">
+                  <div className="lg:hidden flex flex-col gap-[18px]">
                     <p className="text-[16px] font-bold leading-[24px] tracking-[-0.2px] text-[#14151a]">
                       Facilities
                     </p>
-                    <div className="grid grid-cols-2 lg:grid-cols-3 gap-2">
+                    <div className="grid grid-cols-2 gap-2">
                       {displayedFacilities.map((facility, index) => {
                         const Icon = getFacilityIcon(facility.facilityType)
                         const facilityName = facility.customNameI18n?.[currentLanguage.code] || facility.facilityType
@@ -749,7 +808,7 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
                             ) : (
                               <Icon className="h-5 w-5 text-[#14151a]" />
                             )}
-                            <span className="text-[14px] lg:text-[16px] font-medium leading-[20px] lg:leading-[24px] tracking-[-0.1px] lg:tracking-[-0.2px] text-[#14151a]">
+                            <span className="text-[14px] font-medium leading-[20px] tracking-[-0.1px] text-[#14151a]">
                               {facilityName}
                             </span>
                           </div>
@@ -770,9 +829,56 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
                   </div>
                 )}
 
-                {/* About this room */}
+                {/* Facilities - 데스크톱 */}
+                {roomData.roomFacilities.length > 0 && (
+                  <div className="hidden lg:flex bg-white rounded-[24px] px-5 py-4 flex-col gap-[18px]">
+                    <p className="text-[16px] font-bold leading-[24px] tracking-[-0.2px] text-[#14151a]">
+                      Facilities
+                    </p>
+                    <div className="grid grid-cols-3 gap-2">
+                      {displayedFacilities.map((facility, index) => {
+                        const Icon = getFacilityIcon(facility.facilityType)
+                        const facilityName = facility.customNameI18n?.[currentLanguage.code] || facility.facilityType
+
+                        return (
+                          <div key={index} className="flex items-center gap-2">
+                            {facility.iconUrl ? (
+                              <img
+                                src={facility.iconUrl}
+                                alt={facilityName}
+                                className="h-5 w-5 object-contain"
+                                onError={(e) => {
+                                  const target = e.target as HTMLImageElement
+                                  target.style.display = 'none'
+                                }}
+                              />
+                            ) : (
+                              <Icon className="h-5 w-5 text-[#14151a]" />
+                            )}
+                            <span className="text-[16px] font-medium leading-[24px] tracking-[-0.2px] text-[#14151a]">
+                              {facilityName}
+                            </span>
+                          </div>
+                        )
+                      })}
+                    </div>
+                    {roomData.roomFacilities.length > 6 && (
+                      <button
+                        onClick={() => setShowAllFacilities(!showAllFacilities)}
+                        className="bg-[rgba(10,15,41,0.04)] rounded-[10px] px-[10px] py-[6px] flex items-center justify-center gap-[2px] cursor-pointer hover:bg-[rgba(10,15,41,0.08)]"
+                      >
+                        <span className="text-[14px] font-medium leading-[20px] tracking-[-0.1px] text-[#14151a] px-1">
+                          {showAllFacilities ? "Show less" : `Show all ${roomData.roomFacilities.length} facilities`}
+                        </span>
+                        <ChevronRight className={`h-4 w-4 text-[#14151a] transition-transform ${showAllFacilities ? 'rotate-90' : ''}`} />
+                      </button>
+                    )}
+                  </div>
+                )}
+
+                {/* About this room - 모바일 */}
                 {roomData.roomDescriptionI18n && (
-                  <div className="lg:bg-white lg:rounded-[24px] lg:px-5 lg:py-4 flex flex-col gap-2">
+                  <div className="lg:hidden flex flex-col gap-2">
                     <p className="text-[16px] font-bold leading-[24px] tracking-[-0.2px] text-[#14151a]">
                       About this room
                     </p>
@@ -791,9 +897,30 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
                   </div>
                 )}
 
-                {/* Rules */}
+                {/* About this room - 데스크톱 */}
+                {roomData.roomDescriptionI18n && (
+                  <div className="hidden lg:flex bg-white rounded-[24px] px-5 py-4 flex-col gap-2">
+                    <p className="text-[16px] font-bold leading-[24px] tracking-[-0.2px] text-[#14151a]">
+                      About this room
+                    </p>
+                    <p className={`text-[16px] font-normal leading-[24px] tracking-[-0.2px] text-[#14151a] whitespace-pre-wrap ${!showFullDescription ? 'line-clamp-4 max-h-[96px] overflow-hidden' : ''}`}>
+                      {roomData.roomDescriptionI18n}
+                    </p>
+                    <button
+                      onClick={() => setShowFullDescription(!showFullDescription)}
+                      className="bg-[rgba(10,15,41,0.04)] rounded-full px-[10px] py-[6px] flex items-center justify-center gap-[2px] cursor-pointer hover:bg-[rgba(10,15,41,0.08)]"
+                    >
+                      <span className="text-[14px] font-medium leading-[20px] tracking-[-0.1px] text-[#14151a] px-1">
+                        {showFullDescription ? "Show less" : "Show more"}
+                      </span>
+                      <ChevronRight className={`h-4 w-4 text-[#14151a] transition-transform ${showFullDescription ? 'rotate-90' : ''}`} />
+                    </button>
+                  </div>
+                )}
+
+                {/* Rules - 모바일 */}
                 {roomData.roomRulesI18n && (
-                  <div className="lg:bg-white lg:rounded-[24px] lg:px-5 lg:py-4 flex flex-col gap-2">
+                  <div className="lg:hidden flex flex-col gap-2">
                     <p className="text-[16px] font-bold leading-[24px] tracking-[-0.2px] text-[#14151a]">
                       Rules
                     </p>
@@ -812,8 +939,29 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
                   </div>
                 )}
 
-                {/* Room location */}
-                <div className="lg:bg-white lg:rounded-[24px] lg:px-5 lg:py-4 flex flex-col gap-2">
+                {/* Rules - 데스크톱 */}
+                {roomData.roomRulesI18n && (
+                  <div className="hidden lg:flex bg-white rounded-[24px] px-5 py-4 flex-col gap-2">
+                    <p className="text-[16px] font-bold leading-[24px] tracking-[-0.2px] text-[#14151a]">
+                      Rules
+                    </p>
+                    <p className={`text-[16px] font-normal leading-[24px] tracking-[-0.2px] text-[#14151a] whitespace-pre-wrap ${!showFullRules ? 'line-clamp-4 max-h-[96px] overflow-hidden' : ''}`}>
+                      {roomData.roomRulesI18n}
+                    </p>
+                    <button
+                      onClick={() => setShowFullRules(!showFullRules)}
+                      className="bg-[rgba(10,15,41,0.04)] rounded-full px-[10px] py-[6px] flex items-center justify-center gap-[2px] cursor-pointer hover:bg-[rgba(10,15,41,0.08)]"
+                    >
+                      <span className="text-[14px] font-medium leading-[20px] tracking-[-0.1px] text-[#14151a] px-1">
+                        {showFullRules ? "Show less" : "Show more"}
+                      </span>
+                      <ChevronRight className={`h-4 w-4 text-[#14151a] transition-transform ${showFullRules ? 'rotate-90' : ''}`} />
+                    </button>
+                  </div>
+                )}
+
+                {/* Room location - 모바일 */}
+                <div className="lg:hidden flex flex-col gap-2">
                   <div className="flex flex-col gap-0">
                     <p className="text-[16px] font-bold leading-[24px] tracking-[-0.2px] text-[#14151a]">
                       Room location
@@ -825,8 +973,21 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
                   <div id="map" className="h-[200px] rounded-[12px] bg-gray-200 overflow-hidden flex items-center justify-center naver-map-container" style={{ position: 'relative', zIndex: 1 }} />
                 </div>
 
-                {/* About the gosiwon */}
-                <div className="lg:bg-white lg:rounded-[24px] lg:px-5 lg:py-4 flex flex-col gap-2">
+                {/* Room location - 데스크톱 */}
+                <div className="hidden lg:flex bg-white rounded-[24px] px-5 py-4 flex-col gap-2">
+                  <div className="flex flex-col gap-0">
+                    <p className="text-[16px] font-bold leading-[24px] tracking-[-0.2px] text-[#14151a]">
+                      Room location
+                    </p>
+                    <p className="text-[14px] font-semibold leading-[20px] tracking-[-0.1px] text-[rgba(15,19,36,0.6)]">
+                      {roomData.residenceFullAddress}
+                    </p>
+                  </div>
+                  <div id="map-desktop" className="h-[200px] rounded-[12px] bg-gray-200 overflow-hidden flex items-center justify-center naver-map-container" style={{ position: 'relative', zIndex: 1 }} />
+                </div>
+
+                {/* About the host - 모바일 전용 */}
+                <div className="lg:hidden flex flex-col gap-2">
                   <p className="text-[16px] font-bold leading-[24px] tracking-[-0.2px] text-[#14151a]">
                     {messages?.roomDetail?.aboutGosiwon || 'About the host'}
                   </p>
@@ -866,7 +1027,9 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
                   onCheckOutDateChange={setCheckOutDate}
                   onGuestsChange={handleGuestsChange}
                   roomId={params.roomId}
-                  filterDate={filterReservedDates}
+                  filterCheckInDate={filterCheckInDates}
+                  filterCheckOutDate={filterCheckOutDates}
+                  roomLikeCheck={roomData.roomLikeCheck}
                 />
               </div>
             </div>
@@ -951,7 +1114,7 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
           onClick={() => setIsMobileCalendarOpen(false)}
         >
           <div
-            className="relative bg-white rounded-[24px] w-full max-w-sm mx-4 overflow-hidden"
+            className="relative bg-white rounded-[24px] w-full max-w-md mx-4 overflow-hidden max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             {/* 헤더 */}
@@ -965,55 +1128,34 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
               </button>
             </div>
 
-            {/* 달력 영역 */}
+            {/* 달력 영역 - Range 달력으로 통합 */}
             <div className="p-4">
-              {/* 체크인 날짜 선택 */}
-              <div className="mb-4">
-                <div className="mb-2 text-sm font-semibold text-[#14151a]">Check-in</div>
-                <DatePicker
-                  selected={checkInDate}
-                  onChange={handleMobileCheckInChange}
-                  inline
-                  locale={datePickerLocale}
-                  minDate={new Date()}
-                  monthsShown={1}
-                  calendarClassName="!border-none !w-full"
-                  filterDate={(date) => {
-                    if (filterReservedDates) {
-                      return filterReservedDates(date)
-                    }
-                    return true
-                  }}
-                />
-              </div>
-
-              {/* 체크아웃 날짜 선택 */}
-              <div>
-                <div className={`mb-2 text-sm font-semibold ${!checkInDate ? 'text-[rgba(13,17,38,0.3)]' : 'text-[#14151a]'}`}>
-                  Check-out
-                </div>
-                <div className={!checkInDate ? 'opacity-50 pointer-events-none' : ''}>
-                  <DatePicker
-                    selected={checkOutDate}
-                    onChange={handleMobileCheckOutChange}
-                    inline
-                    locale={datePickerLocale}
-                    minDate={checkInDate ? new Date(checkInDate.getTime() + 86400000) : new Date()}
-                    monthsShown={1}
-                    calendarClassName="!border-none !w-full"
-                    filterDate={(date) => {
-                      if (!checkInDate) return false
-                      if (date.getTime() === checkInDate.getTime()) return false
-                      const nextDay = new Date(checkInDate.getTime() + 86400000)
-                      if (date < nextDay) return false
-                      if (filterReservedDates) {
-                        return filterReservedDates(date)
-                      }
-                      return true
-                    }}
-                  />
-                </div>
-              </div>
+              <DatePicker
+                selected={checkInDate}
+                onChange={handleMobileDateRangeChange}
+                startDate={checkInDate}
+                endDate={checkOutDate}
+                selectsRange
+                inline
+                locale={datePickerLocale}
+                minDate={new Date()}
+                monthsShown={2}
+                calendarClassName="!border-none !w-full"
+                filterDate={(date) => {
+                  // 체크인과 체크아웃이 모두 선택되어 있으면 새로운 체크인 선택 중
+                  if (checkInDate && checkOutDate) {
+                    return filterCheckInDates(date)
+                  }
+                  // 체크인만 선택되어 있으면 체크아웃 선택 중
+                  else if (checkInDate && !checkOutDate) {
+                    return filterCheckOutDates(date)
+                  }
+                  // 아무것도 선택되지 않았으면 체크인 선택 중
+                  else {
+                    return filterCheckInDates(date)
+                  }
+                }}
+              />
             </div>
           </div>
         </div>
@@ -1096,22 +1238,43 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
       )}
 
       <Script
-        src={`https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${process.env.NEXT_PUBLIC_NAVER_MAPS_CLIENT_ID}`}
+        src={`https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${process.env.NEXT_PUBLIC_NAVER_CLOUD_CLIENT_ID}`}
         strategy="afterInteractive"
         onLoad={() => {
           if (roomData && (window as any).naver) {
             const naver = (window as any).naver;
-            const map = new naver.maps.Map('map', {
-              center: new naver.maps.LatLng(roomData.residenceLatitude, roomData.residenceLongitude),
-              zoom: 15,
-              mapTypeControl: false,
-              zoomControl: false
-            });
+            
+            // 모바일 지도
+            const mobileMapElement = document.getElementById('map');
+            if (mobileMapElement) {
+              const mobileMap = new naver.maps.Map('map', {
+                center: new naver.maps.LatLng(roomData.residenceLatitude, roomData.residenceLongitude),
+                zoom: 15,
+                mapTypeControl: false,
+                zoomControl: false
+              });
 
-            new naver.maps.Marker({
-              position: new naver.maps.LatLng(roomData.residenceLatitude, roomData.residenceLongitude),
-              map: map
-            });
+              new naver.maps.Marker({
+                position: new naver.maps.LatLng(roomData.residenceLatitude, roomData.residenceLongitude),
+                map: mobileMap
+              });
+            }
+
+            // 데스크톱 지도
+            const desktopMapElement = document.getElementById('map-desktop');
+            if (desktopMapElement) {
+              const desktopMap = new naver.maps.Map('map-desktop', {
+                center: new naver.maps.LatLng(roomData.residenceLatitude, roomData.residenceLongitude),
+                zoom: 15,
+                mapTypeControl: false,
+                zoomControl: false
+              });
+
+              new naver.maps.Marker({
+                position: new naver.maps.LatLng(roomData.residenceLatitude, roomData.residenceLongitude),
+                map: desktopMap
+              });
+            }
           }
         }}
       />
