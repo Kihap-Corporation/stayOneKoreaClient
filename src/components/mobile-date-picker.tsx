@@ -147,7 +147,7 @@ export function MobileDatePicker({
             overflow: hidden !important;
             margin: 0 !important;
             flex-shrink: 0 !important;
-            min-height: 320px !important;
+            min-height: clamp(320px, 50vw, 500px) !important;
           }
 
           .react-datepicker__header {
@@ -178,19 +178,23 @@ export function MobileDatePicker({
           .react-datepicker__day-name {
             color: #666 !important;
             font-weight: 500 !important;
-            width: 38px !important;
-            height: 38px !important;
-            line-height: 38px !important;
-            font-size: 13px !important;
+            width: calc((100vw - 64px) / 7) !important;
+            height: calc((100vw - 64px) / 7) !important;
+            max-width: 60px !important;
+            max-height: 60px !important;
+            line-height: calc((100vw - 64px) / 7) !important;
+            font-size: clamp(13px, 3vw, 16px) !important;
           }
 
           .react-datepicker__day {
-            width: 38px !important;
-            height: 38px !important;
-            line-height: 38px !important;
+            width: calc((100vw - 64px) / 7) !important;
+            height: calc((100vw - 64px) / 7) !important;
+            max-width: 60px !important;
+            max-height: 60px !important;
+            line-height: calc((100vw - 64px) / 7) !important;
             margin: 2px !important;
             border-radius: 6px !important;
-            font-size: 15px !important;
+            font-size: clamp(15px, 3.5vw, 18px) !important;
             font-weight: 500 !important;
             color: #14151a !important;
             transition: all 0.1s ease !important;
