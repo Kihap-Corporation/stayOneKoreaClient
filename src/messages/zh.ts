@@ -180,6 +180,8 @@ header: {
     showMap: "显示地图",
     hideMap: "隐藏地图",
     searchError: "搜索时发生错误",
+    searchButton: "搜索",
+    showAllRooms: "显示所有房间",
     validation: {
       selectLocation: "请从 Algolia 搜索中选择位置",
       selectDates: "请选择入住和退房日期",
@@ -227,7 +229,9 @@ header: {
     pleaseSelectDates: "请选择日期",
     reservationError: "预订处理过程中发生错误",
     checkIn: "入住",
-    checkOut: "退房"
+    checkOut: "退房",
+    checkOutOnly: "仅可退房",
+    selectCheckInFirst: "请先选择入住日期"
   },
   reservation: {
     facilities: "设施",

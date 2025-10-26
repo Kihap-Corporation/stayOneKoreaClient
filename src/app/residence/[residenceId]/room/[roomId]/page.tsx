@@ -66,6 +66,7 @@ interface RoomDetail {
   roomImages: RoomImage[]
   roomFacilities: RoomFacility[]
   reservedDates: ReservedDate[]
+  roomLikeCheck: boolean
 }
 
 interface RelatedRoom {
@@ -75,7 +76,7 @@ interface RelatedRoom {
   pricePerNight: number
   mainImageUrl: string
   residenceIdentifier: string
-  isLiked?: boolean
+  roomLikeCheck: boolean
 }
 
 // 시설 아이콘 매핑
@@ -145,33 +146,18 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
     return `${month}/${day}/${year}`
   }
 
-  // 모바일용 체크인 날짜 변경 핸들러
-  const handleMobileCheckInChange = (date: Date | null) => {
-    setCheckInDate(date)
-
-    // 체크인을 선택하지 않으면 체크아웃 초기화
-    if (!date) {
-      setCheckOutDate(null)
-      return
+  // 모바일용 Range 달력 날짜 변경 핸들러
+  const handleMobileDateRangeChange = (dates: [Date | null, Date | null] | Date | null) => {
+    if (Array.isArray(dates)) {
+      const [start, end] = dates
+      setCheckInDate(start)
+      setCheckOutDate(end)
+      
+      // 체크인과 체크아웃이 모두 선택되면 달력 닫기
+      if (start && end) {
+        setIsMobileCalendarOpen(false)
+      }
     }
-
-    // 체크인 날짜가 체크아웃 날짜보다 늦으면 체크아웃 초기화
-    if (checkOutDate && date >= checkOutDate) {
-      setCheckOutDate(null)
-    }
-
-    setIsMobileCalendarOpen(false)
-  }
-
-  // 모바일용 체크아웃 날짜 변경 핸들러
-  const handleMobileCheckOutChange = (date: Date | null) => {
-    // 체크인이 선택되지 않으면 체크아웃 선택 불가
-    if (!checkInDate) {
-      return
-    }
-
-    setCheckOutDate(date)
-    setIsMobileCalendarOpen(false)
   }
 
   // 방 상세 정보 조회
@@ -184,7 +170,7 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
         const languageCode = currentLanguage.code
         
         const response = await apiGet(
-          `/api/user/room/detail?residenceIdentifier=${params.residenceId}&roomIdentifier=${params.roomId}&languageCode=${languageCode}`
+          `/api/room/detail?residenceIdentifier=${params.residenceId}&roomIdentifier=${params.roomId}&languageCode=${languageCode}`
         )
 
         if (response.code === 200 && response.data) {
@@ -215,7 +201,7 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
         const languageCode = currentLanguage.code
         
         const response = await apiGet(
-          `/api/user/room/list?residenceIdentifier=${params.residenceId}&excludeRoomIdentifier=${params.roomId}&languageCode=${languageCode}&page=${currentRoomPage}&size=5`
+          `/api/room/list?residenceIdentifier=${params.residenceId}&excludeRoomIdentifier=${params.roomId}&languageCode=${languageCode}&page=${currentRoomPage}&size=5`
         )
 
         if (response.code === 200 && response.data) {
@@ -237,23 +223,67 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
     fetchRelatedRooms()
   }, [roomData, params.residenceId, params.roomId, currentLanguage, currentRoomPage])
 
-  // 예약된 날짜 필터링 함수
-  const filterReservedDates = (date: Date) => {
+  // 체크인 날짜 필터링 함수 (체크인 전용)
+  const filterCheckInDates = (date: Date) => {
     if (!roomData?.reservedDates) return true
 
-    const dateStr = date.toISOString().split('T')[0]
-    
+    const currentDate = new Date(date.getFullYear(), date.getMonth(), date.getDate())
+    currentDate.setHours(0, 0, 0, 0)
+
     for (const reserved of roomData.reservedDates) {
-      const checkIn = new Date(reserved.checkIn)
-      const checkOut = new Date(reserved.checkOut)
-      const currentDate = new Date(dateStr)
-      
-      // 체크인과 체크아웃 사이의 날짜는 선택 불가
-      if (currentDate >= checkIn && currentDate < checkOut) {
+      const reservedCheckIn = new Date(reserved.checkIn)
+      const reservedCheckOut = new Date(reserved.checkOut)
+      reservedCheckIn.setHours(0, 0, 0, 0)
+      reservedCheckOut.setHours(0, 0, 0, 0)
+
+      // 예약 기간 [checkIn, checkOut) 동안은 체크인 불가
+      // 예약된 체크인 날짜와 체크아웃 날짜 사이의 모든 날짜는 체크인 불가
+      if (currentDate.getTime() >= reservedCheckIn.getTime() && currentDate.getTime() < reservedCheckOut.getTime()) {
         return false
       }
     }
-    
+
+    return true
+  }
+
+  // 체크아웃 날짜 필터링 함수 (체크아웃 전용)
+  const filterCheckOutDates = (date: Date) => {
+    if (!roomData?.reservedDates || !checkInDate) return false
+
+    const currentDate = new Date(date.getFullYear(), date.getMonth(), date.getDate())
+    currentDate.setHours(0, 0, 0, 0)
+
+    const selectedCheckIn = new Date(checkInDate.getFullYear(), checkInDate.getMonth(), checkInDate.getDate())
+    selectedCheckIn.setHours(0, 0, 0, 0)
+
+    // 체크아웃은 체크인 다음날부터 시작해야 함 (최소 1박)
+    const nextDay = new Date(selectedCheckIn.getTime() + 24 * 60 * 60 * 1000)
+    if (currentDate.getTime() < nextDay.getTime()) {
+      return false
+    }
+
+    // 선택한 체크인 이후, 가장 가까운 예약의 체크인 날짜 찾기
+    let nearestReservedCheckIn: Date | null = null
+
+    for (const reserved of roomData.reservedDates) {
+      const reservedCheckIn = new Date(reserved.checkIn)
+      reservedCheckIn.setHours(0, 0, 0, 0)
+
+      // 선택한 체크인보다 이후에 있는 예약 중에서
+      if (reservedCheckIn.getTime() > selectedCheckIn.getTime()) {
+        // 가장 가까운 예약 찾기
+        if (!nearestReservedCheckIn || reservedCheckIn.getTime() < nearestReservedCheckIn.getTime()) {
+          nearestReservedCheckIn = reservedCheckIn
+        }
+      }
+    }
+
+    // 가장 가까운 예약의 체크인 날짜까지 선택 가능 (체크인 날짜 포함)
+    // 즉, 체크아웃 날짜는 다음 예약의 체크인 날짜까지 가능
+    if (nearestReservedCheckIn && currentDate.getTime() > nearestReservedCheckIn.getTime()) {
+      return false
+    }
+
     return true
   }
 
@@ -281,7 +311,7 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
     setRelatedRooms(prevRooms =>
       prevRooms.map(room =>
         room.roomIdentifier === roomIdentifier
-          ? { ...room, isLiked: !room.isLiked }
+          ? { ...room, roomLikeCheck: !room.roomLikeCheck }
           : room
       )
     )
@@ -294,7 +324,7 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
         setRelatedRooms(prevRooms =>
           prevRooms.map(room =>
             room.roomIdentifier === roomIdentifier
-              ? { ...room, isLiked: !room.isLiked }
+              ? { ...room, roomLikeCheck: !room.roomLikeCheck }
               : room
           )
         )
@@ -305,7 +335,7 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
       setRelatedRooms(prevRooms =>
         prevRooms.map(room =>
           room.roomIdentifier === roomIdentifier
-            ? { ...room, isLiked: !room.isLiked }
+            ? { ...room, roomLikeCheck: !room.roomLikeCheck }
             : room
         )
       )
@@ -866,7 +896,9 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
                   onCheckOutDateChange={setCheckOutDate}
                   onGuestsChange={handleGuestsChange}
                   roomId={params.roomId}
-                  filterDate={filterReservedDates}
+                  filterCheckInDate={filterCheckInDates}
+                  filterCheckOutDate={filterCheckOutDates}
+                  roomLikeCheck={roomData.roomLikeCheck}
                 />
               </div>
             </div>
@@ -951,7 +983,7 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
           onClick={() => setIsMobileCalendarOpen(false)}
         >
           <div
-            className="relative bg-white rounded-[24px] w-full max-w-sm mx-4 overflow-hidden"
+            className="relative bg-white rounded-[24px] w-full max-w-md mx-4 overflow-hidden max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             {/* 헤더 */}
@@ -965,55 +997,34 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
               </button>
             </div>
 
-            {/* 달력 영역 */}
+            {/* 달력 영역 - Range 달력으로 통합 */}
             <div className="p-4">
-              {/* 체크인 날짜 선택 */}
-              <div className="mb-4">
-                <div className="mb-2 text-sm font-semibold text-[#14151a]">Check-in</div>
-                <DatePicker
-                  selected={checkInDate}
-                  onChange={handleMobileCheckInChange}
-                  inline
-                  locale={datePickerLocale}
-                  minDate={new Date()}
-                  monthsShown={1}
-                  calendarClassName="!border-none !w-full"
-                  filterDate={(date) => {
-                    if (filterReservedDates) {
-                      return filterReservedDates(date)
-                    }
-                    return true
-                  }}
-                />
-              </div>
-
-              {/* 체크아웃 날짜 선택 */}
-              <div>
-                <div className={`mb-2 text-sm font-semibold ${!checkInDate ? 'text-[rgba(13,17,38,0.3)]' : 'text-[#14151a]'}`}>
-                  Check-out
-                </div>
-                <div className={!checkInDate ? 'opacity-50 pointer-events-none' : ''}>
-                  <DatePicker
-                    selected={checkOutDate}
-                    onChange={handleMobileCheckOutChange}
-                    inline
-                    locale={datePickerLocale}
-                    minDate={checkInDate ? new Date(checkInDate.getTime() + 86400000) : new Date()}
-                    monthsShown={1}
-                    calendarClassName="!border-none !w-full"
-                    filterDate={(date) => {
-                      if (!checkInDate) return false
-                      if (date.getTime() === checkInDate.getTime()) return false
-                      const nextDay = new Date(checkInDate.getTime() + 86400000)
-                      if (date < nextDay) return false
-                      if (filterReservedDates) {
-                        return filterReservedDates(date)
-                      }
-                      return true
-                    }}
-                  />
-                </div>
-              </div>
+              <DatePicker
+                selected={checkInDate}
+                onChange={handleMobileDateRangeChange}
+                startDate={checkInDate}
+                endDate={checkOutDate}
+                selectsRange
+                inline
+                locale={datePickerLocale}
+                minDate={new Date()}
+                monthsShown={2}
+                calendarClassName="!border-none !w-full"
+                filterDate={(date) => {
+                  // 체크인과 체크아웃이 모두 선택되어 있으면 새로운 체크인 선택 중
+                  if (checkInDate && checkOutDate) {
+                    return filterCheckInDates(date)
+                  }
+                  // 체크인만 선택되어 있으면 체크아웃 선택 중
+                  else if (checkInDate && !checkOutDate) {
+                    return filterCheckOutDates(date)
+                  }
+                  // 아무것도 선택되지 않았으면 체크인 선택 중
+                  else {
+                    return filterCheckInDates(date)
+                  }
+                }}
+              />
             </div>
           </div>
         </div>
