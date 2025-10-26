@@ -1,11 +1,34 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // 개발 중 두 번 호출 문제 해결을 위해 임시로 비활성화
-  // 프로덕션에서는 다시 활성화하는 것을 권장합니다
   reactStrictMode: true,
   eslint: {
-    // 빌드 중 ESLint 오류 무시
     ignoreDuringBuilds: true,
+  },
+  
+  // Windows 파일 시스템 에러 방지
+  experimental: {
+    // Turbopack 최적화 (dev 명령에서 --turbo 사용 시)
+    turbo: {
+      resolveAlias: {
+        // 별칭 최적화
+      },
+    },
+  },
+  
+  // 웹팩 설정 (Turbopack 사용하지 않을 때)
+  webpack: (config, { isServer }) => {
+    // Windows에서 파일 감시 최적화
+    config.watchOptions = {
+      poll: 1000, // 1초마다 폴링
+      aggregateTimeout: 300,
+      ignored: [
+        '**/node_modules/**',
+        '**/.next/**',
+        '**/.git/**',
+      ],
+    };
+    
+    return config;
   },
 };
 

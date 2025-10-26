@@ -11,7 +11,7 @@ interface PriceFilterProps {
 
 export function PriceFilter({ onSearch }: PriceFilterProps) {
   const { messages } = useLanguage()
-  const [localValues, setLocalValues] = useState<[number, number]>([0, 300])
+  const [localValues, setLocalValues] = useState<[number, number]>([0, 200])
 
   const handleSliderChange = (value: number | number[]) => {
     if (Array.isArray(value) && value.length === 2) {
@@ -46,7 +46,7 @@ export function PriceFilter({ onSearch }: PriceFilterProps) {
             <Slider
               range
               min={0}
-              max={300}
+              max={200}
               step={5}
               value={localValues}
               onChange={handleSliderChange}

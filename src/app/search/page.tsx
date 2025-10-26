@@ -26,7 +26,7 @@ function SearchResultContent() {
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [totalElements, setTotalElements] = useState(0)
-  const [priceRange, setPriceRange] = useState({ min: 0, max: 300 })
+  const [priceRange, setPriceRange] = useState({ min: 0, max: undefined as number | undefined })
   const [sortOption, setSortOption] = useState<SortOption>('RECOMMEND')
   const [isInitialLoad, setIsInitialLoad] = useState(true) // 초기 로딩 여부
 
@@ -121,7 +121,8 @@ function SearchResultContent() {
 
   const handlePriceSearch = (min: number, max: number) => {
     // Search 버튼 클릭 시 가격 범위 업데이트 및 API 호출
-    setPriceRange({ min, max })
+    // max가 200이면 undefined로 설정 (최대값 제한 없음)
+    setPriceRange({ min, max: max === 200 ? undefined : max })
     setCurrentPage(1)
     setSelectedRoomIndex(null)
   }
@@ -279,7 +280,7 @@ function SearchResultContent() {
                       <LikedRoomCard
                         roomIdentifier={room.roomIdentifier}
                         image={room.firstGalleryImageUrl}
-                        title={room.residenceName}
+                        title={room.roomName}
                         provider={room.residenceName}
                         location={room.fullAddress}
                         price={room.pricePerNight}
