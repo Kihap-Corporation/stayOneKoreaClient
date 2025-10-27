@@ -285,7 +285,14 @@ header: {
     invalidInput: "提供的输入无效",
     loadError: "加载预订信息失败",
     reservationNotAvailable: "预订不可用",
-    consentRequired: "请勾选所有同意事项。"
+    consentRequired: "请勾选所有同意事项。",
+    updateSuccess: "信息更新成功",
+    invalidRequest: "请求无效。请检查您的信息。",
+    serverError: "服务器发生错误。请重试。",
+    updateError: "信息更新失败",
+    requiredFields: "请填写所有必填字段。",
+    invalidEmail: "请输入有效的电子邮件地址。",
+    invalidPhone: "请输入有效的电话号码。"
   },
   bookings: {
     title: "预订",

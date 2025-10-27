@@ -285,7 +285,14 @@ header: {
     invalidInput: "잘못된 입력을 했습니다",
     loadError: "예약 정보를 불러오는 중 오류가 발생했습니다",
     reservationNotAvailable: "예약 가능한 상태가 아닙니다",
-    consentRequired: "모든 동의사항에 체크해주세요."
+    consentRequired: "모든 동의사항에 체크해주세요.",
+    updateSuccess: "정보가 성공적으로 업데이트되었습니다.",
+    invalidRequest: "잘못된 요청입니다. 정보를 확인해주세요.",
+    serverError: "서버 오류가 발생했습니다. 다시 시도해주세요.",
+    updateError: "정보 업데이트에 실패했습니다.",
+    requiredFields: "모든 필수 필드를 입력해주세요.",
+    invalidEmail: "유효한 이메일 주소를 입력해주세요.",
+    invalidPhone: "유효한 전화번호를 입력해주세요."
   },
   bookings: {
     title: "예약 내역",

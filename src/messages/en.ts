@@ -285,7 +285,14 @@ header: {
     invalidInput: "Invalid input provided",
     loadError: "Failed to load reservation information",
     reservationNotAvailable: "Reservation is not available",
-    consentRequired: "Please check all consent items."
+    consentRequired: "Please check all consent items.",
+    updateSuccess: "Information updated successfully",
+    invalidRequest: "Invalid request. Please check your information.",
+    serverError: "Server error occurred. Please try again.",
+    updateError: "Failed to update information",
+    requiredFields: "Please fill in all required fields.",
+    invalidEmail: "Please enter a valid email address.",
+    invalidPhone: "Please enter a valid phone number."
   },
   bookings: {
     title: "Bookings",
