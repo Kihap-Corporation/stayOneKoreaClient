@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
@@ -17,6 +17,7 @@ import 'swiper/css/navigation'
 import DatePicker from "react-datepicker"
 import "react-datepicker/dist/react-datepicker.css"
 import { toast } from "sonner"
+import { MobileDatePicker } from "@/components/mobile-date-picker"
 
 interface ResidencePageProps {
   params: {
@@ -305,7 +306,7 @@ export default function ResidencePage({ params }: ResidencePageProps) {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen flex-col bg-[#f7f7f8]">
+      <div className="flex min-h-screen flex-col bg-[#FFF] lg:bg-[#f7f7f8]">
         <Header />
         <main className="flex-1 flex items-center justify-center">
           <p className="text-lg">{messages?.common?.loading || "Loading..."}</p>
@@ -317,7 +318,7 @@ export default function ResidencePage({ params }: ResidencePageProps) {
 
   if (error || !residenceData) {
     return (
-      <div className="flex min-h-screen flex-col bg-[#f7f7f8]">
+      <div className="flex min-h-screen flex-col bg-[#FFF] lg:bg-[#f7f7f8]">
         <Header />
         <main className="flex-1 flex items-center justify-center">
           <p className="text-lg text-[#14151a]">
@@ -333,7 +334,7 @@ export default function ResidencePage({ params }: ResidencePageProps) {
   const totalPages = residenceData.rooms.totalPages
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#f7f7f8]">
+    <div className="flex min-h-screen flex-col bg-[#FFF] lg:bg-[#f7f7f8]">
       <Header />
 
       {/* 배경 이미지 섹션 */}
@@ -381,16 +382,8 @@ export default function ResidencePage({ params }: ResidencePageProps) {
 
                 {/* 호스트 정보 섹션 */}
                 <div className="flex flex-col gap-2">
-                  {/* Verified Badge + Name + Years */}
+                  {/* Host Name + Years */}
                   <div className="flex flex-col gap-1">
-                    <div className="inline-flex items-center justify-center bg-[#d1fae4] border border-[rgba(10,15,41,0.08)] rounded-full px-2 py-1 self-start">
-                      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="mr-1">
-                        <path d="M7 0L9 5L14 5L10 8L12 14L7 10L2 14L4 8L0 5L5 5L7 0Z" fill="#166e3f" />
-                      </svg>
-                      <span className="text-[12px] font-medium leading-[16px] text-[#166e3f]">
-                        Verified Host
-                      </span>
-                    </div>
                     <h1 className="text-[24px] font-extrabold leading-[32px] tracking-[-0.3px] text-[#14151a] line-clamp-2">
                       {residenceData.residenceName}
                     </h1>
@@ -447,58 +440,154 @@ export default function ResidencePage({ params }: ResidencePageProps) {
               </div>
             </div>
 
+            {/* 구분선 - 데스크톱과 모바일에서 다르게 표시 */}
+            <div className="hidden lg:block">
+              {/* 데스크톱: 얇은 구분선 */}
+              <div className="bg-[#e9eaec] h-px w-full my-8" />
+            </div>
+            <div className="lg:hidden">
+              {/* 모바일: 더 두꺼운 구분선 */}
+              <div className="bg-[#e9eaec] h-px w-full my-4" />
+            </div>
+
             {/* 우측 룸 리스트 */}
             <div className="flex-1 flex flex-col gap-4">
               {/* 검색 필드 */}
-              <div className="bg-white border border-[#dee0e3] rounded-[16px] px-4 py-4 flex flex-col lg:flex-row gap-4 items-stretch lg:items-end z-100 mt-32">
-              {/* 체크인/체크아웃 날짜 선택 및 검색 */}
-              <div className="flex gap-3 items-end">
-                <div className="flex-1 flex flex-col gap-2">
-                  <label className="text-[14px] font-medium leading-[20px] tracking-[-0.1px] text-[#14151a]">
+              <div className="relative bg-white border border-[#dee0e3] rounded-[16px] px-3 lg:px-4 py-3 lg:py-4 flex flex-col gap-2 lg:gap-3 items-stretch z-10 lg:mt-32 mt-2">
+              {/* 데스크톱: 가로로 한 줄 배치, 모바일: 세로로 배치 */}
+              <div className="flex flex-col lg:flex-row lg:items-end gap-2 lg:gap-3">
+                {/* Schedule 라벨 - 데스크톱에서는 숨김 */}
+                <div className="flex flex-col gap-1 lg:gap-2 lg:hidden">
+                  <label className="text-[14px] lg:text-[16px] font-medium leading-[20px] tracking-[-0.1px] text-[#14151a]">
                     Schedule
                   </label>
-                  <div className="grid grid-cols-2 gap-3">
-                    {/* Check-in */}
-                    <div className="relative">
-                      <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none z-10" />
-                      <input
-                        type="text"
-                        value={checkInDate ? formatDate(checkInDate) : ''}
-                        onClick={() => {
-                          setIsCheckInCalendarOpen(!isCheckInCalendarOpen)
-                          setIsCheckOutCalendarOpen(false) // 체크인 달력을 열 때 체크아웃 달력 닫기
-                        }}
-                        readOnly
-                        className="w-full rounded-xl border border-[#dee0e3] bg-white pl-10 pr-10 py-2.5 text-[14px] leading-[20px] tracking-[-0.1px] text-[#14151a] focus:border-[#E91E63] focus:outline-none hover:border-gray-300 cursor-pointer"
-                        placeholder="Check-in"
-                      />
-                      {checkInDate && (
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            setCheckInDate(null)
-                            setCheckOutDate(null)
-                            setCheckIn("")
-                            setCheckOut("")
-                          }}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 hover:text-gray-600 cursor-pointer"
-                          type="button"
-                        >
-                          <X className="h-3 w-3" />
-                        </button>
-                      )}
+                </div>
 
-                      {isCheckInCalendarOpen && (
-                        <div className="absolute top-full left-0 mt-2 z-50 bg-white rounded-xl shadow-lg border border-[#dee0e3] p-4 w-[280px] calendar-container">
-                          <div className="mb-3 text-sm font-semibold text-[#14151a]">
-                            Check-in
-                          </div>
+                {/* 체크인/체크아웃 입력 필드 - 더 큰 크기 */}
+                <div className="relative flex flex-col lg:flex-row gap-3 lg:gap-4 lg:flex-[2]">
+                  {/* Check-in */}
+                  <div className="relative flex-1">
+                      <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 lg:h-5 lg:w-5 text-gray-400 pointer-events-none z-10" />
+                    <input
+                      type="text"
+                      value={checkInDate ? formatDate(checkInDate) : ''}
+                      onClick={() => {
+                        setIsCheckInCalendarOpen(!isCheckInCalendarOpen)
+                        setIsCheckOutCalendarOpen(false) // 체크인 달력을 열 때 체크아웃 달력 닫기
+                      }}
+                      readOnly
+                        className="w-full rounded-xl border border-[#dee0e3] bg-white pl-8 lg:pl-12 pr-8 lg:pr-12 h-12 lg:h-12 text-[14px] lg:text-[16px] leading-[20px] tracking-[-0.1px] text-[#14151a] focus:border-[#E91E63] focus:outline-none hover:border-gray-300 cursor-pointer"
+                      placeholder="Check-in"
+                    />
+                    {checkInDate && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setCheckInDate(null)
+                          setCheckOutDate(null)
+                          setCheckIn("")
+                          setCheckOut("")
+                        }}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 lg:h-5 lg:w-5 text-gray-400 hover:text-gray-600 cursor-pointer"
+                        type="button"
+                      >
+                          <X className="h-3 w-3 lg:h-4 lg:w-4" />
+                      </button>
+                    )}
+
+                    {/* 데스크톱용 체크인 달력 */}
+                    {isCheckInCalendarOpen && (
+                      <div className="hidden lg:block absolute top-full left-0 right-0 z-50 mt-2">
+                        <div className="bg-white border border-[#dee0e3] rounded-[16px] shadow-lg w-full max-w-[600px]">
+                          <style dangerouslySetInnerHTML={{__html: `
+                            .react-datepicker {
+                              border-radius: 16px !important;
+                              border: none !important;
+                              box-shadow: none !important;
+                              background-color: transparent !important;
+                              width: 100% !important;
+                              max-width: 600px !important;
+                            }
+
+                            .react-datepicker__header {
+                              background-color: transparent !important;
+                              border-bottom: 1px solid #e9eaec !important;
+                              padding: 16px !important;
+                              border-radius: 16px 16px 0 0 !important;
+                            }
+
+                            .react-datepicker__current-month {
+                              font-size: 18px !important;
+                              font-weight: 600 !important;
+                              color: #14151a !important;
+                            }
+
+                            .react-datepicker__navigation {
+                              top: 16px !important;
+                              border-radius: 6px !important;
+                              width: 32px !important;
+                              height: 32px !important;
+                              background-color: #f7f7f8 !important;
+                              border: none !important;
+                            }
+
+                            .react-datepicker__navigation:hover {
+                              background-color: #e9eaec !important;
+                            }
+
+                            .react-datepicker__navigation-icon::before {
+                              border-color: #666 !important;
+                              border-width: 2px 2px 0 0 !important;
+                              width: 6px !important;
+                              height: 6px !important;
+                            }
+
+                            .react-datepicker__day-names {
+                              background-color: #f7f7f8 !important;
+                              border-radius: 8px !important;
+                              margin: 0 16px !important;
+                              padding: 12px 0 !important;
+                            }
+
+                            .react-datepicker__day-name {
+                              color: #666 !important;
+                              font-weight: 500 !important;
+                              width: 50px !important;
+                              height: 50px !important;
+                              line-height: 50px !important;
+                              font-size: 16px !important;
+                            }
+
+                            .react-datepicker__day {
+                              width: 50px !important;
+                              height: 50px !important;
+                              line-height: 50px !important;
+                              margin: 3px !important;
+                              border-radius: 10px !important;
+                              font-size: 18px !important;
+                              color: #14151a !important;
+                            }
+
+                            .react-datepicker__day:hover {
+                              background-color: #f7f7f8 !important;
+                            }
+
+                            .react-datepicker__day--selected {
+                              background-color: #e0004d !important;
+                              color: white !important;
+                            }
+
+                            .react-datepicker__day--today {
+                              background-color: #fff3cd !important;
+                              color: #14151a !important;
+                              font-weight: 600 !important;
+                            }
+                          `}} />
                           <DatePicker
                             selected={checkInDate}
                             onChange={(date) => {
                               handleCheckInChange(date)
                               if (date) {
-                                // 체크인을 선택하면 체크인 달력을 닫고 체크아웃 입력 필드를 활성화
                                 setIsCheckInCalendarOpen(false)
                               }
                             }}
@@ -506,52 +595,135 @@ export default function ResidencePage({ params }: ResidencePageProps) {
                             locale={datePickerLocale}
                             minDate={new Date()}
                             monthsShown={1}
-                            calendarClassName="!border-none"
+                            calendarClassName="!border-none !w-full"
                           />
                         </div>
-                      )}
-                    </div>
+                      </div>
+                    )}
+                  </div>
 
-                    {/* Check-out */}
-                    <div className="relative">
-                      <Calendar className={`absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none z-10 ${!checkInDate ? 'text-[rgba(13,17,38,0.3)]' : 'text-gray-400'}`} />
-                      <input
-                        type="text"
-                        value={checkOutDate ? formatDate(checkOutDate) : ''}
-                        onClick={() => checkInDate && (setIsCheckOutCalendarOpen(!isCheckOutCalendarOpen), setIsCheckInCalendarOpen(false))}
-                        readOnly
-                        disabled={!checkInDate}
-                        className={`w-full rounded-xl border pl-10 pr-10 py-2.5 text-[14px] leading-[20px] tracking-[-0.1px] ${!checkInDate
-                          ? 'bg-gray-50 text-[rgba(13,17,38,0.3)] border-gray-200 cursor-not-allowed'
-                          : 'bg-white text-[#14151a] border-[#dee0e3] focus:border-[#E91E63] focus:outline-none hover:border-gray-300 cursor-pointer'
-                        }`}
-                        placeholder="Check-out"
-                      />
-                      {checkOutDate && checkInDate && (
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            setCheckOutDate(null)
-                            setCheckOut("")
-                          }}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 hover:text-gray-600 cursor-pointer"
-                          type="button"
-                        >
-                          <X className="h-3 w-3" />
-                        </button>
-                      )}
+                  {/* Check-out */}
+                  <div className="relative flex-1">
+                      <Calendar className={`absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 lg:h-5 lg:w-5 pointer-events-none z-10 ${!checkInDate ? 'text-[rgba(13,17,38,0.3)]' : 'text-gray-400'}`} />
+                    <input
+                      type="text"
+                      value={checkOutDate ? formatDate(checkOutDate) : ''}
+                      onClick={() => checkInDate && (setIsCheckOutCalendarOpen(!isCheckOutCalendarOpen), setIsCheckInCalendarOpen(false))}
+                      readOnly
+                      disabled={!checkInDate}
+                      className={`w-full rounded-xl border pl-8 lg:pl-12 pr-8 lg:pr-12 h-12 lg:h-12 text-[14px] lg:text-[16px] leading-[20px] tracking-[-0.1px] ${!checkInDate
+                        ? 'bg-gray-50 text-[rgba(13,17,38,0.3)] border-gray-200 cursor-not-allowed'
+                        : 'bg-white text-[#14151a] border-[#dee0e3] focus:border-[#E91E63] focus:outline-none hover:border-gray-300 cursor-pointer'
+                      }`}
+                      placeholder="Check-out"
+                    />
+                    {checkOutDate && checkInDate && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setCheckOutDate(null)
+                          setCheckOut("")
+                        }}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 lg:h-5 lg:w-5 text-gray-400 hover:text-gray-600 cursor-pointer"
+                        type="button"
+                      >
+                          <X className="h-3 w-3 lg:h-4 lg:w-4" />
+                      </button>
+                    )}
 
-                      {isCheckOutCalendarOpen && (
-                        <div className="absolute top-full left-0 mt-2 z-50 bg-white rounded-xl shadow-lg border border-[#dee0e3] p-4 w-[280px] calendar-container">
-                          <div className="mb-3 text-sm font-semibold text-[#14151a]">
-                            Check-out
-                          </div>
+                    {/* 데스크톱용 체크아웃 달력 */}
+                    {isCheckOutCalendarOpen && (
+                      <div className="hidden lg:block absolute top-full left-0 right-0 z-50 mt-2">
+                        <div className="bg-white border border-[#dee0e3] rounded-[16px] shadow-lg w-full max-w-[600px]">
+                          <style dangerouslySetInnerHTML={{__html: `
+                            .react-datepicker {
+                              border-radius: 16px !important;
+                              border: none !important;
+                              box-shadow: none !important;
+                              background-color: transparent !important;
+                              width: 100% !important;
+                              max-width: 600px !important;
+                            }
+
+                            .react-datepicker__header {
+                              background-color: transparent !important;
+                              border-bottom: 1px solid #e9eaec !important;
+                              padding: 16px !important;
+                              border-radius: 16px 16px 0 0 !important;
+                            }
+
+                            .react-datepicker__current-month {
+                              font-size: 18px !important;
+                              font-weight: 600 !important;
+                              color: #14151a !important;
+                            }
+
+                            .react-datepicker__navigation {
+                              top: 16px !important;
+                              border-radius: 6px !important;
+                              width: 32px !important;
+                              height: 32px !important;
+                              background-color: #f7f7f8 !important;
+                              border: none !important;
+                            }
+
+                            .react-datepicker__navigation:hover {
+                              background-color: #e9eaec !important;
+                            }
+
+                            .react-datepicker__navigation-icon::before {
+                              border-color: #666 !important;
+                              border-width: 2px 2px 0 0 !important;
+                              width: 6px !important;
+                              height: 6px !important;
+                            }
+
+                            .react-datepicker__day-names {
+                              background-color: #f7f7f8 !important;
+                              border-radius: 8px !important;
+                              margin: 0 16px !important;
+                              padding: 12px 0 !important;
+                            }
+
+                            .react-datepicker__day-name {
+                              color: #666 !important;
+                              font-weight: 500 !important;
+                              width: 50px !important;
+                              height: 50px !important;
+                              line-height: 50px !important;
+                              font-size: 16px !important;
+                            }
+
+                            .react-datepicker__day {
+                              width: 50px !important;
+                              height: 50px !important;
+                              line-height: 50px !important;
+                              margin: 3px !important;
+                              border-radius: 10px !important;
+                              font-size: 18px !important;
+                              color: #14151a !important;
+                            }
+
+                            .react-datepicker__day:hover {
+                              background-color: #f7f7f8 !important;
+                            }
+
+                            .react-datepicker__day--selected {
+                              background-color: #e0004d !important;
+                              color: white !important;
+                            }
+
+                            .react-datepicker__day--today {
+                              background-color: #fff3cd !important;
+                              color: #14151a !important;
+                              font-weight: 600 !important;
+                            }
+                          `}} />
                           <DatePicker
                             selected={checkOutDate}
                             onChange={(date) => {
                               handleCheckOutChange(date)
                               if (date) {
-                                // 체크아웃을 선택하면 체크아웃 달력을 닫음
                                 setIsCheckOutCalendarOpen(false)
                               }
                             }}
@@ -559,16 +731,17 @@ export default function ResidencePage({ params }: ResidencePageProps) {
                             locale={datePickerLocale}
                             minDate={checkInDate ? new Date(checkInDate.getFullYear(), checkInDate.getMonth(), checkInDate.getDate()) : new Date()}
                             monthsShown={1}
-                            calendarClassName="!border-none"
+                            calendarClassName="!border-none !w-full"
                           />
                         </div>
-                      )}
-                    </div>
+                      </div>
+                    )}
                   </div>
                 </div>
 
-                {/* 검색 및 모든 방 보기 버튼들 */}
-                <div className="flex gap-2">
+
+                {/* 검색 및 모든 방 보기 버튼들 - 더 큰 크기 */}
+                <div className="flex flex-col lg:flex-row gap-3 lg:gap-4 lg:flex-1 lg:justify-end">
                   {/* 검색 버튼 */}
                   <Button
                     onClick={() => {
@@ -579,10 +752,10 @@ export default function ResidencePage({ params }: ResidencePageProps) {
                       executeSearch()
                     }}
                     disabled={!checkInDate || !checkOutDate}
-                    className="flex-1 h-10 px-4 rounded-xl bg-[#e0004d] hover:bg-[#c2003f] disabled:bg-gray-300 disabled:cursor-not-allowed"
+                    className="flex-1 lg:flex-none lg:w-auto h-12 lg:h-12 px-4 lg:px-6 rounded-xl bg-[#e0004d] hover:bg-[#c2003f] disabled:bg-gray-300 disabled:cursor-not-allowed"
                   >
-                    <Search className="h-4 w-4 mr-2" />
-                    <span className="text-[14px] font-medium leading-[20px] tracking-[-0.1px] text-white">
+                    <Search className="h-4 w-4 lg:h-5 lg:w-5 mr-2" />
+                    <span className="text-[15px] lg:text-[16px] font-medium leading-[24px] tracking-[-0.1px] text-white">
                       {messages?.searchResult?.searchButton || '검색'}
                     </span>
                   </Button>
@@ -599,9 +772,9 @@ export default function ResidencePage({ params }: ResidencePageProps) {
                       // 모든 방을 보기 위해 검색 실행 (체크인/체크아웃 없이)
                       executeSearch()
                     }}
-                    className="flex-1 h-10 px-4 rounded-xl bg-white border border-[#dee0e3] hover:bg-gray-50"
+                    className="flex-1 lg:flex-none lg:w-auto h-12 lg:h-12 px-4 lg:px-6 rounded-xl bg-white border border-[#dee0e3] hover:bg-gray-50"
                   >
-                    <span className="text-[14px] font-medium leading-[20px] tracking-[-0.1px] text-[#14151a]">
+                    <span className="text-[15px] lg:text-[16px] font-medium leading-[24px] tracking-[-0.1px] text-[#14151a]">
                       {messages?.searchResult?.showAllRooms || '모든 방 보기'}
                     </span>
                   </Button>
@@ -720,6 +893,32 @@ export default function ResidencePage({ params }: ResidencePageProps) {
       </main>
 
       <Footer />
+
+      {/* 체크인 달력 모달 - 모바일만 */}
+      <MobileDatePicker
+        isOpen={isCheckInCalendarOpen}
+        onClose={() => setIsCheckInCalendarOpen(false)}
+        title="Check-in"
+        selectedDate={checkInDate}
+        onChange={(date) => {
+          handleCheckInChange(date)
+        }}
+        minDate={new Date()}
+        locale={datePickerLocale}
+      />
+
+      {/* 체크아웃 달력 모달 - 모바일만 */}
+      <MobileDatePicker
+        isOpen={isCheckOutCalendarOpen}
+        onClose={() => setIsCheckOutCalendarOpen(false)}
+        title="Check-out"
+        selectedDate={checkOutDate}
+        onChange={(date) => {
+          handleCheckOutChange(date)
+        }}
+        minDate={checkInDate ? new Date(checkInDate.getFullYear(), checkInDate.getMonth(), checkInDate.getDate()) : new Date()}
+        locale={datePickerLocale}
+      />
     </div>
   )
 }

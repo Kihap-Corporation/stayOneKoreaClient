@@ -99,13 +99,7 @@ export function Header() {
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="flex items-center gap-1 px-1 hover:bg-transparent">
-                      {currentLanguage.code === 'ko' ? (
-                        <img src="/icons/kor.png" alt="한국어" className="w-5 h-5 rounded-sm" />
-                      ) : currentLanguage.code === 'en' ? (
-                        <img src="/icons/usa.png" alt="English" className="w-5 h-5 rounded-sm" />
-                      ) : (
-                        <span className="text-lg">{currentLanguage.flag}</span>
-                      )}
+                      <img src={currentLanguage.flag} alt={currentLanguage.name} className="w-5 h-5 rounded-sm" />
                       <span className="uppercase text-[#14151a] text-sm font-medium tracking-tight">{currentLanguage.code}</span>
                       <ChevronDown className="h-4 w-4 text-gray-600" />
                     </Button>
@@ -117,7 +111,7 @@ export function Header() {
                         onClick={() => setCurrentLanguage(language)}
                         className={`flex items-center gap-3 px-3 py-2 cursor-pointer ${language.code === currentLanguage.code ? "bg-pink-50 text-[#E91E63]" : "hover:bg-gray-50"}`}
                       >
-                        <span className="text-lg">{language.flag}</span>
+                        <img src={language.flag} alt={language.name} className="w-5 h-5 rounded-sm" />
                         <span className="font-medium">{language.name}</span>
                       </DropdownMenuItem>
                     ))}
@@ -391,13 +385,7 @@ export function Header() {
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline" className="w-full justify-start text-sm h-11 border-2 hover:border-gray-300 transition-colors">
                       <Globe className="h-4 w-4 mr-2 text-gray-600" />
-                      {currentLanguage.code === 'ko' ? (
-                        <img src="/icons/kor.png" alt="한국어" className="w-5 h-5 mr-2 rounded-sm" />
-                      ) : currentLanguage.code === 'en' ? (
-                        <img src="/icons/usa.png" alt="English" className="w-5 h-5 mr-2 rounded-sm" />
-                      ) : (
-                        <span className="text-lg mr-2">{currentLanguage.flag}</span>
-                      )}
+                      <img src={currentLanguage.flag} alt={currentLanguage.name} className="w-5 h-5 mr-2 rounded-sm" />
                       <span className="font-medium">{currentLanguage.name}</span>
                     </Button>
                   </DropdownMenuTrigger>
@@ -408,7 +396,7 @@ export function Header() {
                         onClick={() => setCurrentLanguage(language)}
                         className={`flex items-center gap-3 px-3 py-2 cursor-pointer ${language.code === currentLanguage.code ? "bg-pink-50 text-[#E91E63]" : "hover:bg-gray-50"}`}
                       >
-                        <span className="text-lg">{language.flag}</span>
+                        <img src={language.flag} alt={language.name} className="w-5 h-5 rounded-sm" />
                         <span className="font-medium">{language.name}</span>
                       </DropdownMenuItem>
                     ))}

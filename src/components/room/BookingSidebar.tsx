@@ -110,6 +110,7 @@ export function BookingSidebar({
   const [isReserving, setIsReserving] = useState(false)
   const [datePickerLocale, setDatePickerLocale] = useState<any>(undefined)
   const [isLiked, setIsLiked] = useState(roomLikeCheck)
+  const [showFullHostDescription, setShowFullHostDescription] = useState(false)
   const calendarRef = useRef<HTMLDivElement>(null)
 
   // 숙박일수 계산
@@ -221,15 +222,15 @@ export function BookingSidebar({
       const currentUrl = window.location.href
       await navigator.clipboard.writeText(currentUrl)
 
-      // 성공 메시지 alert로 표시
-      alert(messages?.roomDetail?.shareSuccess || 
+      // 성공 메시지 toast로 표시
+      toast.success(messages?.roomDetail?.shareSuccess || 
         (language === 'ko' ? '링크가 클립보드에 복사되었습니다!' :
          language === 'en' ? 'Link copied to clipboard!' :
          language === 'zh' ? '链接已复制到剪贴板!' :
          'Lien copié dans le presse-papiers!'))
     } catch (error) {
       console.error('링크 복사 실패:', error)
-      alert(messages?.roomDetail?.shareError || 
+      toast.error(messages?.roomDetail?.shareError || 
         (language === 'ko' ? '링크 복사에 실패했습니다' :
          language === 'en' ? 'Failed to copy link' :
          language === 'zh' ? '复制链接失败' :
@@ -285,7 +286,7 @@ export function BookingSidebar({
       })
 
       if (response.ok && data.code === 200) {
-        const reservationId = data.data?.id
+        const reservationId = data.data?.identifier
         if (reservationId) {
           window.location.href = `/reservation/${reservationId}`
         } else {
@@ -534,7 +535,7 @@ export function BookingSidebar({
 
             {/* 예약 버튼 */}
             <Button
-              className="w-full h-12 rounded-full bg-[#e0004d] hover:bg-[#c2003f] px-4 py-3 shadow-[0px_1px_2px_0px_rgba(20,21,26,0.05)]"
+              className="w-full h-12 rounded-full bg-[#e0004d] hover:bg-[#c2003f] px-4 py-3 shadow-[0px_1px_2px_0px_rgba(20,21,26,0.05)] disabled:opacity-50 disabled:cursor-not-allowed"
               onClick={handleReservation}
               disabled={isReserving || !checkInDate || !checkOutDate}
             >
@@ -606,16 +607,42 @@ export function BookingSidebar({
         </div>
 
         {/* 다른 숙소 보기 버튼 */}
-        <Button className="w-full h-10 rounded-xl bg-white border border-[#dee0e3] hover:bg-gray-50 px-3 py-2.5 shadow-none">
+        <Button
+          className="w-full h-10 rounded-xl bg-white border border-[#dee0e3] hover:bg-gray-50 px-3 py-2.5 shadow-none"
+          onClick={() => {
+            // 현재 URL에서 residenceId를 추출하여 고시원 페이지로 이동
+            const currentPath = window.location.pathname
+            const pathParts = currentPath.split('/')
+            // /residence/[residenceId]/room/[roomId] 구조에서 residenceId 추출
+            if (pathParts.length >= 3 && pathParts[1] === 'residence') {
+              const residenceId = pathParts[2]
+              window.location.href = `/residence/${residenceId}`
+            }
+          }}
+        >
           <span className="text-[14px] font-medium leading-[20px] tracking-[-0.1px] text-[#14151a]">
             {messages?.roomDetail?.showMoreRooms || 'Show more rooms'}
           </span>
         </Button>
 
         {/* 호스트 설명 */}
-        <p className="text-[16px] font-normal leading-[24px] tracking-[-0.2px] text-[#14151a]">
-          {host.description}
-        </p>
+        <div className="flex flex-col gap-2">
+          <p className={`text-[16px] font-normal leading-[24px] tracking-[-0.2px] text-[#14151a] whitespace-pre-wrap ${!showFullHostDescription ? 'line-clamp-4 max-h-[96px] overflow-hidden' : ''}`}>
+            {host.description}
+          </p>
+          <button
+            onClick={() => setShowFullHostDescription(!showFullHostDescription)}
+            className="mx-auto rounded-full bg-transparent hover:bg-[rgba(10,15,41,0.04)] px-4 py-2 transition-colors duration-200 flex items-center justify-center gap-1"
+            style={{
+              borderRadius: 'var(--measurements-radius-full, 999px)',
+              background: 'var(--background-button-ghost, rgba(255, 255, 255, 0.00))'
+            }}
+          >
+            <span className="text-[14px] font-medium leading-[20px] tracking-[-0.1px] text-[#14151a] text-center">
+              {showFullHostDescription ? 'Show less' : 'Read more >'}
+            </span>
+          </button>
+        </div>
       </div>
     </div>
   )
