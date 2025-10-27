@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import DatePicker, { registerLocale, setDefaultLocale } from "react-datepicker"
+import DatePicker, { registerLocale } from "react-datepicker"
 import { ko, enUS, zhCN, fr } from "date-fns/locale"
 import "react-datepicker/dist/react-datepicker.css"
 
@@ -35,7 +35,7 @@ export function DateRangePickerV2({
   const handleDateChange = (dates: [Date | null, Date | null] | Date | null) => {
     if (Array.isArray(dates)) {
       const [start, end] = dates
-      
+
       // 체크인과 체크아웃이 모두 있을 때
       if (startDate && endDate) {
         // 새로운 날짜가 체크인 이전이면 체크인 변경
@@ -82,7 +82,7 @@ export function DateRangePickerV2({
   return (
     <div className={showBorder ? "bg-white rounded-2xl shadow-lg border border-[#dee0e3] w-fit" : "bg-white w-fit"}>
       <DatePicker
-        selected={startDate}
+        selected={null}
         onChange={handleDateChange}
         startDate={startDate}
         endDate={endDate}
