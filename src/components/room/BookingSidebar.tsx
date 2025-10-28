@@ -11,6 +11,7 @@ import { toast } from "sonner"
 import Image from "next/image"
 import { CustomDateRangePicker } from "@/components/home/custom-date-range-picker"
 import { MobileCustomDateRangePicker } from "@/components/home/mobile-custom-date-range-picker"
+import { saveBookingDates } from "@/lib/session-storage"
 
 // 로케일 맵핑 - 동적 import 사용
 const getLocale = async (lang: string) => {
@@ -175,6 +176,9 @@ export function BookingSidebar({
       // 시간 정보를 제거하고 날짜만 저장 (00:00:00.000으로 설정)
       const normalizedStart = start ? new Date(start.getFullYear(), start.getMonth(), start.getDate()) : null
       const normalizedEnd = end ? new Date(end.getFullYear(), end.getMonth(), end.getDate()) : null
+
+      // 세션 스토리지에 저장
+      saveBookingDates(normalizedStart, normalizedEnd)
 
       onCheckInDateChange && onCheckInDateChange(normalizedStart)
       onCheckOutDateChange && onCheckOutDateChange(normalizedEnd)

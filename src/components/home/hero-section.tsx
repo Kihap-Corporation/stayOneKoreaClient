@@ -9,13 +9,23 @@ import { Calendar, Users } from "lucide-react"
 import { CustomDateRangePicker } from "./custom-date-range-picker"
 import { MobileCustomDateRangePicker } from "./mobile-custom-date-range-picker"
 import { AlgoliaSearch, SearchHit } from "./algolia-search"
+import { getBookingDates, saveBookingDates } from "@/lib/session-storage"
 
 export function HeroSection() {
   const { messages, currentLanguage } = useLanguage()
   const router = useRouter()
   const [people, setPeople] = useState(1)
-  const [checkIn, setCheckIn] = useState<Date | null>(null)
-  const [checkOut, setCheckOut] = useState<Date | null>(null)
+
+  // 세션 스토리지에서 날짜 가져오기
+  const [checkIn, setCheckIn] = useState<Date | null>(() => {
+    const { checkIn } = getBookingDates()
+    return checkIn
+  })
+  const [checkOut, setCheckOut] = useState<Date | null>(() => {
+    const { checkOut } = getBookingDates()
+    return checkOut
+  })
+
   const [showDatePicker, setShowDatePicker] = useState(false)
   const [selectedLocationData, setSelectedLocationData] = useState<SearchHit | null>(null)
   const checkInRef = useRef<HTMLDivElement>(null)
@@ -232,9 +242,11 @@ export function HeroSection() {
                     checkOut={checkOut}
                     onCheckInChange={(date) => {
                       setCheckIn(date)
+                      saveBookingDates(date, checkOut)
                     }}
                     onCheckOutChange={(date) => {
                       setCheckOut(date)
+                      saveBookingDates(checkIn, date)
                       // 체크아웃이 선택되면 달력 닫기
                       if (date) {
                         setShowDatePicker(false)
@@ -283,9 +295,11 @@ export function HeroSection() {
         checkOut={checkOut}
         onCheckInChange={(date) => {
           setCheckIn(date)
+          saveBookingDates(date, checkOut)
         }}
         onCheckOutChange={(date) => {
           setCheckOut(date)
+          saveBookingDates(checkIn, date)
         }}
         locale={currentLanguage.code}
       />

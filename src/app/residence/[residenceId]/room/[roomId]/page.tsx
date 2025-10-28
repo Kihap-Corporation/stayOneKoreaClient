@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { useLanguage } from "@/components/language-provider"
@@ -14,6 +14,7 @@ import "react-datepicker/dist/react-datepicker.css"
 import DatePicker from "react-datepicker"
 import Script from 'next/script'
 import { MobileCustomDateRangePicker } from "@/components/home/mobile-custom-date-range-picker"
+import { getBookingDates, saveBookingDates } from "@/lib/session-storage"
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Pagination, Navigation } from 'swiper/modules'
 import 'swiper/css'
@@ -96,12 +97,21 @@ const getFacilityIcon = (facilityType: string) => {
 
 export default function RoomDetailPage({ params }: RoomDetailPageProps) {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const { messages, currentLanguage } = useLanguage()
   const [loading, setLoading] = useState(true)
   const [roomData, setRoomData] = useState<RoomDetail | null>(null)
   const [relatedRooms, setRelatedRooms] = useState<RelatedRoom[]>([])
-  const [checkInDate, setCheckInDate] = useState<Date | null>(null)
-  const [checkOutDate, setCheckOutDate] = useState<Date | null>(null)
+
+  // 세션 스토리지에서 날짜 가져오기
+  const [checkInDate, setCheckInDate] = useState<Date | null>(() => {
+    const { checkIn } = getBookingDates()
+    return checkIn
+  })
+  const [checkOutDate, setCheckOutDate] = useState<Date | null>(() => {
+    const { checkOut } = getBookingDates()
+    return checkOut
+  })
   const [guests, setGuests] = useState(1)
   const [showAllFacilities, setShowAllFacilities] = useState(false)
   const [showFullDescription, setShowFullDescription] = useState(false)
@@ -1355,9 +1365,11 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
         checkOut={checkOutDate}
         onCheckInChange={(date: Date | null) => {
           setCheckInDate(date)
+          saveBookingDates(date, checkOutDate)
         }}
         onCheckOutChange={(date: Date | null) => {
           setCheckOutDate(date)
+          saveBookingDates(checkInDate, date)
         }}
         locale={currentLanguage.code}
       />

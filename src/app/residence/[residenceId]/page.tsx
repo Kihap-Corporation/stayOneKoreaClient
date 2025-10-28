@@ -19,6 +19,7 @@ import "react-datepicker/dist/react-datepicker.css"
 import { toast } from "sonner"
 import { CustomDateRangePicker } from "@/components/home/custom-date-range-picker"
 import { MobileCustomDateRangePicker } from "@/components/home/mobile-custom-date-range-picker"
+import { getBookingDates, saveBookingDates } from "@/lib/session-storage"
 
 interface ResidencePageProps {
   params: {
@@ -69,10 +70,35 @@ export default function ResidencePage({ params }: ResidencePageProps) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [showFullDescription, setShowFullDescription] = useState(false)
-  const [checkIn, setCheckIn] = useState<string>("")
-  const [checkOut, setCheckOut] = useState<string>("")
-  const [checkInDate, setCheckInDate] = useState<Date | null>(null)
-  const [checkOutDate, setCheckOutDate] = useState<Date | null>(null)
+
+  // 세션 스토리지에서 날짜 가져오기
+  const [checkInDate, setCheckInDate] = useState<Date | null>(() => {
+    const { checkIn } = getBookingDates()
+    return checkIn
+  })
+  const [checkOutDate, setCheckOutDate] = useState<Date | null>(() => {
+    const { checkOut } = getBookingDates()
+    return checkOut
+  })
+
+  // YYYY-MM-DD 형식 문자열 state
+  const [checkIn, setCheckIn] = useState<string>(() => {
+    const { checkIn } = getBookingDates()
+    if (!checkIn) return ""
+    const year = checkIn.getFullYear()
+    const month = String(checkIn.getMonth() + 1).padStart(2, '0')
+    const day = String(checkIn.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
+  })
+  const [checkOut, setCheckOut] = useState<string>(() => {
+    const { checkOut } = getBookingDates()
+    if (!checkOut) return ""
+    const year = checkOut.getFullYear()
+    const month = String(checkOut.getMonth() + 1).padStart(2, '0')
+    const day = String(checkOut.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
+  })
+
   const [showDatePicker, setShowDatePicker] = useState(false)
   const [datePickerLocale, setDatePickerLocale] = useState<any>(undefined)
 
@@ -244,7 +270,13 @@ export default function ResidencePage({ params }: ResidencePageProps) {
   }, [params.residenceId, currentPage, currentLanguage])
 
   const handleRoomClick = (roomId: string) => {
-    router.push(`/residence/${params.residenceId}/room/${roomId}`)
+    // 체크인/체크아웃 날짜를 쿼리 파라미터로 전달
+    const queryParams = new URLSearchParams()
+    if (checkIn) queryParams.append('checkIn', checkIn)
+    if (checkOut) queryParams.append('checkOut', checkOut)
+
+    const url = `/residence/${params.residenceId}/room/${roomId}${queryParams.toString() ? `?${queryParams.toString()}` : ''}`
+    router.push(url)
   }
 
   const toggleRoomLike = async (roomIdentifier: string, e: React.MouseEvent) => {
@@ -514,6 +546,7 @@ export default function ResidencePage({ params }: ResidencePageProps) {
                          checkOut={checkOutDate}
                          onCheckInChange={(date: Date | null) => {
                            setCheckInDate(date)
+                           saveBookingDates(date, checkOutDate)
                               if (date) {
                              const year = date.getFullYear()
                              const month = String(date.getMonth() + 1).padStart(2, '0')
@@ -525,6 +558,7 @@ export default function ResidencePage({ params }: ResidencePageProps) {
                          }}
                          onCheckOutChange={(date: Date | null) => {
                            setCheckOutDate(date)
+                           saveBookingDates(checkInDate, date)
                            if (date) {
                              const year = date.getFullYear()
                              const month = String(date.getMonth() + 1).padStart(2, '0')
@@ -706,6 +740,7 @@ export default function ResidencePage({ params }: ResidencePageProps) {
         checkOut={checkOutDate}
         onCheckInChange={(date: Date | null) => {
           setCheckInDate(date)
+          saveBookingDates(date, checkOutDate)
           if (date) {
             const year = date.getFullYear()
             const month = String(date.getMonth() + 1).padStart(2, '0')
@@ -717,6 +752,7 @@ export default function ResidencePage({ params }: ResidencePageProps) {
         }}
         onCheckOutChange={(date: Date | null) => {
           setCheckOutDate(date)
+          saveBookingDates(checkInDate, date)
           if (date) {
             const year = date.getFullYear()
             const month = String(date.getMonth() + 1).padStart(2, '0')
