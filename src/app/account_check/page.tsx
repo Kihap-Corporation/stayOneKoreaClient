@@ -11,10 +11,11 @@ import { Label } from "@/components/ui/label"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useLanguage } from "@/components/language-provider"
+import { apiPost } from "@/lib/api"
 
 
 // Vercel에서는 Environment Variables에서 NEXT_PUBLIC_BASE_URL 설정 필요
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "https://your-backend-api.com"
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
 
 export default function AccountCheckPage() {
   const [email, setEmail] = useState("")
@@ -30,11 +31,13 @@ export default function AccountCheckPage() {
     setIsLoading(true)
 
     try {
+      // HTTP status와 응답 데이터를 모두 확인하기 위해 직접 fetch 사용
       const response = await fetch(`${BASE_URL}/api/auth/email-check`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify({
           email: email
         })
@@ -43,11 +46,14 @@ export default function AccountCheckPage() {
       const data = await response.json()
 
       if (data.code === 200) {
-        // 회원가입 페이지로 이동 (이메일 기억)
-        router.push(`/signup?email=${encodeURIComponent(email)}`)
-      } else if (data.code === 400) {
-        // 로그인 페이지로 이동
-        router.push('/signin')
+        // 이메일을 localStorage에 저장하고 회원가입 페이지로 이동
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('signupEmail', email)
+        }
+        router.push('/signup')
+      } else if (data.code === 400 || data.code === 40104) {
+        // 로그인 페이지로 이동 (이메일 정보와 함께)
+        router.push(`/signin?email=${encodeURIComponent(email)}`)
       } else {
         // 기타 에러 처리
         console.error('Unexpected response:', data)

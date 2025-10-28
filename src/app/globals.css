@@ -3,6 +3,16 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* 스크롤바 숨기기 유틸리티 */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 :root {
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
@@ -122,4 +132,162 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  /* 클릭 가능한 모든 요소에 cursor:pointer 적용 */
+  button,
+  a,
+  [role="button"],
+  input[type="submit"],
+  input[type="button"],
+  .cursor-pointer,
+  [onclick],
+  [data-clickable] {
+    cursor: pointer;
+  }
+}
+
+/* React DatePicker 커스텀 스타일 */
+.react-datepicker-wrapper {
+  width: 100%;
+}
+
+.react-datepicker__input-container {
+  width: 100%;
+}
+
+.react-datepicker__input-container input {
+  width: 100%;
+  background-color: white;
+}
+
+.datepicker-popper {
+  z-index: 9999 !important;
+}
+
+.react-datepicker {
+  font-family: "SUIT Variable", sans-serif;
+  border: 1px solid #dee0e3;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.react-datepicker__header {
+  background-color: white;
+  border-bottom: 1px solid #dee0e3;
+  border-radius: 12px 12px 0 0;
+  padding-top: 0.75rem;
+}
+
+.react-datepicker__current-month {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #14151a;
+  margin-bottom: 0.5rem;
+}
+
+.react-datepicker__day-names {
+  display: flex;
+  justify-content: space-around;
+  padding: 0.5rem 0;
+}
+
+.react-datepicker__day-name {
+  color: #9ca3af;
+  font-size: 0.75rem;
+  font-weight: 600;
+  width: 2rem;
+  line-height: 2rem;
+}
+
+.react-datepicker__month {
+  margin: 0.5rem;
+}
+
+.react-datepicker__week {
+  display: flex;
+  justify-content: space-around;
+}
+
+.react-datepicker__day {
+  width: 2rem;
+  line-height: 2rem;
+  border-radius: 8px;
+  color: #14151a;
+  font-size: 0.875rem;
+  margin: 0.125rem;
+  cursor: pointer;
+}
+
+.react-datepicker__day:hover {
+  background-color: #f3f4f6;
+  border-radius: 8px;
+}
+
+.react-datepicker__day--selected {
+  background-color: #e0004d !important;
+  color: white !important;
+  font-weight: 600;
+}
+
+.react-datepicker__day--selected:hover {
+  background-color: #c2185b !important;
+}
+
+.react-datepicker__day--keyboard-selected {
+  background-color: #f3f4f6;
+  color: #14151a;
+}
+
+.react-datepicker__day--disabled {
+  color: #d1d5db;
+  cursor: not-allowed;
+}
+
+.react-datepicker__day--outside-month {
+  color: #d1d5db;
+}
+
+.react-datepicker__navigation {
+  top: 0.75rem;
+}
+
+.react-datepicker__navigation-icon::before {
+  border-color: #14151a;
+  border-width: 2px 2px 0 0;
+}
+
+.react-datepicker__navigation:hover *::before {
+  border-color: #e0004d;
+}
+
+/* Swiper 커스텀 스타일 */
+.swiper-pagination {
+  bottom: 16px !important;
+}
+
+.swiper-pagination-bullet {
+  width: 6px !important;
+  height: 6px !important;
+  background: rgba(255, 255, 255, 0.7) !important;
+  opacity: 1 !important;
+}
+
+.swiper-pagination-bullet-active {
+  background: #ffffff !important;
+}
+
+/* 네이버 지도 z-index 제어 */
+/* 네이버 지도 컨테이너의 모든 자식 요소 z-index 낮추기 */
+.naver-map-container,
+.naver-map-container * {
+  position: relative;
+  z-index: 1 !important;
+}
+
+/* 네이버 지도 컨트롤 버튼들 (일반/위성 등) */
+.nmsc,
+.nmap_control_button,
+.nmap_control_compass,
+.nmap_control_zoom {
+  z-index: 10 !important;
 }

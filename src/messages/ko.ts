@@ -1,7 +1,35 @@
 export default {
-  header: {
+header: {
     search: { placeholder: "한국의 숙소를 찾아보세요" },
-    navigation: { stays: "숙박", about: "고시원 소개" }
+    navigation: { stays: "숙박", about: "고시원 소개" },
+    profile: {
+      viewProfile: "프로필 보기",
+      notifications: "알림",
+      myBookings: "내 예약",
+      settings: "설정",
+      logout: "로그아웃"
+    }
+  },
+  mypage: {
+    welcome: "마이페이지",
+    welcomeDesc: "계정 정보와 예약 내역을 관리하세요",
+    myBookings: "내 예약",
+    bookingDescription: "예약 내역을 확인하세요",
+    noBookings: "예약 내역이 없습니다",
+    noBookingsDesc: "새로운 예약을 시작해보세요",
+    findStay: "숙소 찾기",
+    settings: "설정",
+    editProfile: "편집",
+    totalBookings: "총 예약",
+    activeBookings: "활성 예약",
+    rating: "평점",
+    currentBookings: "현재 예약",
+    viewAll: "전체보기",
+    accountSettings: "계정 설정",
+    notifications: "알림 설정",
+    paymentMethods: "결제 수단",
+    help: "도움말",
+    logout: "로그아웃"
   },
   footer: {
     company: "스테이원코리아",
@@ -22,19 +50,47 @@ export default {
     }
   },
   home: {
-    title: "한국의 아름다운 숙박시설을 소개하는 플랫폼입니다.",
-    subtitle: "전국 각지의 특별한 숙소를 만나보세요.",
-    explore: "숙소 둘러보기",
-    host: "호스트 등록하기",
-    search: { title: "다양한 숙소 검색", description: "지역, 가격, 시설 등 원하시는 조건으로 숙소를 찾아보세요." },
-    booking: { title: "안전한 예약 시스템", description: "신뢰할 수 있는 예약 시스템으로 안전하게 숙소를 예약하세요." },
-    experience: { title: "특별한 경험", description: "한국의 전통과 현대가 어우러진 특별한 숙박 경험을 제공합니다." }
+    hero: {
+      title: "한국에서 숙소를 찾아보세요",
+      searchButton: "서울에서 5일 숙박 검색",
+      searchRequirements: {
+        selectLocation: "위치를 선택해주세요",
+        selectDates: "날짜를 선택해주세요",
+        minimumStay: "최소 3박 이상 선택해주세요"
+      }
+    },
+    features: {
+      title: "고시원, K-컴팩트 스튜디오",
+      learnMore: "더 알아보기",
+      deposit: {
+        title: "최소 보증금 & 유연한 계약",
+        description: "일일, 주간, 월간 계약이 가능하며 한국 최저 보증금으로 체류 목적에 맞는 유연한 계약을 제공합니다."
+      },
+      furnished: {
+        title: "완비된 가구 & 올인클루시브",
+        description: "완전히 갖춰진 가구와 가전제품 - 모든 공과금 포함, 추가 요금 없음."
+      },
+      safety: {
+        title: "안전 & 최고의 위치",
+        description: "24시간 보안 및 지하철역, 대학교, 서울 전역의 비즈니스 지구 근처 최고의 위치."
+      }
+    },
+    trending: {
+      title: "인기 여행지",
+      subtitle: "가장 인기 있는 숙소 위치"
+    },
+    featuredRooms: {
+      title: "추천 숙소",
+      subtitle: "Stay One Korea 추천 숙소",
+      freeCancellation: "무료 취소"
+    }
   },
   account_check: {
     title: "로그인하거나 계정을 생성하세요",
     emailLabel: "이메일",
     emailPlaceholder: "id@email.com",
     continue: "계속하기",
+    loading: "확인 중...",
     termsAgreement: "로그인하면 Stay One Korea의",
     termsOfUse: "이용약관",
     privacyPolicy: "개인정보처리방침",
@@ -46,12 +102,16 @@ export default {
     firstName: "이름",
     lastName: "성",
     firstNamePlaceholder: "이름",
-    lastNamePlaceholder: "성",
-    password: "비밀번호",
-    passwordPlaceholder: "비밀번호",
-    passwordRule: "비밀번호 규칙",
+      lastNamePlaceholder: "성",
+      email: "이메일",
+      emailPlaceholder: "id@email.com",
+      password: "비밀번호",
+      passwordPlaceholder: "비밀번호",
+    passwordRule: "비밀번호는 영문자, 숫자, 특수문자(@ , $, !, %, *, ?, &, #)를 각각 최소 1개 이상 포함한 8~20자의 문자열이어야 합니다.",
+    passwordLengthError: "비밀번호는 8자 이상 20자 이하여야 합니다.",
+    passwordPatternError: "비밀번호는 영문자, 숫자, 특수문자를 최소 1개씩 포함해야 합니다.",
     phoneNumber: "휴대폰 번호",
-    phoneNumberPlaceholder: "휴대폰 번호",
+      phoneNumberPlaceholder: "010-1234-5678",
     southKorea: "대한민국",
     usa: "미국",
     consentAll: "다음의 모든 항목에 동의합니다:",
@@ -65,6 +125,69 @@ export default {
     and: "및",
     agreeToTerms: "에 동의합니다."
   },
+  signin: {
+    title: "로그인",
+    email: "이메일",
+    emailPlaceholder: "id@email.com",
+    password: "비밀번호",
+    passwordPlaceholder: "비밀번호",
+    continue: "계속하기",
+    termsAgreement: "로그인하면 Stay One Korea의",
+    termsOfUse: "이용약관",
+    privacyPolicy: "개인정보처리방침",
+    and: "및",
+    agreeToTerms: "에 동의합니다.",
+    loginSuccess: "로그인을 성공하였습니다.",
+    loginError: "이메일 또는 비밀번호가 올바르지 않습니다."
+  },
+  verifyEmail: {
+    title: "이메일을 확인하세요",
+    subtitle: "귀하의 이메일 주소로 인증 이메일을 보냈습니다.",
+    description: "계정을 활성화하려면 버튼을 클릭하세요.",
+    findStay: "숙소 찾기"
+  },
+  auth: {
+    tokenExpired: "액세스 토큰이 만료되었습니다. 다시 로그인해주세요.",
+    tokenRefreshFailed: "토큰 재발급에 실패했습니다 다시 로그인 해주세요: 로그인이 만료되었습니다.",
+    accountLoggedOut: "계정이 로그아웃 되었습니다. 다시 로그인 해주세요",
+    logoutSuccess: "로그아웃이 완료되었습니다.",
+    logoutError: "로그아웃 중 오류가 발생했습니다.",
+    currentPasswordIncorrect: "현재 비밀번호가 일치하지 않습니다.",
+    sessionExpired: "세션이 만료되었습니다. 다시 로그인해주세요.",
+    loginRequired: "로그인이 필요한 서비스입니다",
+    loginRequiredDesc: "로그인 페이지로 이동하시겠습니까?"
+  },
+  error: {
+    accessDenied: "접근이 불가능합니다",
+    accessDeniedDescription: "이 페이지에 접근할 권한이 없습니다.",
+    goHome: "홈으로 돌아가기"
+  },
+  searchResult: {
+    title: "숙소 검색 결과",
+    priceFilter: "가격",
+    priceRange: "가격 범위",
+    roomsFound: "{count}개의 숙소",
+    mapView: "지도 보기",
+    listView: "목록 보기",
+    sortBy: "정렬",
+    sortRecommend: "추천순",
+    sortPriceLow: "낮은 가격순",
+    sortPriceHigh: "높은 가격순",
+    sortRating: "평점순",
+    noResults: "검색 결과가 없습니다",
+    noResultsDesc: "다른 조건으로 검색해보세요",
+    perNight: "박당",
+    showMap: "지도 보기",
+    hideMap: "지도 숨기기",
+    searchError: "검색 중 오류가 발생했습니다",
+    searchButton: "검색",
+    showAllRooms: "모든 방 보기",
+    validation: {
+      selectLocation: "알고리아 검색에서 위치를 선택해주세요",
+      selectDates: "체크인/체크아웃 날짜를 선택해주세요",
+      minStay: "최소 3일 이상 숙박해야 합니다"
+    }
+  },
   common: {
     loading: "로딩 중...",
     error: "오류가 발생했습니다",
@@ -74,6 +197,150 @@ export default {
     save: "저장",
     delete: "삭제",
     edit: "편집",
-    close: "닫기"
+    close: "닫기",
+    noImage: "이미지 없음"
+  },
+  roomDetail: {
+    schedule: "일정",
+    people: "인원",
+    selectDates: "날짜 선택...",
+    perNight: "per night",
+    forNights: "for {nights} nights",
+    freeCancellation: "Free cancellation",
+    save: "Save",
+    reserve: "Reserve",
+    notChargedYet: "아직 요금이 청구되지 않습니다",
+    shareTitle: "친구와 함께 공유하기",
+    shareButton: "이 숙소 공유하기",
+    shareSuccess: "링크가 클립보드에 복사되었습니다!",
+    shareDescription: "친구들과 공유해보세요",
+    shareError: "링크 복사에 실패했습니다",
+    hostTitle: "호스트",
+    yearsHosting: "{years}년부터 호스팅",
+    showMoreRooms: "다른 숙소 보기",
+    readMore: "더 읽어보기",
+    aboutGosiwon: "고시원 소개",
+    roomNotFound: "방을 찾을 수 없습니다",
+    cannotLoadRoom: "방 정보를 조회할 수 없습니다",
+    invalidInput: "잘못된 값을 입력했습니다",
+    alreadyReserved: "해당 기간에 이미 예약이 존재합니다",
+    invalidCurrency: "잘못된 화폐단위를 입력했습니다",
+    exchangeRateNotFound: "환율정보를 찾을 수 없습니다",
+    pleaseSelectDates: "날짜를 선택해주세요",
+    reservationError: "예약 처리 중 오류가 발생했습니다",
+    checkIn: "체크인",
+    checkOut: "체크아웃",
+    checkOutOnly: "체크아웃만 가능",
+    selectCheckInFirst: "체크인을 먼저 선택해주세요"
+  },
+  reservation: {
+    facilities: "편의시설",
+    showAllFacilities: "모든 {count}개 편의시설 보기",
+    rules: "규칙",
+    showMore: "더 보기",
+    leadGuest: "대표 예약자",
+    firstName: "이름",
+    lastName: "성",
+    firstNamePlaceholder: "이름",
+    lastNamePlaceholder: "성",
+    email: "이메일",
+    emailPlaceholder: "email@email.com",
+    emailHelper: "이메일 주소가 정확한지 확인해주세요. 예약 확인서를 보내는 데 사용됩니다.",
+    countryRegion: "거주 국가/지역",
+    selectPlaceholder: "선택...",
+    phoneNumber: "휴대폰 번호",
+    phoneNumberPlaceholder: "휴대폰 번호",
+    consentAll: "다음의 모든 항목에 동의합니다:",
+    consentTerms: "이용약관에 동의하며, 만 18세 이상임을 확인합니다.",
+    consentPrivacy: "개인정보처리방침에 따라 개인정보의 수집 및 이용에 동의합니다.",
+    consentThirdParty: "개인정보처리방침에 따라 국내외 제3자와 개인정보 공유에 동의합니다.",
+    nextPayment: "다음: 결제 정보",
+    notChargedYet: "아직 요금이 청구되지 않습니다",
+    checkIn: "체크인",
+    checkOut: "체크아웃",
+    nights: "박",
+    roomPricePerNight: "1박 숙박 요금",
+    nightsCount: "× {count}박",
+    roomCount: "× {count}실",
+    bookingFees: "예약 수수료",
+    free: "무료",
+    price: "가격",
+    includedInPrice: "가격에 포함: 세금 10%",
+    currencyNote: "통화 선택은 요금에 영향을 미칩니다",
+    theseTerms: "해당 약관",
+    required: "*",
+    priceGuaranteed: "이 가격은 다음 시간 동안 보장됩니다",
+    timeExpired: "예약 가능 시간이 만료되었습니다.",
+    cancelReservation: "예약 취소",
+    cancelConfirm: "예약을 취소하시겠습니까?",
+    cancelConfirmModal: "예약을 취소하시겠습니까?\n\n이 작업은 되돌릴 수 없습니다.",
+    cancelSuccess: "예약이 취소되었습니다.",
+    cancelNotAllowed: "해당 예약은 취소가 불가능합니다.",
+    userNotFound: "존재하지 않는 사용자입니다.",
+    cancelError: "예약 취소 중 오류가 발생했습니다.",
+    stepCustomerInfo: "고객 정보",
+    stepPayment: "결제 정보",
+    stepConfirmed: "확인 완료",
+    roomNotFound: "존재하지 않는 방입니다",
+    invalidInput: "잘못된 입력을 했습니다",
+    loadError: "예약 정보를 불러오는 중 오류가 발생했습니다",
+    reservationNotAvailable: "예약 가능한 상태가 아닙니다",
+    consentRequired: "모든 동의사항에 체크해주세요."
+  },
+  bookings: {
+    title: "예약 내역",
+    underWay: "진행 중",
+    pending: "대기 중",
+    approved: "승인됨",
+    cancelled: "취소됨",
+    rejected: "거절됨",
+    checkIn: "체크인",
+    checkOut: "체크아웃",
+    nights: "박",
+    noBookings: "예약 내역이 없습니다"
+  },
+  payment: {
+    securePayment: "안전한 결제",
+    encryptedInfo: "모든 카드 정보는 완전히 암호화되고 안전하게 보호됩니다.",
+    paypalOnly: "PayPal을 통해서만 결제를 받습니다.",
+    bookWithPaypal: "PayPal로 지금 예약하기",
+    clickToComplete: "위 버튼을 클릭하여 결제를 진행하고 예약을 완료하세요.",
+    paypalProcessing: "PayPal 결제를 진행합니다...",
+    ourPrice: "정가",
+    discount: "할인"
+  },
+  like: {
+    title: "저장된 숙소",
+    noSavedRooms: "저장된 숙소가 없습니다",
+    noSavedRoomsDesc: "마음에 드는 숙소를 저장해보세요",
+    noLikedRoomsError: "저장된 룸이 존재하지 않습니다",
+    verified: "인증됨",
+    freeCancellation: "무료 취소"
+  },
+  admin: {
+    users: {
+      title: "유저 관리",
+      totalUsers: "전체 유저",
+      email: "이메일",
+      fullName: "이름",
+      phoneNumber: "연락처",
+      createdAt: "가입일",
+      status: "상태",
+      active: "활성",
+      deleted: "삭제됨",
+      page: "페이지",
+      of: "/",
+      sortBy: "정렬",
+      sortByCreatedAt: "가입일순",
+      sortByName: "이름순",
+      direction: "방향",
+      asc: "오름차순",
+      desc: "내림차순",
+      noUsers: "유저가 없습니다",
+      loadError: "유저 목록을 불러오는 중 오류가 발생했습니다",
+      perPage: "페이지당"
+    }
   }
+
+
 }

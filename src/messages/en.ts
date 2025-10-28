@@ -1,7 +1,35 @@
 export default {
-  header: {
+header: {
     search: { placeholder: "Find your stay in Korea" },
-    navigation: { stays: "Stays", about: "About Gosiwon" }
+    navigation: { stays: "Stays", about: "About Gosiwon" },
+    profile: {
+      viewProfile: "View Profile",
+      notifications: "Notifications",
+      myBookings: "My Bookings",
+      settings: "Settings",
+      logout: "Logout"
+    }
+  },
+  mypage: {
+    welcome: "My Page",
+    welcomeDesc: "Manage your account information and bookings",
+    myBookings: "My Bookings",
+    bookingDescription: "Check your booking history",
+    noBookings: "No bookings found",
+    noBookingsDesc: "Start your first booking",
+    findStay: "Find a Stay",
+    settings: "Settings",
+    editProfile: "Edit",
+    totalBookings: "Total Bookings",
+    activeBookings: "Active Bookings",
+    rating: "Rating",
+    currentBookings: "Current Bookings",
+    viewAll: "View All",
+    accountSettings: "Account Settings",
+    notifications: "Notifications",
+    paymentMethods: "Payment Methods",
+    help: "Help",
+    logout: "Logout"
   },
   footer: {
     company: "Company Name",
@@ -22,19 +50,47 @@ export default {
     }
   },
   home: {
-    title: "A platform that introduces beautiful accommodations in Korea.",
-    subtitle: "Discover special accommodations throughout Korea.",
-    explore: "Explore Accommodations",
-    host: "Become a Host",
-    search: { title: "Diverse Accommodation Search", description: "Find accommodations based on your preferred location, price, and amenities." },
-    booking: { title: "Secure Booking System", description: "Book accommodations safely with our reliable booking system." },
-    experience: { title: "Special Experience", description: "Experience the perfect blend of Korean tradition and modernity." }
+    hero: {
+      title: "Find Your Stay in Korea",
+      searchButton: "Search 5days in Seoul",
+      searchRequirements: {
+        selectLocation: "Please select a location",
+        selectDates: "Please select dates",
+        minimumStay: "Please select at least 3 nights"
+      }
+    },
+    features: {
+      title: "GOSIWON, K-Compact Studio",
+      learnMore: "Learn More",
+      deposit: {
+        title: "Near-Zero Deposit & Flexible Lease",
+        description: "Flexible daily, weekly, and monthly contracts with the lowest deposit in Korea, tailored to your stay purpose."
+      },
+      furnished: {
+        title: "Fully Furnished & All-Inclusive",
+        description: "Fully furnished with appliances — all utilities included, no extra charges."
+      },
+      safety: {
+        title: "Safety & Prime Location",
+        description: "24-hour security and prime locations near subway stations, universities, and business districts across Seoul."
+      }
+    },
+    trending: {
+      title: "Trending destinations",
+      subtitle: "Most popular stay locations"
+    },
+    featuredRooms: {
+      title: "Featured rooms",
+      subtitle: "Recommended rooms by Stay One Korea",
+      freeCancellation: "Free cancellation"
+    }
   },
   account_check: {
     title: "Sign in or create an account",
     emailLabel: "Email",
     emailPlaceholder: "id@email.com",
     continue: "Continue",
+    loading: "Checking...",
     termsAgreement: "By signing in, I agree to Stay One Korea's",
     termsOfUse: "Terms of Use",
     privacyPolicy: "Privacy Policy",
@@ -46,12 +102,16 @@ export default {
     firstName: "First name",
     lastName: "Last name",
     firstNamePlaceholder: "First name",
-    lastNamePlaceholder: "Last name",
-    password: "Password",
-    passwordPlaceholder: "Password",
-    passwordRule: "Password Rule",
+      lastNamePlaceholder: "Last name",
+      email: "Email",
+      emailPlaceholder: "id@email.com",
+      password: "Password",
+      passwordPlaceholder: "Password",
+    passwordRule: "Password must be 8-20 characters long and contain at least one letter, one number, and one special character (@, $, !, %, *, ?, &, #).",
+    passwordLengthError: "Password must be 8-20 characters long.",
+    passwordPatternError: "Password must contain at least one letter, one number, and one special character (@, $, !, %, *, ?, &, #).",
     phoneNumber: "Phone number",
-    phoneNumberPlaceholder: "Phone number",
+      phoneNumberPlaceholder: "(123) 456-7890",
     southKorea: "South Korea",
     usa: "USA",
     consentAll: "I consent to all of the following:",
@@ -65,6 +125,69 @@ export default {
     and: "and",
     agreeToTerms: "."
   },
+  signin: {
+    title: "Sign in",
+    email: "Email",
+    emailPlaceholder: "id@email.com",
+    password: "Password",
+    passwordPlaceholder: "Password",
+    continue: "Continue",
+    termsAgreement: "By signing in, I agree to Stay One Korea's",
+    termsOfUse: "Terms of Use",
+    privacyPolicy: "Privacy Policy",
+    and: "and",
+    agreeToTerms: ".",
+    loginSuccess: "Login successful.",
+    loginError: "Email or password is incorrect."
+  },
+  verifyEmail: {
+    title: "Check your inbox",
+    subtitle: "We've sent you a verification email to your email address.",
+    description: "Click the button to activate your account.",
+    findStay: "Find your stay"
+  },
+  auth: {
+    tokenExpired: "Access token has expired. Please log in again.",
+    tokenRefreshFailed: "Token refresh failed. Please log in again: Login has expired.",
+    accountLoggedOut: "Account has been logged out. Please log in again.",
+    logoutSuccess: "Logout completed successfully.",
+    logoutError: "An error occurred during logout.",
+    currentPasswordIncorrect: "Current password is incorrect.",
+    sessionExpired: "Session has expired. Please log in again.",
+    loginRequired: "Login is required for this service",
+    loginRequiredDesc: "Would you like to go to the login page?"
+  },
+  error: {
+    accessDenied: "Access denied",
+    accessDeniedDescription: "You do not have permission to access this page.",
+    goHome: "Go to Home"
+  },
+  searchResult: {
+    title: "Search Results",
+    priceFilter: "Price",
+    priceRange: "Price Range",
+    roomsFound: "{count} rooms found",
+    mapView: "Map View",
+    listView: "List View",
+    sortBy: "Sort by",
+    sortRecommend: "Recommended",
+    sortPriceLow: "Price: Low to High",
+    sortPriceHigh: "Price: High to Low",
+    sortRating: "Rating",
+    noResults: "No results found",
+    noResultsDesc: "Try searching with different criteria",
+    perNight: "per night",
+    showMap: "Show Map",
+    hideMap: "Hide Map",
+    searchError: "An error occurred while searching",
+    searchButton: "Search",
+    showAllRooms: "Show all rooms",
+    validation: {
+      selectLocation: "Please select a location from Algolia search",
+      selectDates: "Please select check-in and check-out dates",
+      minStay: "Minimum stay is 3 days"
+    }
+  },
   common: {
     loading: "Loading...",
     error: "An error occurred",
@@ -74,6 +197,148 @@ export default {
     save: "Save",
     delete: "Delete",
     edit: "Edit",
-    close: "Close"
+    close: "Close",
+    noImage: "No image"
+  },
+  roomDetail: {
+    schedule: "Schedule",
+    people: "People",
+    selectDates: "Select dates...",
+    perNight: "per night",
+    forNights: "for {nights} nights",
+    freeCancellation: "Free cancellation",
+    save: "Save",
+    reserve: "Reserve",
+    notChargedYet: "You won't be charged yet",
+    shareTitle: "Share this room with friends",
+    shareButton: "Share this room",
+    shareSuccess: "Link copied to clipboard!",
+    shareDescription: "Share with your friends",
+    shareError: "Failed to copy link",
+    hostTitle: "Host of this room",
+    yearsHosting: "{years} years hosting",
+    showMoreRooms: "Show more rooms",
+    readMore: "Read more",
+    aboutGosiwon: "About the gosiwon",
+    roomNotFound: "Room not found",
+    cannotLoadRoom: "Unable to load room information",
+    invalidInput: "Invalid input provided",
+    alreadyReserved: "This period is already reserved",
+    invalidCurrency: "Invalid currency provided",
+    exchangeRateNotFound: "Exchange rate information not found",
+    pleaseSelectDates: "Please select dates",
+    reservationError: "An error occurred while processing the reservation",
+    checkIn: "Check-in",
+    checkOut: "Check-out",
+    checkOutOnly: "Check-out only",
+    selectCheckInFirst: "Please select check-in date first"
+  },
+  reservation: {
+    facilities: "Facilities",
+    showAllFacilities: "Show all {count} facilities",
+    rules: "Rules",
+    showMore: "Show more",
+    leadGuest: "Lead guest",
+    firstName: "First name",
+    lastName: "Last name",
+    firstNamePlaceholder: "First name",
+    lastNamePlaceholder: "Last name",
+    email: "Email",
+    emailPlaceholder: "email@email.com",
+    emailHelper: "Please make sure your email address is correct. It will be used to send your booking confirmation.",
+    countryRegion: "Country/region of residence",
+    selectPlaceholder: "Select...",
+    phoneNumber: "Phone number",
+    phoneNumberPlaceholder: "Phone number",
+    consentAll: "I consent to all of the following:",
+    consentTerms: "I agree to the Terms of use and confirm that I am 18 years old or older.",
+    consentPrivacy: "I agree to the collection and use of my personal information in accordance with the Privacy Policy.",
+    consentThirdParty: "I agree to sharing of my personal information with third parties, in Korea or overseas in accordance with the Privacy Policy.",
+    nextPayment: "Next: Payment information",
+    notChargedYet: "You won't be charged yet",
+    checkIn: "Check-in",
+    checkOut: "Check-out",
+    nights: "nights",
+    roomPricePerNight: "Room price per night",
+    nightsCount: "× {count} nights",
+    roomCount: "× {count} rooms",
+    bookingFees: "Booking fees",
+    free: "Free",
+    price: "Price",
+    includedInPrice: "Included in price: 10% tax",
+    currencyNote: "Currency selection affects pricing",
+    theseTerms: "These terms",
+    required: "*",
+    priceGuaranteed: "This price is guaranteed for the next",
+    timeExpired: "Booking time has expired.",
+    cancelReservation: "Cancel reservation",
+    cancelConfirm: "Are you sure you want to cancel your reservation?",
+    cancelConfirmModal: "Are you sure you want to cancel your reservation?\n\nThis action cannot be undone.",
+    cancelSuccess: "Reservation has been cancelled.",
+    cancelNotAllowed: "This reservation cannot be cancelled.",
+    userNotFound: "User not found.",
+    cancelError: "An error occurred while cancelling the reservation.",
+    stepCustomerInfo: "Customer information",
+    stepPayment: "Payment information",
+    stepConfirmed: "Confirmed",
+    roomNotFound: "Room not found",
+    invalidInput: "Invalid input provided",
+    loadError: "Failed to load reservation information",
+    reservationNotAvailable: "Reservation is not available",
+    consentRequired: "Please check all consent items."
+  },
+  bookings: {
+    title: "Bookings",
+    underWay: "Under Way",
+    pending: "Pending",
+    approved: "Approved",
+    cancelled: "Cancelled",
+    rejected: "Rejected",
+    checkIn: "Check-in",
+    checkOut: "Check-out",
+    nights: "nights",
+    noBookings: "No bookings found"
+  },
+  payment: {
+    securePayment: "Secure payment",
+    encryptedInfo: "All card information is fully encrypted, secure and protected.",
+    paypalOnly: "We only accept payments via PayPal.",
+    bookWithPaypal: "Book Now with PayPal",
+    clickToComplete: "Click the button above to proceed with payment and complete your booking.",
+    paypalProcessing: "Processing PayPal payment...",
+    ourPrice: "Our price",
+    discount: "Discount"
+  },
+  like: {
+    title: "Saved",
+    noSavedRooms: "No saved rooms",
+    noSavedRoomsDesc: "Save your favorite rooms to see them here",
+    noLikedRoomsError: "No saved rooms exist",
+    verified: "Verified",
+    freeCancellation: "Free cancellation"
+  },
+  admin: {
+    users: {
+      title: "User Management",
+      totalUsers: "Total Users",
+      email: "Email",
+      fullName: "Full Name",
+      phoneNumber: "Phone Number",
+      createdAt: "Created At",
+      status: "Status",
+      active: "Active",
+      deleted: "Deleted",
+      page: "Page",
+      of: "of",
+      sortBy: "Sort By",
+      sortByCreatedAt: "Created Date",
+      sortByName: "Name",
+      direction: "Direction",
+      asc: "Ascending",
+      desc: "Descending",
+      noUsers: "No users found",
+      loadError: "Failed to load user list",
+      perPage: "Per page"
+    }
   }
 }

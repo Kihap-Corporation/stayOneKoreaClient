@@ -1,7 +1,35 @@
 export default {
-  header: {
+header: {
     search: { placeholder: "Trouvez votre séjour en Corée" },
-    navigation: { stays: "Séjours", about: "À propos de Gosiwon" }
+    navigation: { stays: "Séjours", about: "À propos de Gosiwon" },
+    profile: {
+      viewProfile: "Voir le profil",
+      notifications: "Notifications",
+      myBookings: "Mes réservations",
+      settings: "Paramètres",
+      logout: "Déconnexion"
+    }
+  },
+  mypage: {
+    welcome: "Ma page",
+    welcomeDesc: "Gérez vos informations de compte et réservations",
+    myBookings: "Mes réservations",
+    bookingDescription: "Consultez votre historique de réservations",
+    noBookings: "Aucune réservation trouvée",
+    noBookingsDesc: "Commencez votre première réservation",
+    findStay: "Trouver un séjour",
+    settings: "Paramètres",
+    editProfile: "Modifier",
+    totalBookings: "Total des réservations",
+    activeBookings: "Réservations actives",
+    rating: "Évaluation",
+    currentBookings: "Réservations actuelles",
+    viewAll: "Voir tout",
+    accountSettings: "Paramètres du compte",
+    notifications: "Notifications",
+    paymentMethods: "Moyens de paiement",
+    help: "Aide",
+    logout: "Déconnexion"
   },
   footer: {
     company: "Nom de l'entreprise",
@@ -22,19 +50,47 @@ export default {
     }
   },
   home: {
-    title: "Une plateforme qui présente de belles installations d'hébergement en Corée.",
-    subtitle: "Découvrez des hébergements spéciaux dans tout le pays.",
-    explore: "Explorer les hébergements",
-    host: "Devenir hôte",
-    search: { title: "Recherche d'hébergement diversifiée", description: "Trouvez des hébergements selon votre lieu, prix et équipements préférés." },
-    booking: { title: "Système de réservation sécurisé", description: "Réservez des hébergements en toute sécurité avec notre système de réservation fiable." },
-    experience: { title: "Expérience spéciale", description: "Vivez l'expérience parfaite du mélange de la tradition et de la modernité coréennes." }
+    hero: {
+      title: "Trouvez votre séjour en Corée",
+      searchButton: "Rechercher 5 jours à Séoul",
+      searchRequirements: {
+        selectLocation: "Veuillez sélectionner un lieu",
+        selectDates: "Veuillez sélectionner des dates",
+        minimumStay: "Veuillez sélectionner au moins 3 nuits"
+      }
+    },
+    features: {
+      title: "GOSIWON, Studio K-Compact",
+      learnMore: "En savoir plus",
+      deposit: {
+        title: "Dépôt quasi nul & Bail flexible",
+        description: "Contrats quotidiens, hebdomadaires et mensuels flexibles avec le dépôt le plus bas en Corée, adaptés à votre objectif de séjour."
+      },
+      furnished: {
+        title: "Entièrement meublé & Tout compris",
+        description: "Entièrement meublé avec des appareils - toutes les charges comprises, sans frais supplémentaires."
+      },
+      safety: {
+        title: "Sécurité & Emplacement de choix",
+        description: "Sécurité 24h/24 et emplacements de choix près des stations de métro, des universités et des quartiers d'affaires de Séoul."
+      }
+    },
+    trending: {
+      title: "Destinations tendances",
+      subtitle: "Emplacements de séjour les plus populaires"
+    },
+    featuredRooms: {
+      title: "Chambres vedettes",
+      subtitle: "Chambres recommandées par Stay One Korea",
+      freeCancellation: "Annulation gratuite"
+    }
   },
   account_check: {
     title: "Se connecter ou créer un compte",
     emailLabel: "Email",
     emailPlaceholder: "id@email.com",
     continue: "Continuer",
+    loading: "Vérification...",
     termsAgreement: "En me connectant, j'accepte les",
     termsOfUse: "Conditions d'utilisation",
     privacyPolicy: "Politique de confidentialité",
@@ -47,11 +103,15 @@ export default {
     lastName: "Nom de famille",
     firstNamePlaceholder: "Prénom",
     lastNamePlaceholder: "Nom de famille",
+    email: "Email",
+    emailPlaceholder: "id@email.com",
     password: "Mot de passe",
     passwordPlaceholder: "Mot de passe",
-    passwordRule: "Règle de mot de passe",
+    passwordRule: "Le mot de passe doit contenir entre 8 et 20 caractères et inclure au moins une lettre, un chiffre et un caractère spécial (@, $, !, %, *, ?, &, #).",
+    passwordLengthError: "Le mot de passe doit contenir entre 8 et 20 caractères.",
+    passwordPatternError: "Le mot de passe doit inclure au moins une lettre, un chiffre et un caractère spécial (@, $, !, %, *, ?, &, #).",
     phoneNumber: "Numéro de téléphone",
-    phoneNumberPlaceholder: "Numéro de téléphone",
+      phoneNumberPlaceholder: "06 12 34 56 78",
     southKorea: "Corée du Sud",
     usa: "États-Unis",
     consentAll: "J'accepte tous les éléments suivants :",
@@ -65,6 +125,69 @@ export default {
     and: "et",
     agreeToTerms: "de Stay One Korea."
   },
+  signin: {
+    title: "Se connecter",
+    email: "Email",
+    emailPlaceholder: "id@email.com",
+    password: "Mot de passe",
+    passwordPlaceholder: "Mot de passe",
+    continue: "Continuer",
+    termsAgreement: "En me connectant, j'accepte les",
+    termsOfUse: "Conditions d'utilisation",
+    privacyPolicy: "Politique de confidentialité",
+    and: "et",
+    agreeToTerms: "de Stay One Korea.",
+    loginSuccess: "Connexion réussie.",
+    loginError: "L'adresse e-mail ou le mot de passe est incorrect."
+  },
+  verifyEmail: {
+    title: "Vérifiez votre boîte de réception",
+    subtitle: "Nous vous avons envoyé un e-mail de vérification à votre adresse e-mail.",
+    description: "Cliquez sur le bouton pour activer votre compte.",
+    findStay: "Trouvez votre séjour"
+  },
+  auth: {
+    tokenExpired: "Le jeton d'accès a expiré. Veuillez vous reconnecter.",
+    tokenRefreshFailed: "Échec du rafraîchissement du jeton. Veuillez vous reconnecter : La connexion a expiré.",
+    accountLoggedOut: "Le compte a été déconnecté. Veuillez vous reconnecter.",
+    logoutSuccess: "Déconnexion terminée avec succès.",
+    logoutError: "Une erreur s'est produite lors de la déconnexion.",
+    currentPasswordIncorrect: "Le mot de passe actuel est incorrect.",
+    sessionExpired: "La session a expiré. Veuillez vous reconnecter.",
+    loginRequired: "La connexion est requise pour ce service",
+    loginRequiredDesc: "Souhaitez-vous aller à la page de connexion ?"
+  },
+  error: {
+    accessDenied: "Accès refusé",
+    accessDeniedDescription: "Vous n'avez pas la permission d'accéder à cette page.",
+    goHome: "Aller à l'accueil"
+  },
+  searchResult: {
+    title: "Résultats de recherche",
+    priceFilter: "Prix",
+    priceRange: "Fourchette de prix",
+    roomsFound: "{count} hébergements trouvés",
+    mapView: "Vue carte",
+    listView: "Vue liste",
+    sortBy: "Trier par",
+    sortRecommend: "Recommandé",
+    sortPriceLow: "Prix : croissant",
+    sortPriceHigh: "Prix : décroissant",
+    sortRating: "Note",
+    noResults: "Aucun résultat trouvé",
+    noResultsDesc: "Essayez de rechercher avec d'autres critères",
+    perNight: "par nuit",
+    showMap: "Afficher la carte",
+    hideMap: "Masquer la carte",
+    searchError: "Une erreur s'est produite lors de la recherche",
+    searchButton: "Rechercher",
+    showAllRooms: "Afficher toutes les chambres",
+    validation: {
+      selectLocation: "Veuillez sélectionner un emplacement dans la recherche Algolia",
+      selectDates: "Veuillez sélectionner les dates d'arrivée et de départ",
+      minStay: "Séjour minimum de 3 jours"
+    }
+  },
   common: {
     loading: "Chargement...",
     error: "Une erreur s'est produite",
@@ -74,6 +197,148 @@ export default {
     save: "Enregistrer",
     delete: "Supprimer",
     edit: "Modifier",
-    close: "Fermer"
+    close: "Fermer",
+    noImage: "Aucune image"
+  },
+  roomDetail: {
+    schedule: "Calendrier",
+    people: "Personnes",
+    selectDates: "Sélectionner des dates...",
+    perNight: "per night",
+    forNights: "for {nights} nights",
+    freeCancellation: "Free cancellation",
+    save: "Save",
+    reserve: "Reserve",
+    notChargedYet: "Vous ne serez pas encore facturé",
+    shareTitle: "Partagez cette chambre avec des amis",
+    shareButton: "Partager cette chambre",
+    shareSuccess: "Lien copié dans le presse-papiers !",
+    shareDescription: "Partagez avec vos amis",
+    shareError: "Échec de la copie du lien",
+    hostTitle: "Hôte de cette chambre",
+    yearsHosting: "{years} ans d'hébergement",
+    showMoreRooms: "Afficher plus de chambres",
+    readMore: "Lire la suite",
+    aboutGosiwon: "À propos du gosiwon",
+    roomNotFound: "Chambre introuvable",
+    cannotLoadRoom: "Impossible de charger les informations de la chambre",
+    invalidInput: "Valeur saisie invalide",
+    alreadyReserved: "Cette période est déjà réservée",
+    invalidCurrency: "Devise invalide",
+    exchangeRateNotFound: "Informations de taux de change introuvables",
+    pleaseSelectDates: "Veuillez sélectionner des dates",
+    reservationError: "Une erreur s'est produite lors du traitement de la réservation",
+    checkIn: "Arrivée",
+    checkOut: "Départ",
+    checkOutOnly: "Départ seulement",
+    selectCheckInFirst: "Veuillez d'abord sélectionner la date d'arrivée"
+  },
+  reservation: {
+    facilities: "Équipements",
+    showAllFacilities: "Afficher tous les {count} équipements",
+    rules: "Règles",
+    showMore: "Afficher plus",
+    leadGuest: "Client principal",
+    firstName: "Prénom",
+    lastName: "Nom de famille",
+    firstNamePlaceholder: "Prénom",
+    lastNamePlaceholder: "Nom de famille",
+    email: "Email",
+    emailPlaceholder: "email@email.com",
+    emailHelper: "Veuillez vous assurer que votre adresse e-mail est correcte. Elle sera utilisée pour envoyer votre confirmation de réservation.",
+    countryRegion: "Pays/région de résidence",
+    selectPlaceholder: "Sélectionner...",
+    phoneNumber: "Numéro de téléphone",
+    phoneNumberPlaceholder: "Numéro de téléphone",
+    consentAll: "J'accepte tous les éléments suivants :",
+    consentTerms: "J'accepte les Conditions d'utilisation et confirme que j'ai 18 ans ou plus.",
+    consentPrivacy: "J'accepte la collecte et l'utilisation de mes informations personnelles conformément à la Politique de confidentialité.",
+    consentThirdParty: "J'accepte le partage de mes informations personnelles avec des tiers, en Corée ou à l'étranger, conformément à la Politique de confidentialité.",
+    nextPayment: "Suivant : Informations de paiement",
+    notChargedYet: "Vous ne serez pas encore facturé",
+    checkIn: "Arrivée",
+    checkOut: "Départ",
+    nights: "nuits",
+    roomPricePerNight: "Prix de la chambre par nuit",
+    nightsCount: "× {count} nuits",
+    roomCount: "× {count} chambres",
+    bookingFees: "Frais de réservation",
+    free: "Gratuit",
+    price: "Prix",
+    includedInPrice: "Inclus dans le prix : 10% de taxe",
+    currencyNote: "La sélection de la devise affecte les prix",
+    theseTerms: "Ces conditions",
+    required: "*",
+    priceGuaranteed: "Ce prix est garanti pour les prochaines",
+    timeExpired: "Le temps de réservation a expiré.",
+    cancelReservation: "Annuler la réservation",
+    cancelConfirm: "Êtes-vous sûr de vouloir annuler votre réservation ?",
+    cancelConfirmModal: "Êtes-vous sûr de vouloir annuler votre réservation ?\n\nCette action ne peut pas être annulée.",
+    cancelSuccess: "La réservation a été annulée.",
+    cancelNotAllowed: "Cette réservation ne peut pas être annulée.",
+    userNotFound: "Utilisateur introuvable.",
+    cancelError: "Une erreur s'est produite lors de l'annulation de la réservation.",
+    stepCustomerInfo: "Informations client",
+    stepPayment: "Informations de paiement",
+    stepConfirmed: "Confirmé",
+    roomNotFound: "Chambre introuvable",
+    invalidInput: "Valeur saisie invalide",
+    loadError: "Échec du chargement des informations de réservation",
+    reservationNotAvailable: "La réservation n'est pas disponible",
+    consentRequired: "Veuillez cocher tous les éléments de consentement."
+  },
+  bookings: {
+    title: "Réservations",
+    underWay: "En cours",
+    pending: "En attente",
+    approved: "Approuvé",
+    cancelled: "Annulé",
+    rejected: "Rejeté",
+    checkIn: "Arrivée",
+    checkOut: "Départ",
+    nights: "nuits",
+    noBookings: "Aucune réservation trouvée"
+  },
+  payment: {
+    securePayment: "Paiement sécurisé",
+    encryptedInfo: "Toutes les informations de carte sont entièrement cryptées, sécurisées et protégées.",
+    paypalOnly: "Nous acceptons uniquement les paiements via PayPal.",
+    bookWithPaypal: "Réserver maintenant avec PayPal",
+    clickToComplete: "Cliquez sur le bouton ci-dessus pour procéder au paiement et finaliser votre réservation.",
+    paypalProcessing: "Traitement du paiement PayPal...",
+    ourPrice: "Notre prix",
+    discount: "Réduction"
+  },
+  like: {
+    title: "Enregistré",
+    noSavedRooms: "Aucune chambre enregistrée",
+    noSavedRoomsDesc: "Enregistrez vos chambres préférées pour les voir ici",
+    noLikedRoomsError: "Aucune chambre enregistrée n'existe",
+    verified: "Vérifié",
+    freeCancellation: "Annulation gratuite"
+  },
+  admin: {
+    users: {
+      title: "Gestion des utilisateurs",
+      totalUsers: "Total des utilisateurs",
+      email: "Email",
+      fullName: "Nom complet",
+      phoneNumber: "Numéro de téléphone",
+      createdAt: "Date d'inscription",
+      status: "Statut",
+      active: "Actif",
+      deleted: "Supprimé",
+      page: "Page",
+      of: "sur",
+      sortBy: "Trier par",
+      sortByCreatedAt: "Date d'inscription",
+      sortByName: "Nom",
+      direction: "Direction",
+      asc: "Croissant",
+      desc: "Décroissant",
+      noUsers: "Aucun utilisateur trouvé",
+      loadError: "Échec du chargement de la liste des utilisateurs",
+      perPage: "Par page"
+    }
   }
 }

@@ -1,7 +1,35 @@
 export default {
-  header: {
+header: {
     search: { placeholder: "在韩国寻找您的住宿" },
-    navigation: { stays: "住宿", about: "关于考試院" }
+    navigation: { stays: "住宿", about: "关于考試院" },
+    profile: {
+      viewProfile: "查看个人资料",
+      notifications: "通知",
+      myBookings: "我的预订",
+      settings: "设置",
+      logout: "登出"
+    }
+  },
+  mypage: {
+    welcome: "我的页面",
+    welcomeDesc: "管理您的账户信息和预订",
+    myBookings: "我的预订",
+    bookingDescription: "查看您的预订历史",
+    noBookings: "未找到预订",
+    noBookingsDesc: "开始您的第一次预订",
+    findStay: "寻找住宿",
+    settings: "设置",
+    editProfile: "编辑",
+    totalBookings: "总预订",
+    activeBookings: "活跃预订",
+    rating: "评分",
+    currentBookings: "当前预订",
+    viewAll: "查看全部",
+    accountSettings: "账户设置",
+    notifications: "通知",
+    paymentMethods: "支付方式",
+    help: "帮助",
+    logout: "登出"
   },
   footer: {
     company: "公司名称",
@@ -22,19 +50,47 @@ export default {
     }
   },
   home: {
-    title: "介绍韩国美丽住宿设施的平台。",
-    subtitle: "发现全国各地的特色住宿。",
-    explore: "浏览住宿",
-    host: "成为房东",
-    search: { title: "多样化住宿搜索", description: "根据您喜欢的地点、价格和设施找到住宿。" },
-    booking: { title: "安全的预订系统", description: "通过我们可靠的预订系统安全地预订住宿。" },
-    experience: { title: "特别体验", description: "体验韩国传统与现代完美融合的住宿体验。" }
+    hero: {
+      title: "在韩国寻找您的住宿",
+      searchButton: "搜索首尔5天住宿",
+      searchRequirements: {
+        selectLocation: "请选择地点",
+        selectDates: "请选择日期",
+        minimumStay: "请至少选择3晚"
+      }
+    },
+    features: {
+      title: "考试院, K-紧凑型工作室",
+      learnMore: "了解更多",
+      deposit: {
+        title: "零保证金 & 灵活租赁",
+        description: "灵活的日租、周租和月租合同，韩国最低保证金，根据您的住宿目的量身定制。"
+      },
+      furnished: {
+        title: "全家具 & 全包",
+        description: "配备齐全的家具和电器 - 所有公用事业费用包含，无额外费用。"
+      },
+      safety: {
+        title: "安全 & 黄金地段",
+        description: "24小时安保和位于地铁站、大学和首尔各地商务区附近的黄金地段。"
+      }
+    },
+    trending: {
+      title: "热门目的地",
+      subtitle: "最受欢迎的住宿地点"
+    },
+    featuredRooms: {
+      title: "精选客房",
+      subtitle: "Stay One Korea 推荐客房",
+      freeCancellation: "免费取消"
+    }
   },
   account_check: {
     title: "登录或创建账户",
     emailLabel: "邮箱",
     emailPlaceholder: "id@email.com",
     continue: "继续",
+    loading: "检查中...",
     termsAgreement: "登录即表示我同意 Stay One Korea 的",
     termsOfUse: "使用条款",
     privacyPolicy: "隐私政策",
@@ -47,11 +103,15 @@ export default {
     lastName: "姓",
     firstNamePlaceholder: "名",
     lastNamePlaceholder: "姓",
+    email: "邮箱",
+    emailPlaceholder: "id@email.com",
     password: "密码",
     passwordPlaceholder: "密码",
-    passwordRule: "密码规则",
+    passwordRule: "密码必须是8-20个字符长，至少包含一个字母、一个数字和一个特殊字符（@，$，！，%，*，？，&，#）。",
+    passwordLengthError: "密码必须是8-20个字符长。",
+    passwordPatternError: "密码必须至少包含一个字母、一个数字和一个特殊字符（@，$，！，%，*，？，&，#）。",
     phoneNumber: "手机号码",
-    phoneNumberPlaceholder: "手机号码",
+      phoneNumberPlaceholder: "138 0013 8000",
     southKorea: "韩国",
     usa: "美国",
     consentAll: "我同意以下所有内容：",
@@ -65,6 +125,69 @@ export default {
     and: "和",
     agreeToTerms: "。"
   },
+  signin: {
+    title: "登录",
+    email: "邮箱",
+    emailPlaceholder: "id@email.com",
+    password: "密码",
+    passwordPlaceholder: "密码",
+    continue: "继续",
+    termsAgreement: "登录即表示我同意 Stay One Korea 的",
+    termsOfUse: "使用条款",
+    privacyPolicy: "隐私政策",
+    and: "和",
+    agreeToTerms: "。",
+    loginSuccess: "登录成功。",
+    loginError: "邮箱或密码不正确。"
+  },
+  verifyEmail: {
+    title: "检查您的收件箱",
+    subtitle: "我们已向您的邮箱发送了验证邮件。",
+    description: "点击按钮激活您的账户。",
+    findStay: "寻找住宿"
+  },
+  auth: {
+    tokenExpired: "访问令牌已过期。请重新登录。",
+    tokenRefreshFailed: "令牌刷新失败。请重新登录：登录已过期。",
+    accountLoggedOut: "账户已登出。请重新登录。",
+    logoutSuccess: "登出成功完成。",
+    logoutError: "登出过程中发生错误。",
+    currentPasswordIncorrect: "当前密码不正确。",
+    sessionExpired: "会话已过期。请重新登录。",
+    loginRequired: "此服务需要登录",
+    loginRequiredDesc: "您想前往登录页面吗？"
+  },
+  error: {
+    accessDenied: "访问被拒绝",
+    accessDeniedDescription: "您没有权限访问此页面。",
+    goHome: "返回首页"
+  },
+  searchResult: {
+    title: "搜索结果",
+    priceFilter: "价格",
+    priceRange: "价格范围",
+    roomsFound: "找到 {count} 个住宿",
+    mapView: "地图视图",
+    listView: "列表视图",
+    sortBy: "排序",
+    sortRecommend: "推荐",
+    sortPriceLow: "价格：低到高",
+    sortPriceHigh: "价格：高到低",
+    sortRating: "评分",
+    noResults: "未找到结果",
+    noResultsDesc: "尝试使用不同的条件搜索",
+    perNight: "每晚",
+    showMap: "显示地图",
+    hideMap: "隐藏地图",
+    searchError: "搜索时发生错误",
+    searchButton: "搜索",
+    showAllRooms: "显示所有房间",
+    validation: {
+      selectLocation: "请从 Algolia 搜索中选择位置",
+      selectDates: "请选择入住和退房日期",
+      minStay: "最少住宿 3 天"
+    }
+  },
   common: {
     loading: "加载中...",
     error: "发生错误",
@@ -74,6 +197,148 @@ export default {
     save: "保存",
     delete: "删除",
     edit: "编辑",
-    close: "关闭"
+    close: "关闭",
+    noImage: "无图像"
+  },
+  roomDetail: {
+    schedule: "日程",
+    people: "人数",
+    selectDates: "选择日期...",
+    perNight: "per night",
+    forNights: "for {nights} nights",
+    freeCancellation: "Free cancellation",
+    save: "Save",
+    reserve: "Reserve",
+    notChargedYet: "暂不收费",
+    shareTitle: "与朋友分享此房间",
+    shareButton: "分享此房间",
+    shareSuccess: "链接已复制到剪贴板！",
+    shareDescription: "与您的朋友分享",
+    shareError: "复制链接失败",
+    hostTitle: "房东信息",
+    yearsHosting: "已托管{years}年",
+    showMoreRooms: "查看更多房间",
+    readMore: "阅读更多",
+    aboutGosiwon: "关于高斯院",
+    roomNotFound: "找不到房间",
+    cannotLoadRoom: "无法加载房间信息",
+    invalidInput: "输入的值无效",
+    alreadyReserved: "该时间段已被预订",
+    invalidCurrency: "货币单位无效",
+    exchangeRateNotFound: "找不到汇率信息",
+    pleaseSelectDates: "请选择日期",
+    reservationError: "预订处理过程中发生错误",
+    checkIn: "入住",
+    checkOut: "退房",
+    checkOutOnly: "仅可退房",
+    selectCheckInFirst: "请先选择入住日期"
+  },
+  reservation: {
+    facilities: "设施",
+    showAllFacilities: "显示所有 {count} 个设施",
+    rules: "规则",
+    showMore: "显示更多",
+    leadGuest: "主要客人",
+    firstName: "名",
+    lastName: "姓",
+    firstNamePlaceholder: "名",
+    lastNamePlaceholder: "姓",
+    email: "邮箱",
+    emailPlaceholder: "email@email.com",
+    emailHelper: "请确保您的邮箱地址正确。它将用于发送预订确认。",
+    countryRegion: "居住国家/地区",
+    selectPlaceholder: "选择...",
+    phoneNumber: "手机号码",
+    phoneNumberPlaceholder: "手机号码",
+    consentAll: "我同意以下所有内容：",
+    consentTerms: "我同意使用条款，并确认我已满18岁。",
+    consentPrivacy: "我同意根据隐私政策收集和使用我的个人信息。",
+    consentThirdParty: "我同意根据隐私政策与韩国境内外的第三方共享我的个人信息。",
+    nextPayment: "下一步：支付信息",
+    notChargedYet: "暂不收费",
+    checkIn: "入住",
+    checkOut: "退房",
+    nights: "晚",
+    roomPricePerNight: "每晚房费",
+    nightsCount: "× {count} 晚",
+    roomCount: "× {count} 间房",
+    bookingFees: "预订费用",
+    free: "免费",
+    price: "价格",
+    includedInPrice: "价格包含：10% 税费",
+    currencyNote: "货币选择会影响价格",
+    theseTerms: "这些条款",
+    required: "*",
+    priceGuaranteed: "此价格保证在接下来的时间内有效",
+    timeExpired: "预订时间已过期。",
+    cancelReservation: "取消预订",
+    cancelConfirm: "您确定要取消预订吗？",
+    cancelConfirmModal: "您确定要取消预订吗？\n\n此操作无法撤销。",
+    cancelSuccess: "预订已取消。",
+    cancelNotAllowed: "此预订无法取消。",
+    userNotFound: "未找到用户。",
+    cancelError: "取消预订时发生错误。",
+    stepCustomerInfo: "客户信息",
+    stepPayment: "支付信息",
+    stepConfirmed: "已确认",
+    roomNotFound: "未找到房间",
+    invalidInput: "提供的输入无效",
+    loadError: "加载预订信息失败",
+    reservationNotAvailable: "预订不可用",
+    consentRequired: "请勾选所有同意事项。"
+  },
+  bookings: {
+    title: "预订",
+    underWay: "进行中",
+    pending: "待处理",
+    approved: "已批准",
+    cancelled: "已取消",
+    rejected: "已拒绝",
+    checkIn: "入住",
+    checkOut: "退房",
+    nights: "晚",
+    noBookings: "未找到预订"
+  },
+  payment: {
+    securePayment: "安全支付",
+    encryptedInfo: "所有卡信息都经过完全加密、安全和保护。",
+    paypalOnly: "我们仅接受通过 PayPal 付款。",
+    bookWithPaypal: "立即使用 PayPal 预订",
+    clickToComplete: "点击上面的按钮继续付款并完成您的预订。",
+    paypalProcessing: "正在处理 PayPal 付款...",
+    ourPrice: "原价",
+    discount: "折扣"
+  },
+  like: {
+    title: "已保存",
+    noSavedRooms: "未保存房间",
+    noSavedRoomsDesc: "保存您喜欢的房间以在此处查看",
+    noLikedRoomsError: "不存在保存的房间",
+    verified: "已验证",
+    freeCancellation: "免费取消"
+  },
+  admin: {
+    users: {
+      title: "用户管理",
+      totalUsers: "总用户数",
+      email: "邮箱",
+      fullName: "姓名",
+      phoneNumber: "电话号码",
+      createdAt: "注册日期",
+      status: "状态",
+      active: "活跃",
+      deleted: "已删除",
+      page: "页",
+      of: "/",
+      sortBy: "排序",
+      sortByCreatedAt: "注册日期",
+      sortByName: "姓名",
+      direction: "方向",
+      asc: "升序",
+      desc: "降序",
+      noUsers: "未找到用户",
+      loadError: "加载用户列表失败",
+      perPage: "每页"
+    }
   }
 }

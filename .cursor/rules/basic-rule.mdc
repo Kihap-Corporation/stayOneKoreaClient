@@ -43,3 +43,127 @@ alwaysApply: true
 
 환경변수를 등록할때는 아래의 예시와 같이 하드코딩 되면 안됩니다.
 - const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:8080"
+
+API 요청을 보낼때는 아래와 같은 base url을 사용해야 합니다.
+- const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
+
+
+# Cursor Rules for Stay One Korea Project
+
+## Responsive Design Rules ✅ COMPLETED
+
+### Breakpoint System
+- **Desktop Layout**: 1200px and above (`xl:` breakpoint ≈ 1280px)
+- **Mobile Layout**: Below 1200px, maximum width 600px
+
+### Implementation Guidelines ✅
+- ✅ Container widths: `max-w-7xl xl:max-w-[1200px]`
+- ✅ Page content: `max-w-[600px]` for mobile layouts
+- ✅ Padding: `px-4 lg:px-6 xl:px-8` for responsive spacing
+- ✅ Applied to all views: header, footer, and all pages
+
+### Applied Components ✅
+- ✅ Header component: Responsive design with hamburger menu (hidden elements) + custom profile dropdown
+- ✅ Footer component: `xl:max-w-[1200px]` container with responsive padding
+- ✅ All page layouts: `max-w-[600px]` for mobile content width
+- ✅ Main pages: home, signup, account_check, verify-email, signin, email-verified
+- ✅ MyPage: User profile page with bookings, settings, and account management (responsive)
+- ✅ Signup: Email readonly, international phone input with country selector
+
+### Responsive Classes Used
+- Container: `max-w-7xl xl:max-w-[1200px]`
+- Content: `max-w-[600px]` (mobile limit)
+- Spacing: `px-4 lg:px-6 xl:px-8`
+- Layout: `hidden lg:flex` (desktop), `flex lg:hidden` (mobile)
+- Mobile Menu: Hamburger menu with slide-down navigation
+
+## Typography & Fonts
+- **SUIT Font**: Use SUIT Variable font for all text content across the entire application
+- **Font Loading**: SUIT Variable font is loaded via CDN in layout.tsx
+- **Fallback**: Use `sans-serif` as fallback font family
+- **Application**: Applied globally via `fontFamily: "'SUIT Variable', sans-serif"` in body element
+
+## Code Style
+- Use TypeScript for all components
+- Follow Tailwind CSS utility-first approach
+- Maintain consistent spacing and typography across breakpoints
+- Implement mobile-first responsive design
+
+## Interactive Elements Rules ✅ COMPLETED
+
+### Cursor Pointer for Clickable Elements
+- **모든 클릭 가능한 요소**: `cursor-pointer` 클래스 적용 또는 CSS 전역 설정
+- **적용 대상**: 버튼, 링크, 클릭 가능한 div, form 요소 등 모든 상호작용 요소
+- **구현 방법**: `globals.css`에 전역 CSS 규칙 설정 및 주요 버튼들에 명시적 클래스 추가
+
+### 적용된 요소들 ✅
+- ✅ 모든 Button 컴포넌트: `cursor-pointer` 클래스 추가
+- ✅ 클릭 가능한 div/button 요소들: `cursor-pointer` 클래스 추가
+- ✅ 전역 CSS 규칙: 클릭 가능한 모든 요소에 자동 적용
+
+### Header Profile Hover Shadow Removal ✅
+- **프로필 아이콘 호버 그림자 제거**: `hover:bg-transparent` 클래스 적용
+- **적용 대상**: 헤더의 프로필 버튼과 알림 버튼
+- **목적**: 불필요한 그림자 효과 제거로 깔끔한 UI 유지
+
+## API Integration Rules ✅ COMPLETED
+
+### Authentication & Authorization
+- **401 Error Handling**: 액세스 토큰 만료 시 (code: 40101) 자동으로 토큰 재발급 시도
+- **Token Refresh**: `/api/auth/token/reissue` POST 요청으로 토큰 재발급
+- **Logout on Failure**: 토큰 재발급 실패 시 (code: 40102) 자동 로그아웃 및 로그인 페이지 이동
+- **403 Error Handling**: 접근 권한 없음 시 `/access-denied` 페이지로 리다이렉트
+
+### API Request Standards
+- **Credentials**: 모든 API 요청에 `credentials: 'include'` 옵션 필수 (쿠키 포함)
+- **Common Utility**: `src/lib/api.ts`의 `apiRequest`, `apiPost`, `apiGet` 등 공통 함수 사용
+- **Error Handling**: 공통 에러 처리 로직으로 일관된 사용자 경험 제공
+- **Logout API**: `/api/auth/logout` POST 요청으로 로그아웃 처리
+
+### Implementation Guidelines
+- ✅ 모든 페이지에서 `apiPost`, `apiGet` 등 공통 API 함수 사용
+- ✅ 401/403 에러 자동 처리
+- ✅ 다국어 지원 에러 메시지
+- ✅ 쿠키 기반 인증 유지
+- ✅ 자동 로그아웃 및 리다이렉트
+
+## Internationalization (i18n) Rules ✅ COMPLETED
+
+### Language Management Structure
+- **Message Files**: 모든 다국어 메시지는 `src/messages/` 폴더의 별도 파일에서 관리
+  - `ko.ts` (한국어)
+  - `en.ts` (영어)
+  - `zh.ts` (중국어)
+  - `fr.ts` (프랑스어)
+- **Central Import**: `src/components/language-provider.tsx`에서 모든 메시지 파일 import
+- **No Inline Messages**: 컴포넌트 파일에서 메시지를 직접 정의하지 않음
+
+### Supported Languages
+- **Korean (ko)**: 기본 언어, 모든 메시지 완전 지원
+- **English (en)**: 완전 지원
+- **Chinese (zh)**: 완전 지원
+- **French (fr)**: 완전 지원
+
+### Message Structure
+모든 메시지 파일은 다음과 같은 구조를 따름:
+```typescript
+export default {
+  header: { /* 헤더 관련 메시지 */ },
+  footer: { /* 푸터 관련 메시지 */ },
+  home: { /* 홈페이지 메시지 */ },
+  account_check: { /* 계정 확인 페이지 메시지 */ },
+  signup: { /* 회원가입 페이지 메시지 */ },
+  signin: { /* 로그인 페이지 메시지 */ },
+  verifyEmail: { /* 이메일 인증 페이지 메시지 */ },
+  mypage: { /* 마이페이지 메시지 */ },
+  auth: { /* 인증 관련 메시지 */ },
+  error: { /* 에러 메시지 */ },
+  common: { /* 공통 메시지 */ }
+}
+```
+
+### Implementation Guidelines
+- ✅ 모든 UI 텍스트는 `useLanguage()` 훅을 통해 메시지 파일에서 가져옴
+- ✅ 메시지 추가 시 모든 언어 파일에 동일한 키로 추가
+- ✅ 메시지 수정 시 모든 언어 파일 동시 업데이트
+- ✅ 새로운 페이지 추가 시 해당 페이지의 메시지 구조 먼저 정의
