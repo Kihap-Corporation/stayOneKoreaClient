@@ -314,7 +314,15 @@ header: {
     clickToComplete: "위 버튼을 클릭하여 결제를 진행하고 예약을 완료하세요.",
     paypalProcessing: "PayPal 결제를 진행합니다...",
     ourPrice: "정가",
-    discount: "할인"
+    discount: "할인",
+    processing: "결제 처리 중...",
+    success: "결제가 완료되었습니다!",
+    failed: "결제에 실패했습니다",
+    cancelled: "결제가 취소되었습니다",
+    verifying: "결제 정보를 확인하는 중...",
+    verificationFailed: "결제 확인에 실패했습니다",
+    redirecting: "예약 확인 페이지로 이동합니다...",
+    error: "결제 중 오류가 발생했습니다"
   },
   like: {
     title: "저장된 숙소",

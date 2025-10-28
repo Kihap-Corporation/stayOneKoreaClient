@@ -314,7 +314,15 @@ header: {
     clickToComplete: "点击上面的按钮继续付款并完成您的预订。",
     paypalProcessing: "正在处理 PayPal 付款...",
     ourPrice: "原价",
-    discount: "折扣"
+    discount: "折扣",
+    processing: "正在处理付款...",
+    success: "付款成功！",
+    failed: "付款失败",
+    cancelled: "付款已取消",
+    verifying: "正在验证付款...",
+    verificationFailed: "付款验证失败",
+    redirecting: "正在跳转到预订确认页面...",
+    error: "付款过程中发生错误"
   },
   like: {
     title: "已保存",

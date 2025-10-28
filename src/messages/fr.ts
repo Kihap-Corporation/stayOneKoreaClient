@@ -314,7 +314,15 @@ header: {
     clickToComplete: "Cliquez sur le bouton ci-dessus pour procéder au paiement et finaliser votre réservation.",
     paypalProcessing: "Traitement du paiement PayPal...",
     ourPrice: "Notre prix",
-    discount: "Réduction"
+    discount: "Réduction",
+    processing: "Traitement du paiement...",
+    success: "Paiement réussi !",
+    failed: "Le paiement a échoué",
+    cancelled: "Paiement annulé",
+    verifying: "Vérification du paiement...",
+    verificationFailed: "La vérification du paiement a échoué",
+    redirecting: "Redirection vers la confirmation de réservation...",
+    error: "Une erreur s'est produite lors du paiement"
   },
   like: {
     title: "Enregistré",

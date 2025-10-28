@@ -314,7 +314,15 @@ header: {
     clickToComplete: "Click the button above to proceed with payment and complete your booking.",
     paypalProcessing: "Processing PayPal payment...",
     ourPrice: "Our price",
-    discount: "Discount"
+    discount: "Discount",
+    processing: "Processing payment...",
+    success: "Payment successful!",
+    failed: "Payment failed",
+    cancelled: "Payment cancelled",
+    verifying: "Verifying payment...",
+    verificationFailed: "Payment verification failed",
+    redirecting: "Redirecting to booking confirmation...",
+    error: "An error occurred during payment"
   },
   like: {
     title: "Saved",
