@@ -1,22 +1,37 @@
 "use client"
 
+import { useRouter } from "next/navigation"
+
 interface RoomCardProps {
   image: string
   title: string
   provider: string
   location: string
   price: number
+  roomId: string
+  residenceId: string
 }
 
-export function RoomCard({ 
-  image, 
-  title, 
-  provider, 
-  location, 
-  price
+export function RoomCard({
+  image,
+  title,
+  provider,
+  location,
+  price,
+  roomId,
+  residenceId
 }: RoomCardProps) {
+  const router = useRouter()
+
+  const handleClick = () => {
+    router.push(`/residence/${residenceId}/room/${roomId}`)
+  }
+
   return (
-    <div className="flex flex-col gap-2 w-full cursor-pointer group">
+    <div
+      className="flex flex-col gap-2 w-full cursor-pointer group"
+      onClick={handleClick}
+    >
       {/* Image */}
       <div className="relative aspect-square rounded-2xl overflow-hidden">
         <img

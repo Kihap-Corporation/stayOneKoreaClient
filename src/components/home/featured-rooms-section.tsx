@@ -13,6 +13,8 @@ interface RecommendedRoom {
   fullAddress: string
   roomName: string
   pricePerNight: number
+  roomIdentifier: string
+  residenceIdentifier: string
 }
 
 // UI에서 사용하는 Room 타입
@@ -23,6 +25,8 @@ interface Room {
   address: string
   price: number
   imageUrl: string
+  roomIdentifier: string
+  residenceIdentifier: string
 }
 
 export function FeaturedRoomsSection() {
@@ -47,7 +51,9 @@ export function FeaturedRoomsSection() {
             residenceName: item.residenceName,
             address: item.fullAddress,
             price: item.pricePerNight,
-            imageUrl: item.firstGalleryImageUrl
+            imageUrl: item.firstGalleryImageUrl,
+            roomIdentifier: item.roomIdentifier,
+            residenceIdentifier: item.residenceIdentifier
           }))
           setRooms(formattedRooms)
         }
@@ -148,6 +154,8 @@ export function FeaturedRoomsSection() {
               provider={room.residenceName}
               location={room.address}
               price={room.price}
+              roomId={room.roomIdentifier}
+              residenceId={room.residenceIdentifier}
             />
           ))}
         </div>
