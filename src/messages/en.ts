@@ -198,7 +198,8 @@ header: {
     delete: "Delete",
     edit: "Edit",
     close: "Close",
-    noImage: "No image"
+    noImage: "No image",
+    accessDenied: "You do not have access to this page"
   },
   roomDetail: {
     schedule: "Schedule",
@@ -323,6 +324,12 @@ header: {
     verificationFailed: "Payment verification failed",
     redirecting: "Redirecting to booking confirmation...",
     error: "An error occurred during payment"
+  },
+  bookingResult: {
+    title: "Your Stay is Almost Ready",
+    subtitle1: "Your host is reviewing your booking request.",
+    subtitle2: "You'll receive a confirmation within 24 hours.",
+    viewDetails: "View details in My Bookings"
   },
   like: {
     title: "Saved",

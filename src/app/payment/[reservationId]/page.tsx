@@ -305,20 +305,11 @@ export default function PaymentPage() {
       
       if (verifyResponse.code === 200) {
         toast.success(messages?.payment?.success || "결제가 완료되었습니다!")
-        
-        // TODO: 백엔드 API가 준비되면 아래 주석을 해제하고 예약 확인 페이지로 이동
-        // 현재는 백엔드 API 대기 중이므로 홈으로 이동
-        
-        // 예약 확인 페이지로 이동 (백엔드 API 연동 시 활성화)
-        // setTimeout(() => {
-        //   toast.info(messages?.payment?.redirecting || "예약 확인 페이지로 이동합니다...")
-        //   router.push(`/bookings/${params.reservationId}`)
-        // }, 1500)
-        
-        // 백엔드 API 준비 전까지는 예약 페이지로 이동
+
+        // 예약 대기 결과 페이지로 이동
         setTimeout(() => {
-          toast.info(messages?.payment?.redirecting || "예약 상세 페이지로 이동합니다...")
-          router.push(`/reservation/${params.reservationId}`)
+          toast.info(messages?.payment?.redirecting || "예약 확인 페이지로 이동합니다...")
+          router.push(`/payment/result/${reservationData.reservationIdentifier}`)
         }, 1500)
       } else {
         toast.error(messages?.payment?.verificationFailed || "결제 확인에 실패했습니다")

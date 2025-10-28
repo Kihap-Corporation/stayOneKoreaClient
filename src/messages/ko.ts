@@ -198,7 +198,8 @@ header: {
     delete: "삭제",
     edit: "편집",
     close: "닫기",
-    noImage: "이미지 없음"
+    noImage: "이미지 없음",
+    accessDenied: "해당 페이지에 접근할 수 없습니다"
   },
   roomDetail: {
     schedule: "일정",
@@ -323,6 +324,12 @@ header: {
     verificationFailed: "결제 확인에 실패했습니다",
     redirecting: "예약 확인 페이지로 이동합니다...",
     error: "결제 중 오류가 발생했습니다"
+  },
+  bookingResult: {
+    title: "숙소 준비가 거의 완료되었습니다",
+    subtitle1: "호스트가 예약 요청을 검토 중입니다.",
+    subtitle2: "24시간 이내에 확인서를 받으실 수 있습니다.",
+    viewDetails: "내 예약에서 상세보기"
   },
   like: {
     title: "저장된 숙소",

@@ -198,7 +198,8 @@ header: {
     delete: "Supprimer",
     edit: "Modifier",
     close: "Fermer",
-    noImage: "Aucune image"
+    noImage: "Aucune image",
+    accessDenied: "Vous n'avez pas accès à cette page"
   },
   roomDetail: {
     schedule: "Calendrier",
@@ -323,6 +324,12 @@ header: {
     verificationFailed: "La vérification du paiement a échoué",
     redirecting: "Redirection vers la confirmation de réservation...",
     error: "Une erreur s'est produite lors du paiement"
+  },
+  bookingResult: {
+    title: "Votre séjour est presque prêt",
+    subtitle1: "Votre hôte examine votre demande de réservation.",
+    subtitle2: "Vous recevrez une confirmation dans les 24 heures.",
+    viewDetails: "Voir les détails dans Mes réservations"
   },
   like: {
     title: "Enregistré",

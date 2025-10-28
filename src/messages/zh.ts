@@ -198,7 +198,8 @@ header: {
     delete: "删除",
     edit: "编辑",
     close: "关闭",
-    noImage: "无图像"
+    noImage: "无图像",
+    accessDenied: "您无法访问此页面"
   },
   roomDetail: {
     schedule: "日程",
@@ -323,6 +324,12 @@ header: {
     verificationFailed: "付款验证失败",
     redirecting: "正在跳转到预订确认页面...",
     error: "付款过程中发生错误"
+  },
+  bookingResult: {
+    title: "您的住宿即将准备就绪",
+    subtitle1: "房东正在审核您的预订请求。",
+    subtitle2: "您将在24小时内收到确认书。",
+    viewDetails: "在我的预订中查看详情"
   },
   like: {
     title: "已保存",
