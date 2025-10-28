@@ -498,7 +498,7 @@ export default function ResidencePage({ params }: ResidencePageProps) {
                           setCheckOut("")
                         setShowDatePicker(false)
                         }}
-                      className="absolute -right-2 top-1/2 -translate-y-1/2 h-6 w-6 text-gray-400 hover:text-gray-600 cursor-pointer"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 h-6 w-6 text-gray-400 hover:text-gray-600 cursor-pointer"
                         type="button"
                       >
                       <X className="h-4 w-4" />
