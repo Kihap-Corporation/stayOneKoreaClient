@@ -264,9 +264,10 @@
 }
 
 .react-datepicker__day--keyboard-selected {
-  background-color: #ffebf3 !important;
+  background-color: transparent !important;
   color: #14151a !important;
-  border-radius: 4px !important;
+  border-radius: 0 !important;
+  font-weight: 400 !important;
 }
 
 .react-datepicker__day--disabled {
@@ -295,58 +296,17 @@
   border-radius: 4px !important;
 }
 
-/* 같은 달이 아닌 날짜에서는 모든 선택 스타일 제거 */
-.react-datepicker__day.react-datepicker__day--outside-month.react-datepicker__day--range-start,
-.react-datepicker__day.react-datepicker__day--outside-month.react-datepicker__day--range-end,
-.react-datepicker__day.react-datepicker__day--outside-month.react-datepicker__day--in-range,
-.react-datepicker__day.react-datepicker__day--outside-month.react-datepicker__day--in-selecting-range,
-.react-datepicker__day.react-datepicker__day--outside-month.react-datepicker__day--keyboard-selected,
-.react-datepicker__day.react-datepicker__day--outside-month.react-datepicker__day--selected,
-.react-datepicker__day.react-datepicker__day--outside-month.react-datepicker__day--selecting-range-start,
-.react-datepicker__day.react-datepicker__day--outside-month.react-datepicker__day--selecting-range-end {
+/* outside-month 날짜 스타일 */
+.react-datepicker__day.react-datepicker__day--outside-month {
   background-color: transparent !important;
   color: #d1d5db !important;
   border-radius: 0 !important;
   font-weight: 400 !important;
 }
 
-.react-datepicker__day.react-datepicker__day--outside-month.react-datepicker__day--range-start:hover,
-.react-datepicker__day.react-datepicker__day--outside-month.react-datepicker__day--range-end:hover,
-.react-datepicker__day.react-datepicker__day--outside-month.react-datepicker__day--in-range:hover,
-.react-datepicker__day.react-datepicker__day--outside-month.react-datepicker__day--in-selecting-range:hover,
-.react-datepicker__day.react-datepicker__day--outside-month.react-datepicker__day--keyboard-selected:hover,
-.react-datepicker__day.react-datepicker__day--outside-month.react-datepicker__day--selected:hover,
-.react-datepicker__day.react-datepicker__day--outside-month.react-datepicker__day--selecting-range-start:hover,
-.react-datepicker__day.react-datepicker__day--outside-month.react-datepicker__day--selecting-range-end:hover {
+.react-datepicker__day.react-datepicker__day--outside-month:hover {
   background-color: transparent !important;
   color: #d1d5db !important;
-  border-radius: 0 !important;
-}
-
-/* 다른 월의 같은 날짜 번호에 대한 잘못된 선택 스타일 제거 */
-.react-datepicker__day.hide-wrong-month-selection {
-  background-color: transparent !important;
-  color: #14151a !important;
-  border-radius: 0 !important;
-  font-weight: 400 !important;
-}
-
-.react-datepicker__day.hide-wrong-month-selection.react-datepicker__day--keyboard-selected,
-.react-datepicker__day.hide-wrong-month-selection.react-datepicker__day--in-selecting-range,
-.react-datepicker__day.hide-wrong-month-selection.react-datepicker__day--selecting-range-start,
-.react-datepicker__day.hide-wrong-month-selection.react-datepicker__day--selecting-range-end,
-.react-datepicker__day.hide-wrong-month-selection.react-datepicker__day--in-range,
-.react-datepicker__day.hide-wrong-month-selection.react-datepicker__day--range-start,
-.react-datepicker__day.hide-wrong-month-selection.react-datepicker__day--range-end {
-  background-color: transparent !important;
-  color: #14151a !important;
-  border-radius: 0 !important;
-  font-weight: 400 !important;
-}
-
-.react-datepicker__day.hide-wrong-month-selection:hover {
-  background-color: #ffe5ef !important;
-  border-radius: 4px !important;
 }
 
 /* 네비게이션 화살표 */

@@ -260,11 +260,16 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
   const handleMobileDateRangeChange = (dates: [Date | null, Date | null] | Date | null) => {
     if (Array.isArray(dates)) {
       const [start, end] = dates
-      setCheckInDate(start)
-      setCheckOutDate(end)
-      
+
+      // 시간 정보를 제거하고 날짜만 저장 (00:00:00.000으로 설정)
+      const normalizedStart = start ? new Date(start.getFullYear(), start.getMonth(), start.getDate()) : null
+      const normalizedEnd = end ? new Date(end.getFullYear(), end.getMonth(), end.getDate()) : null
+
+      setCheckInDate(normalizedStart)
+      setCheckOutDate(normalizedEnd)
+
       // 체크인과 체크아웃이 모두 선택되면 달력 닫기
-      if (start && end) {
+      if (normalizedStart && normalizedEnd) {
         setIsMobileCalendarOpen(false)
       }
     }
@@ -1365,7 +1370,7 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
             {/* 달력 영역 - Range 달력으로 통합 */}
             <div className="p-4">
               <DatePicker
-                selected={checkInDate}
+                selected={null}
                 onChange={handleMobileDateRangeChange}
                 startDate={checkInDate}
                 endDate={checkOutDate}

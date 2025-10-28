@@ -1,6 +1,5 @@
 "use client"
 
-import { useState } from "react"
 import DatePicker, { registerLocale } from "react-datepicker"
 import { ko, enUS, zhCN, fr } from "date-fns/locale"
 import "react-datepicker/dist/react-datepicker.css"
@@ -29,51 +28,44 @@ export function DateRangePickerV2({
   monthsShown = 2,
   showBorder = true,
 }: DateRangePickerProps) {
-  const [startDate, setStartDate] = useState(checkIn)
-  const [endDate, setEndDate] = useState(checkOut)
-
   const handleDateChange = (dates: [Date | null, Date | null] | Date | null) => {
     if (Array.isArray(dates)) {
       const [start, end] = dates
 
+      // 시간 정보를 제거하고 날짜만 사용 (00:00:00.000으로 설정)
+      const normalizedStart = start ? new Date(start.getFullYear(), start.getMonth(), start.getDate()) : null
+      const normalizedEnd = end ? new Date(end.getFullYear(), end.getMonth(), end.getDate()) : null
+
       // 체크인과 체크아웃이 모두 있을 때
-      if (startDate && endDate) {
+      if (checkIn && checkOut) {
         // 새로운 날짜가 체크인 이전이면 체크인 변경
-        if (start && start < startDate) {
-          setStartDate(start)
-          setEndDate(null)
-          onCheckInChange(start)
+        if (normalizedStart && normalizedStart < checkIn) {
+          onCheckInChange(normalizedStart)
           onCheckOutChange(null)
         }
         // 새로운 날짜가 체크아웃 이후면 체크아웃 변경
-        else if (end && end > endDate) {
-          setEndDate(end)
-          onCheckOutChange(end)
+        else if (normalizedEnd && normalizedEnd > checkOut) {
+          onCheckOutChange(normalizedEnd)
         }
         // 그 외의 경우는 새로운 범위 시작
-        else if (start) {
-          setStartDate(start)
-          setEndDate(end)
-          onCheckInChange(start)
-          onCheckOutChange(end)
+        else if (normalizedStart) {
+          onCheckInChange(normalizedStart)
+          onCheckOutChange(normalizedEnd)
         }
       }
       // 체크인만 있을 때
-      else if (startDate && !endDate) {
-        if (end) {
-          setEndDate(end)
-          onCheckOutChange(end)
-        } else if (start && start < startDate) {
+      else if (checkIn && !checkOut) {
+        if (normalizedEnd) {
+          onCheckOutChange(normalizedEnd)
+        } else if (normalizedStart && normalizedStart < checkIn) {
           // 체크인 이전 날짜를 선택하면 체크인 변경
-          setStartDate(start)
-          onCheckInChange(start)
+          onCheckInChange(normalizedStart)
         }
       }
       // 체크인과 체크아웃이 모두 없을 때
       else {
-        if (start) {
-          setStartDate(start)
-          onCheckInChange(start)
+        if (normalizedStart) {
+          onCheckInChange(normalizedStart)
         }
       }
     }
@@ -84,8 +76,8 @@ export function DateRangePickerV2({
       <DatePicker
         selected={null}
         onChange={handleDateChange}
-        startDate={startDate}
-        endDate={endDate}
+        startDate={checkIn}
+        endDate={checkOut}
         selectsRange
         monthsShown={monthsShown}
         inline

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useLanguage } from "@/components/language-provider"
 import { Calendar, Users } from "lucide-react"
-import { DateRangePickerV2 } from "./date-range-picker-v2"
+import { CustomDateRangePicker } from "./custom-date-range-picker"
 import { AlgoliaSearch, SearchHit } from "./algolia-search"
 
 export function HeroSection() {
@@ -226,7 +226,7 @@ export function HeroSection() {
               {/* Desktop Calendar - absolute positioning below check-in/check-out wrapper */}
               {showDatePicker && (
                 <div className="hidden lg:block absolute top-full left-0 mt-2 z-50">
-                  <DateRangePickerV2
+                  <CustomDateRangePicker
                     checkIn={checkIn}
                     checkOut={checkOut}
                     onCheckInChange={(date) => {
@@ -301,7 +301,7 @@ export function HeroSection() {
 
           {/* Calendar */}
           <div className="p-4">
-            <DateRangePickerV2
+            <CustomDateRangePicker
               checkIn={checkIn}
               checkOut={checkOut}
               onCheckInChange={(date) => {
