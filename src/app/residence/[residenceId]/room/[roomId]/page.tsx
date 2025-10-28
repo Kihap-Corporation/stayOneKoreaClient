@@ -13,6 +13,7 @@ import { Wifi, WashingMachine, Car, AirVent, Bell, Flame, ChevronRight, Camera, 
 import "react-datepicker/dist/react-datepicker.css"
 import DatePicker from "react-datepicker"
 import Script from 'next/script'
+import { MobileCustomDateRangePicker } from "@/components/home/mobile-custom-date-range-picker"
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Pagination, Navigation } from 'swiper/modules'
 import 'swiper/css'
@@ -1347,58 +1348,19 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
       <Footer />
 
       {/* 모바일 달력 모달 */}
-      {isMobileCalendarOpen && (
-        <div
-          className="fixed inset-0 z-150 bg-black/50 flex items-center justify-center p-4 lg:hidden"
-          onClick={() => setIsMobileCalendarOpen(false)}
-        >
-          <div
-            className="relative bg-white rounded-[24px] w-full max-w-md mx-4 overflow-hidden max-h-[90vh] overflow-y-auto"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* 헤더 */}
-            <div className="flex items-center justify-between p-4 border-b border-[#e9eaec]">
-              <h3 className="text-[18px] font-bold text-[#14151a]">Select dates</h3>
-              <button
-                onClick={() => setIsMobileCalendarOpen(false)}
-                className="bg-[rgba(10,15,41,0.04)] hover:bg-[rgba(10,15,41,0.08)] rounded-full p-2 transition-colors"
-              >
-                <X className="h-5 w-5 text-[#14151a]" />
-              </button>
-            </div>
-
-            {/* 달력 영역 - Range 달력으로 통합 */}
-            <div className="p-4">
-              <DatePicker
-                selected={null}
-                onChange={handleMobileDateRangeChange}
-                startDate={checkInDate}
-                endDate={checkOutDate}
-                selectsRange
-                inline
-                locale={datePickerLocale}
-                minDate={new Date()}
-                monthsShown={2}
-                calendarClassName="!border-none !w-full"
-                filterDate={(date) => {
-                  // 체크인과 체크아웃이 모두 선택되어 있으면 새로운 체크인 선택 중
-                  if (checkInDate && checkOutDate) {
-                    return filterCheckInDates(date)
-                  }
-                  // 체크인만 선택되어 있으면 체크아웃 선택 중
-                  else if (checkInDate && !checkOutDate) {
-                    return filterCheckOutDates(date)
-                  }
-                  // 아무것도 선택되지 않았으면 체크인 선택 중
-                  else {
-                    return filterCheckInDates(date)
-                  }
-                }}
-              />
-            </div>
-          </div>
-        </div>
-      )}
+      <MobileCustomDateRangePicker
+        isOpen={isMobileCalendarOpen}
+        onClose={() => setIsMobileCalendarOpen(false)}
+        checkIn={checkInDate}
+        checkOut={checkOutDate}
+        onCheckInChange={(date: Date | null) => {
+          setCheckInDate(date)
+        }}
+        onCheckOutChange={(date: Date | null) => {
+          setCheckOutDate(date)
+        }}
+        locale={currentLanguage.code}
+      />
 
       {/* 이미지 모달 */}
       {showImageModal && (

@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { useLanguage } from "@/components/language-provider"
 import { Calendar, Users } from "lucide-react"
 import { CustomDateRangePicker } from "./custom-date-range-picker"
+import { MobileCustomDateRangePicker } from "./mobile-custom-date-range-picker"
 import { AlgoliaSearch, SearchHit } from "./algolia-search"
 
 export function HeroSection() {
@@ -275,53 +276,19 @@ export function HeroSection() {
         </div>
       </div>
       {/* Mobile Calendar Modal */}
-      {showDatePicker && (
-      <div className="lg:hidden fixed inset-0 z-[200] flex items-center justify-center p-4">
-        {/* Backdrop */}
-        <div 
-          className="absolute inset-0 bg-black/50"
-          onClick={() => setShowDatePicker(false)}
-        />
-        
-        {/* Modal Content */}
-        <div 
-          className="relative bg-white rounded-[24px] w-full max-w-md max-h-[90vh] overflow-y-auto"
-          onClick={(e) => e.stopPropagation()}
-        >
-          {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b border-[#e9eaec]">
-            <h3 className="text-[18px] font-bold text-[#14151a]">Select dates</h3>
-            <button
-              onClick={() => setShowDatePicker(false)}
-              className="bg-[rgba(10,15,41,0.04)] hover:bg-[rgba(10,15,41,0.08)] rounded-full p-2 transition-colors"
-            >
-              <span className="text-[20px] leading-none">✕</span>
-            </button>
-          </div>
-
-          {/* Calendar */}
-          <div className="p-4">
-            <CustomDateRangePicker
-              checkIn={checkIn}
-              checkOut={checkOut}
-              onCheckInChange={(date) => {
-                setCheckIn(date)
-              }}
-              onCheckOutChange={(date) => {
-                setCheckOut(date)
-                // 체크아웃이 선택되면 달력 닫기
-                if (date) {
-                  setShowDatePicker(false)
-                }
-              }}
-              locale={currentLanguage.code}
-              monthsShown={1}
-              showBorder={false}
-            />
-          </div>
-        </div>
-      </div>
-      )}
+      <MobileCustomDateRangePicker
+        isOpen={showDatePicker}
+        onClose={() => setShowDatePicker(false)}
+        checkIn={checkIn}
+        checkOut={checkOut}
+        onCheckInChange={(date) => {
+          setCheckIn(date)
+        }}
+        onCheckOutChange={(date) => {
+          setCheckOut(date)
+        }}
+        locale={currentLanguage.code}
+      />
     </div>
   )
 }

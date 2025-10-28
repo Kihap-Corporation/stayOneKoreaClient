@@ -17,7 +17,8 @@ import 'swiper/css/navigation'
 import DatePicker from "react-datepicker"
 import "react-datepicker/dist/react-datepicker.css"
 import { toast } from "sonner"
-import { DateRangePickerV2 } from "@/components/home/date-range-picker-v2"
+import { CustomDateRangePicker } from "@/components/home/custom-date-range-picker"
+import { MobileCustomDateRangePicker } from "@/components/home/mobile-custom-date-range-picker"
 
 interface ResidencePageProps {
   params: {
@@ -508,10 +509,10 @@ export default function ResidencePage({ params }: ResidencePageProps) {
                    {/* 데스크톱용 달력 - 하나의 범위 선택 달력 (1개월 표시) */}
                    {showDatePicker && (
                      <div className="hidden lg:block absolute top-full left-0 z-50 mt-2">
-                       <DateRangePickerV2
+                       <CustomDateRangePicker
                          checkIn={checkInDate}
                          checkOut={checkOutDate}
-                         onCheckInChange={(date) => {
+                         onCheckInChange={(date: Date | null) => {
                            setCheckInDate(date)
                               if (date) {
                              const year = date.getFullYear()
@@ -522,7 +523,7 @@ export default function ResidencePage({ params }: ResidencePageProps) {
                              setCheckIn("")
                            }
                          }}
-                         onCheckOutChange={(date) => {
+                         onCheckOutChange={(date: Date | null) => {
                            setCheckOutDate(date)
                            if (date) {
                              const year = date.getFullYear()
@@ -698,67 +699,35 @@ export default function ResidencePage({ params }: ResidencePageProps) {
       <Footer />
 
       {/* 날짜 범위 선택 달력 모달 - 모바일만 */}
-      {showDatePicker && (
-        <div className="lg:hidden fixed inset-0 z-[200] flex items-center justify-center p-4">
-          {/* Backdrop */}
-          <div 
-            className="absolute inset-0 bg-black/50"
-            onClick={() => setShowDatePicker(false)}
-          />
-          
-          {/* Modal Content */}
-          <div 
-            className="relative bg-white rounded-[24px] w-full max-w-md max-h-[90vh] overflow-y-auto"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-[#e9eaec]">
-              <h3 className="text-[18px] font-bold text-[#14151a]">Select dates</h3>
-              <button
-                onClick={() => setShowDatePicker(false)}
-                className="bg-[rgba(10,15,41,0.04)] hover:bg-[rgba(10,15,41,0.08)] rounded-full p-2 transition-colors"
-              >
-                <span className="text-[20px] leading-none">✕</span>
-              </button>
-            </div>
-
-            {/* Calendar */}
-            <div className="p-4">
-              <DateRangePickerV2
-                checkIn={checkInDate}
-                checkOut={checkOutDate}
-                onCheckInChange={(date) => {
-                  setCheckInDate(date)
-                  if (date) {
-                    const year = date.getFullYear()
-                    const month = String(date.getMonth() + 1).padStart(2, '0')
-                    const day = String(date.getDate()).padStart(2, '0')
-                    setCheckIn(`${year}-${month}-${day}`)
-                  } else {
-                    setCheckIn("")
-                  }
-                }}
-                onCheckOutChange={(date) => {
-                  setCheckOutDate(date)
-                  if (date) {
-                    const year = date.getFullYear()
-                    const month = String(date.getMonth() + 1).padStart(2, '0')
-                    const day = String(date.getDate()).padStart(2, '0')
-                    setCheckOut(`${year}-${month}-${day}`)
-                    // 체크아웃이 선택되면 달력 닫기
-                    setShowDatePicker(false)
-                  } else {
-                    setCheckOut("")
-                  }
-                }}
-                locale={currentLanguage.code}
-                monthsShown={1}
-                showBorder={false}
-              />
-            </div>
-          </div>
-        </div>
-      )}
+      <MobileCustomDateRangePicker
+        isOpen={showDatePicker}
+        onClose={() => setShowDatePicker(false)}
+        checkIn={checkInDate}
+        checkOut={checkOutDate}
+        onCheckInChange={(date: Date | null) => {
+          setCheckInDate(date)
+          if (date) {
+            const year = date.getFullYear()
+            const month = String(date.getMonth() + 1).padStart(2, '0')
+            const day = String(date.getDate()).padStart(2, '0')
+            setCheckIn(`${year}-${month}-${day}`)
+          } else {
+            setCheckIn("")
+          }
+        }}
+        onCheckOutChange={(date: Date | null) => {
+          setCheckOutDate(date)
+          if (date) {
+            const year = date.getFullYear()
+            const month = String(date.getMonth() + 1).padStart(2, '0')
+            const day = String(date.getDate()).padStart(2, '0')
+            setCheckOut(`${year}-${month}-${day}`)
+          } else {
+            setCheckOut("")
+          }
+        }}
+        locale={currentLanguage.code}
+      />
     </div>
   )
 }

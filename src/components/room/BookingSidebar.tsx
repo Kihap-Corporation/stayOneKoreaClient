@@ -9,6 +9,8 @@ import { useLanguage } from "@/components/language-provider"
 import { apiPostWithResponse, apiPost } from "@/lib/api"
 import { toast } from "sonner"
 import Image from "next/image"
+import { CustomDateRangePicker } from "@/components/home/custom-date-range-picker"
+import { MobileCustomDateRangePicker } from "@/components/home/mobile-custom-date-range-picker"
 
 // 로케일 맵핑 - 동적 import 사용
 const getLocale = async (lang: string) => {
@@ -424,57 +426,15 @@ export function BookingSidebar({
 
             {/* Range 달력 - 하나로 통합, 체크인 바로 밑에 absolute 배치 */}
             {isCalendarOpen && (
-              <div className="absolute top-full left-0 mt-2 z-50 bg-white rounded-xl shadow-lg border border-[#dee0e3] p-4">
-                <style dangerouslySetInnerHTML={{__html: `
-                  .react-datepicker {
-                    display: flex !important;
-                    width: auto !important;
-                  }
-                  .react-datepicker__month-container {
-                    margin: 0 12px;
-                    width: 280px;
-                  }
-                  .react-datepicker__month-container:first-child {
-                    margin-left: 0;
-                  }
-                  .react-datepicker__month-container:last-child {
-                    margin-right: 0;
-                  }
-                `}} />
-                <DatePicker
-                  selected={null}
-                  onChange={handleDateRangeChange}
-                  startDate={checkInDate}
-                  endDate={checkOutDate}
-                  selectsRange
-                  inline
-                  locale={datePickerLocale}
-                  minDate={new Date()}
+              <div className="absolute top-full left-0 mt-2 z-50">
+                <CustomDateRangePicker
+                  checkIn={checkInDate}
+                  checkOut={checkOutDate}
+                  onCheckInChange={onCheckInDateChange}
+                  onCheckOutChange={onCheckOutDateChange}
+                  locale={currentLanguage.code}
                   monthsShown={2}
-                  calendarClassName="!border-none"
-                  filterDate={(date) => {
-                    // 체크인과 체크아웃이 모두 선택되어 있으면 새로운 체크인 선택 중
-                    if (checkInDate && checkOutDate) {
-                      if (filterCheckInDate) {
-                        return filterCheckInDate(date)
-                      }
-                      return true
-                    }
-                    // 체크인만 선택되어 있으면 체크아웃 선택 중
-                    else if (checkInDate && !checkOutDate) {
-                      if (filterCheckOutDate) {
-                        return filterCheckOutDate(date)
-                      }
-                      return true
-                    }
-                    // 아무것도 선택되지 않았으면 체크인 선택 중
-                    else {
-                      if (filterCheckInDate) {
-                        return filterCheckInDate(date)
-                      }
-                      return true
-                    }
-                  }}
+                  showBorder={true}
                 />
               </div>
             )}
