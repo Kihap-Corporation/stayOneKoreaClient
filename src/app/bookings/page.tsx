@@ -38,21 +38,21 @@ export default function BookingsPage() {
       case 'RESERVATION_UNDER_WAY':
         return {
           label: messages?.bookings?.underWay || 'Under Way',
-          color: 'bg-[#f48e2f] border-[#fad0a9]',
+          color: 'bg-[#f48e2f]',
           textColor: 'text-white',
           icon: Clock
         }
       case 'RESERVATION_PENDING':
         return {
           label: messages?.bookings?.pending || 'Pending',
-          color: 'bg-[#ffa726] border-[#ffcc02]',
+          color: 'bg-[#ffa726]',
           textColor: 'text-white',
           icon: Clock
         }
       case 'APPROVED':
         return {
           label: messages?.bookings?.approved || 'Approved',
-          color: 'bg-[#26bd6c] border-[#9af4c3]',
+          color: 'bg-[#26bd6c]',
           textColor: 'text-white',
           icon: CheckCircle
         }
@@ -66,7 +66,7 @@ export default function BookingsPage() {
       case 'REJECTED':
         return {
           label: messages?.bookings?.rejected || 'Rejected',
-          color: 'bg-[#f44336] border-[#ffcdd2]',
+          color: 'bg-[#f44336]',
           textColor: 'text-white',
           icon: AlertTriangle
         }
@@ -201,7 +201,7 @@ export default function BookingsPage() {
                   return (
                     <div
                       key={booking.reservationIdentifier}
-                      className="bg-white border border-[#dee0e3] rounded-[16px] overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
+                      className="bg-white rounded-[16px] overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
                       onClick={() => handleBookingClick(booking.reservationIdentifier, booking.reservationStatus)}
                     >
                       {/* Status Header */}

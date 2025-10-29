@@ -10,7 +10,6 @@ import { ChevronRight, Clock, ShieldCheck } from "lucide-react"
 import { apiGet, apiPost } from "@/lib/api"
 import * as PortOne from "@portone/browser-sdk/v2"
 import { toast } from "sonner"
-import { randomUUID } from "crypto"
 
 interface RoomFacility {
   facilityType: string
@@ -244,7 +243,7 @@ export default function PaymentPage() {
     const date = new Date(dateString)
     const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-    
+
     return {
       weekday: weekdays[date.getDay()],
       month: months[date.getMonth()],
@@ -253,38 +252,71 @@ export default function PaymentPage() {
     }
   }
 
+  // 고유한 paymentId 생성 함수 (reservationIdentifier + 한국 시간)
+  const generateUniquePaymentId = (reservationIdentifier: string) => {
+    // 한국 시간 타임스탬프 생성 (YYYYMMDDHHmmss 형식)
+    const now = new Date()
+    const kstTime = new Intl.DateTimeFormat('sv-SE', {
+      timeZone: 'Asia/Seoul',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    }).format(now).replace(/\D/g, '') // 모든 구분자 제거
+
+    // reservationIdentifier의 마지막 8자리 + 한국 시간 타임스탬프
+    const shortReservationId = reservationIdentifier.slice(-8)
+    return `${shortReservationId}-${kstTime}`
+  }
+
   const handlePayPalPayment = async () => {
     if (!paymentData || !reservationData) return
     
     try {
       toast.info(messages?.payment?.processing || "결제 처리 중...")
-      
-      // UUID로 paymentId 생성
-      const randomPaymentId = randomUUID()
-      
+
+      // 고유한 paymentId 생성 (reservationIdentifier + 한국 시간)
+      const randomPaymentId = generateUniquePaymentId(reservationData.reservationIdentifier)
+
       // 포트원 결제창 호출 (+결제페이지 띄워줌)
       const response = await PortOne.requestPayment({
         storeId: process.env.NEXT_PUBLIC_PORTONE_STORE_ID!,
         channelKey: process.env.NEXT_PUBLIC_PORTONE_CHANNEL_KEY!,
-        paymentId: "payment-" + randomPaymentId,
+        paymentId: randomPaymentId,
         orderName: paymentData.room.title,
-        totalAmount: paymentData.totalPrice,
-        currency: "USD",
+        totalAmount: paymentData.totalPrice*100,
+        currency: "CURRENCY_USD",
         payMethod: "CARD",
         customer: {
           firstName: reservationData.userFirstName,
           lastName: reservationData.userLastName,
           email: reservationData.userEmail,
+          phoneNumber: reservationData.userPhoneNumber,
         },
         customData: {
           reservationIdentifier: reservationData.reservationIdentifier,
           paymentId: randomPaymentId,
+        },
+        products: [{
+          id : reservationData.reservationIdentifier,
+          name : paymentData.room.title,
+          code : reservationData.reservationIdentifier,
+          amount : paymentData.totalPrice*100, //소수점이 허용되지 않음.
+          quantity : 1,
+          tag: "room",
+          link: "http://localhost:3000",
+        }],
+        popup: {
+          center: true,
         }
       })
       
       // 결제 실패 처리
-      if (response?.code != null || response?.code !== undefined) {
+      if (response?.code !== undefined) {
         toast.error(messages?.payment?.failed || "Payment failed")
+        console.log(response)
         console.error("Payment failed:", response.message)
         return
       }
