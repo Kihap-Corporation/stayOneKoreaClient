@@ -338,8 +338,8 @@ export default function ReservationPage() {
       return
     }
 
-    // 검증 통과 시 결제 페이지로 이동
-    router.push(`/payment/${params.reservationId}`)
+    // 검증 통과 시 결제 페이지로 이동 (DY 분기)
+    router.push(`/payment-dy/${params.reservationId}`)
   }
 
   const handleCancel = async () => {
