@@ -7,37 +7,11 @@
           "@upstash/context7-mcp"
         ]
       },
-      "slack": {
-        "command": "cmd",
-        "args": [
-          "/c",
-          "npx",
-          "-y",
-          "@smithery/cli@latest",
-          "run",
-          "@smithery-ai/slack",
-          "--key",
-          "ba333eec-6de2-4d67-933b-fb6913481083",
-          "--profile",
-          "glad-cuckoo-HZD8ku"
-        ]
-      },
       "memory": {
         "command": "npx",
         "args": [
           "-y",
           "@modelcontextprotocol/server-memory"
-        ]
-      },
-      "github": {
-        "command": "npx",
-        "args": [
-          "-y",
-          "@smithery/cli@latest",
-          "run",
-          "@smithery-ai/github",
-          "--key",
-          "ba333eec-6de2-4d67-933b-fb6913481083"
         ]
       },
       "executeautomation-playwright-server": {
