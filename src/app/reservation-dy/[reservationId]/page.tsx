@@ -293,6 +293,32 @@ export default function ReservationDyPage() {
     return () => clearInterval(timer)
   }, [timeRemaining, endToReserveTime, params.reservationId, router, messages])
 
+  // 날짜 포맷팅 함수 - 클라이언트에서만 실행되도록 useMemo 사용
+  const formatDate = (dateString: string) => {
+    // ISO 날짜 문자열을 UTC 기준으로 파싱하여 서버/클라이언트 간 일관성 유지
+    const date = new Date(dateString + (dateString.includes('T') ? '' : 'T00:00:00Z'))
+    const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+    
+    return {
+      weekday: weekdays[date.getUTCDay()],
+      month: months[date.getUTCMonth()],
+      day: date.getUTCDate().toString().padStart(2, '0'),
+      year: date.getUTCFullYear().toString()
+    }
+  }
+  
+  // 클라이언트에서만 포맷팅 수행하여 hydration 에러 방지 - early return 전에 hooks 호출 필수
+  const checkInFormatted = useMemo(() => {
+    if (!reservationData) return null
+    return formatDate(reservationData.checkIn)
+  }, [reservationData?.checkIn])
+  
+  const checkOutFormatted = useMemo(() => {
+    if (!reservationData) return null
+    return formatDate(reservationData.checkOut)
+  }, [reservationData?.checkOut])
+
   // 타이머 포맷 함수 (HH:MM:SS)
   const formatTimer = (seconds: number) => {
     const hours = Math.floor(seconds / 3600)
@@ -445,32 +471,6 @@ export default function ReservationDyPage() {
     }
     return facilityIcons[typeMap[facility.facilityType]] || facilityIcons['wifi']
   }
-  
-  // 날짜 포맷팅 함수 - 클라이언트에서만 실행되도록 useMemo 사용
-  const formatDate = (dateString: string) => {
-    // ISO 날짜 문자열을 UTC 기준으로 파싱하여 서버/클라이언트 간 일관성 유지
-    const date = new Date(dateString + (dateString.includes('T') ? '' : 'T00:00:00Z'))
-    const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-    
-    return {
-      weekday: weekdays[date.getUTCDay()],
-      month: months[date.getUTCMonth()],
-      day: date.getUTCDate().toString().padStart(2, '0'),
-      year: date.getUTCFullYear().toString()
-    }
-  }
-  
-  // 클라이언트에서만 포맷팅 수행하여 hydration 에러 방지
-  const checkInFormatted = useMemo(() => {
-    if (!reservationData) return null
-    return formatDate(reservationData.checkIn)
-  }, [reservationData?.checkIn])
-  
-  const checkOutFormatted = useMemo(() => {
-    if (!reservationData) return null
-    return formatDate(reservationData.checkOut)
-  }, [reservationData?.checkOut])
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -922,9 +922,9 @@ export default function ReservationDyPage() {
                       {messages?.reservation?.checkIn || "Check-in"}
                     </p>
                     <p className="text-base font-bold tracking-[-0.2px]">
-                      {checkInFormatted.weekday}, {checkInFormatted.month} {checkInFormatted.day}
+                      {checkInFormatted ? `${checkInFormatted.weekday}, ${checkInFormatted.month} ${checkInFormatted.day}` : '-'}
                     </p>
-                    <p className="text-xs text-[rgba(13,17,38,0.4)] font-medium">{checkInFormatted.year}</p>
+                    <p className="text-xs text-[rgba(13,17,38,0.4)] font-medium">{checkInFormatted?.year || '-'}</p>
                   </div>
                   
                   <ChevronRight className="h-4 w-4 text-gray-400" />
@@ -934,9 +934,9 @@ export default function ReservationDyPage() {
                       {messages?.reservation?.checkOut || "Check-out"}
                     </p>
                     <p className="text-base font-bold tracking-[-0.2px]">
-                      {checkOutFormatted.weekday}, {checkOutFormatted.month} {checkOutFormatted.day}
+                      {checkOutFormatted ? `${checkOutFormatted.weekday}, ${checkOutFormatted.month} ${checkOutFormatted.day}` : '-'}
                     </p>
-                    <p className="text-xs text-[rgba(13,17,38,0.4)] font-medium">{checkOutFormatted.year}</p>
+                    <p className="text-xs text-[rgba(13,17,38,0.4)] font-medium">{checkOutFormatted?.year || '-'}</p>
                   </div>
                 </div>
                 
