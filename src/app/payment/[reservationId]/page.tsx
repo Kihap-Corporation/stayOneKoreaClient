@@ -70,6 +70,9 @@ export default function PaymentPage() {
   // Timer state
   const [timeRemaining, setTimeRemaining] = useState<number | null>(null)
   const [endToReserveTime, setEndToReserveTime] = useState<Date | null>(null)
+  
+  // Payment loading state
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false)
 
   // 예약 정보 조회 및 타이머 설정
   useEffect(() => {

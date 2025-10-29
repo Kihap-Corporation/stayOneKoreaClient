@@ -115,6 +115,12 @@ export function BookingSidebar({
   const [isLiked, setIsLiked] = useState(roomLikeCheck)
   const [showFullHostDescription, setShowFullHostDescription] = useState(false)
   const calendarRef = useRef<HTMLDivElement>(null)
+  const handleCheckInChange = (date: Date | null) => {
+    if (onCheckInDateChange) onCheckInDateChange(date)
+  }
+  const handleCheckOutChange = (date: Date | null) => {
+    if (onCheckOutDateChange) onCheckOutDateChange(date)
+  }
 
   // 숙박일수 계산
   const calculateNights = () => {
@@ -432,10 +438,10 @@ export function BookingSidebar({
             {isCalendarOpen && (
               <div className="absolute top-full left-0 mt-2 z-50">
                 <CustomDateRangePicker
-                  checkIn={checkInDate}
-                  checkOut={checkOutDate}
-                  onCheckInChange={onCheckInDateChange}
-                  onCheckOutChange={onCheckOutDateChange}
+                  checkIn={checkInDate ?? null}
+                  checkOut={checkOutDate ?? null}
+                  onCheckInChange={handleCheckInChange}
+                  onCheckOutChange={handleCheckOutChange}
                   locale={currentLanguage.code}
                   monthsShown={2}
                   showBorder={true}
