@@ -180,11 +180,11 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
       if (response.ok && data.code === 200) {
         const reservationId = data.data?.identifier
         if (reservationId) {
-          window.location.href = `/reservation/${reservationId}`
+          window.location.href = `/reservation-dy/${reservationId}`
         } else {
           // 예약 ID가 없으면 폴백으로 기존 방식 사용
           const fallbackId = params.roomId
-          window.location.href = `/reservation/${fallbackId}`
+          window.location.href = `/reservation-dy/${fallbackId}`
         }
       } else {
         // 에러 처리

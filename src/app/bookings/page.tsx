@@ -145,7 +145,7 @@ export default function BookingsPage() {
   const handleBookingClick = (reservationIdentifier: string, status: string) => {
     if (status === 'RESERVATION_UNDER_WAY') {
       // 예약 진행 중인 상태 - 예약 페이지로 이동
-      router.push(`/reservation/${reservationIdentifier}`)
+      router.push(`/reservation-dy/${reservationIdentifier}`)
     } else {
       // 예약 완료된 상태 - 예약 상세 페이지로 이동
       router.push(`/bookings/${reservationIdentifier}`)

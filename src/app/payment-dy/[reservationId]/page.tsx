@@ -7,7 +7,8 @@ import { Footer } from "@/components/footer"
 import { useLanguage } from "@/components/language-provider"
 import { Button } from "@/components/ui/button"
 import { ChevronRight, Clock, ShieldCheck } from "lucide-react"
-import { apiGet } from "@/lib/api"
+import { apiGet, apiPost } from "@/lib/api"
+import * as PortOne from "@portone/browser-sdk/v2"
 
 interface RoomFacility {
   facilityType: string
@@ -249,9 +250,132 @@ export default function PaymentDyPage() {
     }
   }
 
-  const handlePayPalPayment = () => {
-    // PayPal 결제 로직 구현 예정 (동일 UI/기능)
-    alert(messages?.payment?.paypalProcessing || "PayPal 결제를 진행합니다...")
+  // 결제 처리 함수
+  const handlePayment = async () => {
+    if (!paymentData || isProcessingPayment || (timeRemaining !== null && timeRemaining <= 0)) {
+      return
+    }
+
+    setIsProcessingPayment(true)
+
+    try {
+      const storeId = process.env.NEXT_PUBLIC_PORTONE_STORE_ID
+      const channelKey = process.env.NEXT_PUBLIC_PORTONE_EXIMBAY_CHANNEL_KEY
+
+      if (!storeId || !channelKey) {
+        alert(messages?.payment?.configError || "결제 설정이 완료되지 않았습니다. 관리자에게 문의하세요.")
+        setIsProcessingPayment(false)
+        return
+      }
+
+      // PaymentId 생성 (예약 ID 기반)
+      const paymentId = `payment-${params.reservationId}-${Date.now()}`
+
+      // 통화 코드 변환 (USD -> USD는 그대로, 필요시 다른 통화도 처리)
+      const currency = paymentData.totalPrice > 0 ? 'USD' : 'USD'
+      
+      // 결제 금액 (센트 단위로 변환: $1.50 -> 150)
+      // 현재 totalPrice는 달러 단위이므로 100을 곱해 센트로 변환
+      const totalAmount = Math.round(paymentData.totalPrice * 100)
+
+      // 고객 정보 (예약 정보에서 가져오기)
+      const reservationInfo = await apiGet(
+        `/api/user/reserve/page/${params.reservationId}?languageCode=${currentLanguage.code}`
+      )
+
+      if (reservationInfo.code !== 200 || !reservationInfo.data) {
+        throw new Error("예약 정보를 불러올 수 없습니다")
+      }
+
+      const reservationData = reservationInfo.data as ReservationAPIResponse
+
+      // Portone 결제 요청
+      // 엑심베이의 경우 payMethod를 생략하면 모든 결제 수단 표시
+      const payment = await PortOne.requestPayment({
+        storeId: storeId,
+        channelKey: channelKey,
+        paymentId: paymentId,
+        orderName: `${reservationData.roomName} - ${reservationData.residenceName}`,
+        totalAmount: totalAmount,
+        currency: currency,
+        // payMethod는 엑심베이에서 생략 가능 (엑심베이 결제창에서 선택)
+        payMethod: undefined as any, // 엑심베이는 결제 수단을 지정하지 않아도 됨
+        customer: {
+          fullName: `${reservationData.userFirstName} ${reservationData.userLastName}`,
+          firstName: reservationData.userFirstName,
+          lastName: reservationData.userLastName,
+          email: reservationData.userEmail,
+          phoneNumber: reservationData.userPhoneNumber,
+        },
+        // 엑심베이 특수 파라미터
+        bypass: {
+          eximbay_v2: {
+            // 결제 수단을 지정하지 않으면 엑심베이에서 사용 가능한 모든 수단 표시
+            // payment: {
+            //   payment_method: "PAYPAL", // 특정 수단만 표시하려면 설정
+            //   // 또는 여러 수단 표시
+            //   // multi_payment_method: ["PAYPAL", "ALIPAY", "UNIONPAY"]
+            // }
+          }
+        },
+      } as any)
+
+      // 결제 실패 처리 (에러 응답 체크)
+      if (!payment || 'code' in payment) {
+        setIsProcessingPayment(false)
+        const errorMessage = payment && 'message' in payment 
+          ? (payment as any).message 
+          : "알 수 없는 오류가 발생했습니다."
+        alert(
+          messages?.payment?.paymentFailed || 
+          `결제 실패: ${errorMessage}`
+        )
+        return
+      }
+
+      // 결제 성공 - 서버에 결제 확인 요청
+      try {
+        const confirmResponse = await apiPost(
+          `/api/user/reserve/confirm/${params.reservationId}`,
+          {
+            paymentId: payment.paymentId,
+            paymentStatus: 'PAID', // Portone V2에서 결제 성공 시 status는 'PAID'
+          }
+        )
+
+        if (confirmResponse.code === 200) {
+          // 결제 완료 후 북킹 상세 페이지로 이동
+          router.push(`/bookings/${params.reservationId}`)
+        } else {
+          // 서버 확인 실패
+          setIsProcessingPayment(false)
+          alert(
+            messages?.payment?.confirmFailed || 
+            "결제는 완료되었으나 서버 확인 중 오류가 발생했습니다. 마이페이지에서 확인해주세요."
+          )
+          router.push(`/bookings/${params.reservationId}`)
+        }
+      } catch (confirmError) {
+        // 결제는 성공했지만 서버 확인 실패
+        console.error("Payment confirmation error:", confirmError)
+        setIsProcessingPayment(false)
+        alert(
+          messages?.payment?.confirmFailed || 
+          "결제는 완료되었으나 서버 확인 중 오류가 발생했습니다. 마이페이지에서 확인해주세요."
+        )
+        router.push(`/bookings/${params.reservationId}`)
+      }
+
+    } catch (error) {
+      setIsProcessingPayment(false)
+      console.error("Payment error:", error)
+      
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : messages?.payment?.paymentError || "결제 처리 중 오류가 발생했습니다."
+      
+      alert(errorMessage)
+    }
   }
 
   if (loading) {
@@ -505,18 +629,28 @@ export default function PaymentDyPage() {
               
               <div className="flex flex-col gap-[6px]">
                 <Button
-                  onClick={handlePayPalPayment}
-                  className="w-full bg-[#e0004d] hover:bg-[#C2185B] text-white rounded-full py-3 flex items-center justify-center gap-2"
+                  onClick={handlePayment}
+                  disabled={isProcessingPayment || (timeRemaining !== null && timeRemaining <= 0)}
+                  className="w-full bg-[#e0004d] hover:bg-[#C2185B] text-white rounded-full py-3 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M17.5 8.33333C17.5 11.0947 15.2614 13.3333 12.5 13.3333H10.8333L10 17.5H7.5L8.33333 13.3333H6.66667L5.83333 17.5H3.33333L4.16667 13.3333C2.32572 13.3333 0.833333 11.841 0.833333 10V8.33333C0.833333 5.57191 3.07191 3.33333 5.83333 3.33333H12.5C15.2614 3.33333 17.5 5.57191 17.5 8.33333Z" fill="white"/>
-                  </svg>
-                  <span className="text-base font-medium tracking-[-0.2px]">
-                    {messages?.payment?.bookWithPaypal || "Book Now with PayPal"}
-                  </span>
+                  {isProcessingPayment ? (
+                    <>
+                      <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      <span className="text-base font-medium tracking-[-0.2px]">
+                        {messages?.payment?.processing || "결제 처리 중..."}
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <ShieldCheck className="h-5 w-5" />
+                      <span className="text-base font-medium tracking-[-0.2px]">
+                        {messages?.payment?.bookNow || "지금 결제하기"}
+                      </span>
+                    </>
+                  )}
                 </Button>
                 <p className="text-base font-medium tracking-[-0.2px] text-[rgba(13,17,38,0.4)] text-center">
-                  {messages?.payment?.clickToComplete || "Click the button above to proceed with payment and complete your booking."}
+                  {messages?.payment?.clickToComplete || "위 버튼을 클릭하여 결제를 진행하고 예약을 완료하세요."}
                 </p>
               </div>
             </div>

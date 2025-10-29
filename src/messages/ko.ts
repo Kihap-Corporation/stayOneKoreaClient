@@ -315,6 +315,12 @@ header: {
     paypalProcessing: "PayPal 결제를 진행합니다...",
     alipayProcessing: "알리페이 결제를 진행합니다...",
     unionpayProcessing: "UnionPay 결제를 진행합니다...",
+    bookNow: "지금 결제하기",
+    processing: "결제 처리 중...",
+    configError: "결제 설정이 완료되지 않았습니다. 관리자에게 문의하세요.",
+    paymentFailed: "결제 실패",
+    paymentError: "결제 처리 중 오류가 발생했습니다.",
+    confirmFailed: "결제는 완료되었으나 서버 확인 중 오류가 발생했습니다. 마이페이지에서 확인해주세요.",
     ourPrice: "정가",
     discount: "할인"
   },
