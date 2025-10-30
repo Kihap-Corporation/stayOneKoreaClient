@@ -40,9 +40,7 @@ export default function VerifyEmailPage() {
     if (!email) return
 
     try {
-      const data = await apiPost('/api/auth/resend/verification_email', {
-        email: email
-      })
+      const data = await apiPost(`/api/auth/resend/verification_email?email=${encodeURIComponent(email)}`, {})
 
       if (data.code === 200) {
         alert(messages?.verifyEmail?.emailResent || "Verification email has been resent.")
