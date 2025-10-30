@@ -69,6 +69,7 @@ export default function PaymentPage() {
   const [loading, setLoading] = useState(true)
   const [paymentData, setPaymentData] = useState<PaymentPageData | null>(null)
   const [reservationData, setReservationData] = useState<ReservationAPIResponse | null>(null)
+  const [verifyingPayment, setVerifyingPayment] = useState(false)
   
   // Timer state
   const [timeRemaining, setTimeRemaining] = useState<number | null>(null)
@@ -336,32 +337,33 @@ export default function PaymentPage() {
       }
       
       // 결제 성공 - 서버에서 검증
+      setVerifyingPayment(true)
       toast.info(messages?.payment?.verifying || "결제 정보를 확인하는 중...")
-      
+
       // response가 성공했다면 paymentId가 존재함
       if (!response?.paymentId) {
+        setVerifyingPayment(false)
         toast.error(messages?.payment?.verificationFailed || "결제 확인에 실패했습니다")
         return
       }
-      
+
       const verifyResponse = await apiPost('/api/user/payment/complete', {
         paymentId: response.paymentId,
         reservationId: reservationData.reservationIdentifier
       })
       
       if (verifyResponse.code === 200) {
+        setVerifyingPayment(false)
         toast.success(messages?.payment?.success || "결제가 완료되었습니다!")
 
-        // 예약 대기 결과 페이지로 이동
-        setTimeout(() => {
-          toast.info(messages?.payment?.redirecting || "예약 확인 페이지로 이동합니다...")
-          router.push(`/payment/result/${reservationData.reservationIdentifier}`)
-        }, 1500)
+        router.push(`/payment/result/${reservationData.reservationIdentifier}`)
       } else {
+        setVerifyingPayment(false)
         toast.error(messages?.payment?.verificationFailed || "결제 확인에 실패했습니다")
       }
       
     } catch (error) {
+      setVerifyingPayment(false)
       console.error("Payment error:", error)
       toast.error(messages?.payment?.error || "결제 중 오류가 발생했습니다")
     }
@@ -401,6 +403,23 @@ export default function PaymentPage() {
   return (
     <div className="flex min-h-screen flex-col bg-[#f7f7f8]">
       <ReservationHeader currentStep={2} />
+
+      {/* 결제 검증 로딩 오버레이 */}
+      {verifyingPayment && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
+          <div className="bg-white rounded-[24px] p-8 shadow-lg max-w-sm w-full mx-4">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#e0004d] mx-auto mb-4"></div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                {messages?.payment?.verifying || "결제 확인 중"}
+              </h3>
+              <p className="text-sm text-gray-600">
+                {messages?.payment?.pleaseWait || "잠시만 기다려주세요..."}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
       
       {/* Timer Banner */}
       <div className="bg-[#fce5e4] py-1">
