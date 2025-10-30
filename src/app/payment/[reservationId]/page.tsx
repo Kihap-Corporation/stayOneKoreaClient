@@ -288,6 +288,7 @@ export default function PaymentPage() {
         orderName: paymentData.room.title,
         totalAmount: paymentData.totalPrice*100,
         currency: "CURRENCY_USD",
+        locale: "EN_US",
         payMethod: "CARD",
         customer: {
           firstName: reservationData.userFirstName,
@@ -298,6 +299,13 @@ export default function PaymentPage() {
         customData: {
           reservationIdentifier: reservationData.reservationIdentifier,
           paymentId: randomPaymentId,
+        },
+        bypass: { 
+          eximbay_v2 : {
+            settings:{
+              call_from_app : "Y"
+            }
+          }
         },
         products: [{
           id : reservationData.reservationIdentifier,
