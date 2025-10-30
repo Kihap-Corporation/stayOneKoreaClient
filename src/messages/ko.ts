@@ -198,7 +198,8 @@ header: {
     delete: "삭제",
     edit: "편집",
     close: "닫기",
-    noImage: "이미지 없음"
+    noImage: "이미지 없음",
+    accessDenied: "해당 페이지에 접근할 수 없습니다"
   },
   roomDetail: {
     schedule: "일정",
@@ -285,7 +286,14 @@ header: {
     invalidInput: "잘못된 입력을 했습니다",
     loadError: "예약 정보를 불러오는 중 오류가 발생했습니다",
     reservationNotAvailable: "예약 가능한 상태가 아닙니다",
-    consentRequired: "모든 동의사항에 체크해주세요."
+    consentRequired: "모든 동의사항에 체크해주세요.",
+    updateSuccess: "정보가 성공적으로 업데이트되었습니다.",
+    invalidRequest: "잘못된 요청입니다. 정보를 확인해주세요.",
+    serverError: "서버 오류가 발생했습니다. 다시 시도해주세요.",
+    updateError: "정보 업데이트에 실패했습니다.",
+    requiredFields: "모든 필수 필드를 입력해주세요.",
+    invalidEmail: "유효한 이메일 주소를 입력해주세요.",
+    invalidPhone: "유효한 전화번호를 입력해주세요."
   },
   bookings: {
     title: "예약 내역",
@@ -316,7 +324,21 @@ header: {
     alipayProcessing: "알리페이 결제를 진행합니다...",
     unionpayProcessing: "UnionPay 결제를 진행합니다...",
     ourPrice: "정가",
-    discount: "할인"
+    discount: "할인",
+    processing: "결제 처리 중...",
+    success: "결제가 완료되었습니다!",
+    failed: "결제에 실패했습니다",
+    cancelled: "결제가 취소되었습니다",
+    verifying: "결제 정보를 확인하는 중...",
+    verificationFailed: "결제 확인에 실패했습니다",
+    redirecting: "예약 확인 페이지로 이동합니다...",
+    error: "결제 중 오류가 발생했습니다"
+  },
+  bookingResult: {
+    title: "숙소 준비가 거의 완료되었습니다",
+    subtitle1: "호스트가 예약 요청을 검토 중입니다.",
+    subtitle2: "24시간 이내에 확인서를 받으실 수 있습니다.",
+    viewDetails: "내 예약에서 상세보기"
   },
   like: {
     title: "저장된 숙소",

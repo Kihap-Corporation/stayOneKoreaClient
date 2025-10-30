@@ -7,7 +7,9 @@ import { Footer } from "@/components/footer"
 import { useLanguage } from "@/components/language-provider"
 import { Button } from "@/components/ui/button"
 import { ChevronRight, Clock, ShieldCheck } from "lucide-react"
-import { apiGet } from "@/lib/api"
+import { apiGet, apiPost } from "@/lib/api"
+import * as PortOne from "@portone/browser-sdk/v2"
+import { toast } from "sonner"
 
 interface RoomFacility {
   facilityType: string
@@ -66,6 +68,7 @@ export default function PaymentPage() {
   const { messages, currentLanguage } = useLanguage()
   const [loading, setLoading] = useState(true)
   const [paymentData, setPaymentData] = useState<PaymentPageData | null>(null)
+  const [reservationData, setReservationData] = useState<ReservationAPIResponse | null>(null)
   
   // Timer state
   const [timeRemaining, setTimeRemaining] = useState<number | null>(null)
@@ -86,6 +89,9 @@ export default function PaymentPage() {
         
         if (response.code === 200 && response.data) {
           const apiData: ReservationAPIResponse = response.data
+          
+          // 예약 정보 저장
+          setReservationData(apiData)
           
           // RESERVATION_UNDER_WAY 상태만 허용
           if (apiData.reservationStatus !== 'RESERVATION_UNDER_WAY') {
@@ -240,7 +246,7 @@ export default function PaymentPage() {
     const date = new Date(dateString)
     const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-    
+
     return {
       weekday: weekdays[date.getDay()],
       month: months[date.getMonth()],
@@ -249,9 +255,113 @@ export default function PaymentPage() {
     }
   }
 
-  const handlePayPalPayment = () => {
-    // PayPal 결제 로직 구현 예정
-    alert(messages?.payment?.paypalProcessing || "PayPal 결제를 진행합니다...")
+  // 고유한 paymentId 생성 함수 (reservationIdentifier + 한국 시간)
+  const generateUniquePaymentId = (reservationIdentifier: string) => {
+    // 한국 시간 타임스탬프 생성 (YYYYMMDDHHmmss 형식)
+    const now = new Date()
+    const kstTime = new Intl.DateTimeFormat('sv-SE', {
+      timeZone: 'Asia/Seoul',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    }).format(now).replace(/\D/g, '') // 모든 구분자 제거
+
+    // reservationIdentifier의 마지막 8자리 + 한국 시간 타임스탬프
+    const shortReservationId = reservationIdentifier.slice(-8)
+    return `${shortReservationId}-${kstTime}`
+  }
+
+  const handlePayPalPayment = async () => {
+    if (!paymentData || !reservationData) return
+    
+    try {
+      toast.info(messages?.payment?.processing || "결제 처리 중...")
+
+      // 고유한 paymentId 생성 (reservationIdentifier + 한국 시간)
+      const randomPaymentId = generateUniquePaymentId(reservationData.reservationIdentifier)
+
+      // 포트원 결제창 호출 (+결제페이지 띄워줌)
+      const response = await PortOne.requestPayment({
+        storeId: process.env.NEXT_PUBLIC_PORTONE_STORE_ID!,
+        channelKey: process.env.NEXT_PUBLIC_PORTONE_CHANNEL_KEY!,
+        paymentId: randomPaymentId,
+        orderName: paymentData.room.title,
+        totalAmount: paymentData.totalPrice*100,
+        currency: "CURRENCY_USD",
+        locale: "EN_US",
+        payMethod: "CARD",
+        customer: {
+          firstName: reservationData.userFirstName,
+          lastName: reservationData.userLastName,
+          email: reservationData.userEmail,
+          phoneNumber: reservationData.userPhoneNumber,
+        },
+        customData: {
+          reservationIdentifier: reservationData.reservationIdentifier,
+          paymentId: randomPaymentId,
+        },
+        bypass: { 
+          eximbay_v2 : {
+            settings:{
+              call_from_app : "Y"
+            }
+          }
+        },
+        products: [{
+          id : reservationData.reservationIdentifier,
+          name : paymentData.room.title,
+          code : reservationData.reservationIdentifier,
+          amount : paymentData.totalPrice*100, //소수점이 허용되지 않음.
+          quantity : 1,
+          tag: "room",
+          link: "http://localhost:3000",
+        }],
+        popup: {
+          center: true,
+        }
+      })
+      
+      // 결제 실패 처리
+      if (response?.code !== undefined) {
+        toast.error(messages?.payment?.failed || "Payment failed")
+        console.log(response)
+        console.error("Payment failed:", response.message)
+        return
+      }
+      
+      // 결제 성공 - 서버에서 검증
+      toast.info(messages?.payment?.verifying || "결제 정보를 확인하는 중...")
+      
+      // response가 성공했다면 paymentId가 존재함
+      if (!response?.paymentId) {
+        toast.error(messages?.payment?.verificationFailed || "결제 확인에 실패했습니다")
+        return
+      }
+      
+      const verifyResponse = await apiPost('/api/user/payment/complete', {
+        paymentId: response.paymentId,
+        reservationId: reservationData.reservationIdentifier
+      })
+      
+      if (verifyResponse.code === 200) {
+        toast.success(messages?.payment?.success || "결제가 완료되었습니다!")
+
+        // 예약 대기 결과 페이지로 이동
+        setTimeout(() => {
+          toast.info(messages?.payment?.redirecting || "예약 확인 페이지로 이동합니다...")
+          router.push(`/payment/result/${reservationData.reservationIdentifier}`)
+        }, 1500)
+      } else {
+        toast.error(messages?.payment?.verificationFailed || "결제 확인에 실패했습니다")
+      }
+      
+    } catch (error) {
+      console.error("Payment error:", error)
+      toast.error(messages?.payment?.error || "결제 중 오류가 발생했습니다")
+    }
   }
 
   if (loading) {

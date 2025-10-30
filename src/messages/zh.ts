@@ -198,7 +198,8 @@ header: {
     delete: "删除",
     edit: "编辑",
     close: "关闭",
-    noImage: "无图像"
+    noImage: "无图像",
+    accessDenied: "您无法访问此页面"
   },
   roomDetail: {
     schedule: "日程",
@@ -285,7 +286,14 @@ header: {
     invalidInput: "提供的输入无效",
     loadError: "加载预订信息失败",
     reservationNotAvailable: "预订不可用",
-    consentRequired: "请勾选所有同意事项。"
+    consentRequired: "请勾选所有同意事项。",
+    updateSuccess: "信息更新成功",
+    invalidRequest: "请求无效。请检查您的信息。",
+    serverError: "服务器发生错误。请重试。",
+    updateError: "信息更新失败",
+    requiredFields: "请填写所有必填字段。",
+    invalidEmail: "请输入有效的电子邮件地址。",
+    invalidPhone: "请输入有效的电话号码。"
   },
   bookings: {
     title: "预订",
@@ -307,7 +315,21 @@ header: {
     clickToComplete: "点击上面的按钮继续付款并完成您的预订。",
     paypalProcessing: "正在处理 PayPal 付款...",
     ourPrice: "原价",
-    discount: "折扣"
+    discount: "折扣",
+    processing: "正在处理付款...",
+    success: "付款成功！",
+    failed: "付款失败",
+    cancelled: "付款已取消",
+    verifying: "正在验证付款...",
+    verificationFailed: "付款验证失败",
+    redirecting: "正在跳转到预订确认页面...",
+    error: "付款过程中发生错误"
+  },
+  bookingResult: {
+    title: "您的住宿即将准备就绪",
+    subtitle1: "房东正在审核您的预订请求。",
+    subtitle2: "您将在24小时内收到确认书。",
+    viewDetails: "在我的预订中查看详情"
   },
   like: {
     title: "已保存",

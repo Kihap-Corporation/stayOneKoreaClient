@@ -198,7 +198,8 @@ header: {
     delete: "Supprimer",
     edit: "Modifier",
     close: "Fermer",
-    noImage: "Aucune image"
+    noImage: "Aucune image",
+    accessDenied: "Vous n'avez pas accès à cette page"
   },
   roomDetail: {
     schedule: "Calendrier",
@@ -285,7 +286,14 @@ header: {
     invalidInput: "Valeur saisie invalide",
     loadError: "Échec du chargement des informations de réservation",
     reservationNotAvailable: "La réservation n'est pas disponible",
-    consentRequired: "Veuillez cocher tous les éléments de consentement."
+    consentRequired: "Veuillez cocher tous les éléments de consentement.",
+    updateSuccess: "Informations mises à jour avec succès",
+    invalidRequest: "Demande invalide. Veuillez vérifier vos informations.",
+    serverError: "Erreur serveur. Veuillez réessayer.",
+    updateError: "Échec de la mise à jour des informations",
+    requiredFields: "Veuillez remplir tous les champs obligatoires.",
+    invalidEmail: "Veuillez saisir une adresse e-mail valide.",
+    invalidPhone: "Veuillez saisir un numéro de téléphone valide."
   },
   bookings: {
     title: "Réservations",
@@ -307,7 +315,21 @@ header: {
     clickToComplete: "Cliquez sur le bouton ci-dessus pour procéder au paiement et finaliser votre réservation.",
     paypalProcessing: "Traitement du paiement PayPal...",
     ourPrice: "Notre prix",
-    discount: "Réduction"
+    discount: "Réduction",
+    processing: "Traitement du paiement...",
+    success: "Paiement réussi !",
+    failed: "Le paiement a échoué",
+    cancelled: "Paiement annulé",
+    verifying: "Vérification du paiement...",
+    verificationFailed: "La vérification du paiement a échoué",
+    redirecting: "Redirection vers la confirmation de réservation...",
+    error: "Une erreur s'est produite lors du paiement"
+  },
+  bookingResult: {
+    title: "Votre séjour est presque prêt",
+    subtitle1: "Votre hôte examine votre demande de réservation.",
+    subtitle2: "Vous recevrez une confirmation dans les 24 heures.",
+    viewDetails: "Voir les détails dans Mes réservations"
   },
   like: {
     title: "Enregistré",
