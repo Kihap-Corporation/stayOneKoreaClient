@@ -279,6 +279,7 @@ export default function PaymentPage() {
 
       // 고유한 paymentId 생성 (reservationIdentifier + 한국 시간)
       const randomPaymentId = generateUniquePaymentId(reservationData.reservationIdentifier)
+      const productsLink = process.env.NEXT_PUBLIC_PORTONE_PRODUCTS_LINK!
 
       // 포트원 결제창 호출 (+결제페이지 띄워줌)
       const response = await PortOne.requestPayment({
@@ -314,7 +315,7 @@ export default function PaymentPage() {
           amount : paymentData.totalPrice*100, //소수점이 허용되지 않음.
           quantity : 1,
           tag: "room",
-          link: "http://localhost:3000",
+          link: productsLink,
         }],
         popup: {
           center: true,
