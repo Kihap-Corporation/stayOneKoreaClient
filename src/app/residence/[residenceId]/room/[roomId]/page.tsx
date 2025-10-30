@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { useLanguage } from "@/components/language-provider"
@@ -13,6 +13,8 @@ import { Wifi, WashingMachine, Car, AirVent, Bell, Flame, ChevronRight, Camera, 
 import "react-datepicker/dist/react-datepicker.css"
 import DatePicker from "react-datepicker"
 import Script from 'next/script'
+import { MobileCustomDateRangePicker } from "@/components/home/mobile-custom-date-range-picker"
+import { getBookingDates, saveBookingDates } from "@/lib/session-storage"
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Pagination, Navigation } from 'swiper/modules'
 import 'swiper/css'
@@ -95,12 +97,21 @@ const getFacilityIcon = (facilityType: string) => {
 
 export default function RoomDetailPage({ params }: RoomDetailPageProps) {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const { messages, currentLanguage } = useLanguage()
   const [loading, setLoading] = useState(true)
   const [roomData, setRoomData] = useState<RoomDetail | null>(null)
   const [relatedRooms, setRelatedRooms] = useState<RelatedRoom[]>([])
-  const [checkInDate, setCheckInDate] = useState<Date | null>(null)
-  const [checkOutDate, setCheckOutDate] = useState<Date | null>(null)
+
+  // 세션 스토리지에서 날짜 가져오기
+  const [checkInDate, setCheckInDate] = useState<Date | null>(() => {
+    const { checkIn } = getBookingDates()
+    return checkIn
+  })
+  const [checkOutDate, setCheckOutDate] = useState<Date | null>(() => {
+    const { checkOut } = getBookingDates()
+    return checkOut
+  })
   const [guests, setGuests] = useState(1)
   const [showAllFacilities, setShowAllFacilities] = useState(false)
   const [showFullDescription, setShowFullDescription] = useState(false)
@@ -260,11 +271,16 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
   const handleMobileDateRangeChange = (dates: [Date | null, Date | null] | Date | null) => {
     if (Array.isArray(dates)) {
       const [start, end] = dates
-      setCheckInDate(start)
-      setCheckOutDate(end)
-      
+
+      // 시간 정보를 제거하고 날짜만 저장 (00:00:00.000으로 설정)
+      const normalizedStart = start ? new Date(start.getFullYear(), start.getMonth(), start.getDate()) : null
+      const normalizedEnd = end ? new Date(end.getFullYear(), end.getMonth(), end.getDate()) : null
+
+      setCheckInDate(normalizedStart)
+      setCheckOutDate(normalizedEnd)
+
       // 체크인과 체크아웃이 모두 선택되면 달력 닫기
-      if (start && end) {
+      if (normalizedStart && normalizedEnd) {
         setIsMobileCalendarOpen(false)
       }
     }
@@ -1342,58 +1358,21 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
       <Footer />
 
       {/* 모바일 달력 모달 */}
-      {isMobileCalendarOpen && (
-        <div
-          className="fixed inset-0 z-150 bg-black/50 flex items-center justify-center p-4 lg:hidden"
-          onClick={() => setIsMobileCalendarOpen(false)}
-        >
-          <div
-            className="relative bg-white rounded-[24px] w-full max-w-md mx-4 overflow-hidden max-h-[90vh] overflow-y-auto"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* 헤더 */}
-            <div className="flex items-center justify-between p-4 border-b border-[#e9eaec]">
-              <h3 className="text-[18px] font-bold text-[#14151a]">Select dates</h3>
-              <button
-                onClick={() => setIsMobileCalendarOpen(false)}
-                className="bg-[rgba(10,15,41,0.04)] hover:bg-[rgba(10,15,41,0.08)] rounded-full p-2 transition-colors"
-              >
-                <X className="h-5 w-5 text-[#14151a]" />
-              </button>
-            </div>
-
-            {/* 달력 영역 - Range 달력으로 통합 */}
-            <div className="p-4">
-              <DatePicker
-                selected={checkInDate}
-                onChange={handleMobileDateRangeChange}
-                startDate={checkInDate}
-                endDate={checkOutDate}
-                selectsRange
-                inline
-                locale={datePickerLocale}
-                minDate={new Date()}
-                monthsShown={2}
-                calendarClassName="!border-none !w-full"
-                filterDate={(date) => {
-                  // 체크인과 체크아웃이 모두 선택되어 있으면 새로운 체크인 선택 중
-                  if (checkInDate && checkOutDate) {
-                    return filterCheckInDates(date)
-                  }
-                  // 체크인만 선택되어 있으면 체크아웃 선택 중
-                  else if (checkInDate && !checkOutDate) {
-                    return filterCheckOutDates(date)
-                  }
-                  // 아무것도 선택되지 않았으면 체크인 선택 중
-                  else {
-                    return filterCheckInDates(date)
-                  }
-                }}
-              />
-            </div>
-          </div>
-        </div>
-      )}
+      <MobileCustomDateRangePicker
+        isOpen={isMobileCalendarOpen}
+        onClose={() => setIsMobileCalendarOpen(false)}
+        checkIn={checkInDate}
+        checkOut={checkOutDate}
+        onCheckInChange={(date: Date | null) => {
+          setCheckInDate(date)
+          saveBookingDates(date, checkOutDate)
+        }}
+        onCheckOutChange={(date: Date | null) => {
+          setCheckOutDate(date)
+          saveBookingDates(checkInDate, date)
+        }}
+        locale={currentLanguage.code}
+      />
 
       {/* 이미지 모달 */}
       {showImageModal && (

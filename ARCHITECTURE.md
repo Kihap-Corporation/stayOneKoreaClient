@@ -12,6 +12,7 @@
 8. [스타일링 시스템](#8-스타일링-시스템)
 9. [상태 관리](#9-상태-관리)
 10. [보안 및 인증](#10-보안-및-인증)
+11. [예약 및 결제 시스템](#11-예약-및-결제-시스템)
 
 ---
 
@@ -1410,9 +1411,478 @@ Vercel 대시보드에서 다음 환경 변수 설정:
 
 ## 📝 변경 이력
 
-| 버전  | 날짜    | 변경 내용               |
-| ----- | ------- | ----------------------- |
-| 1.0.0 | 2025-01 | 초기 아키텍처 문서 작성 |
+| 버전  | 날짜    | 변경 내용                     |
+| ----- | ------- | ----------------------------- |
+| 1.1.0 | 2025-01 | 예약 및 결제 시스템 문서 추가 |
+| 1.0.0 | 2025-01 | 초기 아키텍처 문서 작성       |
+
+---
+
+## 11. 예약 및 결제 시스템
+
+### 11.1 시스템 개요
+
+Stay One Korea는 예약과 결제가 통합된 시스템을 제공합니다. 예약은 20분 내에 완료되어야 하며, 시간 내 결제가 이루어지지 않으면 예약이 취소됩니다.
+
+### 11.2 주요 요구사항
+
+#### 예약 시스템
+
+- **타임아웃**: 예약 생성 후 20분 내 결제 완료 필수
+- **예약 상태 관리**: 실시간 상태 추적
+- **한국 시간(KST) 기준**: 모든 시간 계산은 Asia/Seoul 기준으로 처리
+- **자동 취소**: 20분 경과 시 자동 예약 취소
+
+#### 결제 시스템
+
+- **결제 게이트웨이**: Portone (아임포트)
+- **PG사**: 엑심베이 (EXIMBAY)
+- **결제 수단**: PayPal, Alipay, UnionPay (사용자 선택)
+- **지역별 추천**: 중국(CN/HK/TW/MO) → Alipay, 기타 → PayPal
+- **보안**: SSL/TLS 암호화 통신
+
+### 11.3 기술 스택
+
+#### 프론트엔드
+
+- **Portone MCP Server**: 결제 프로세스 관리
+- **React Hook Form**: 결제 폼 처리
+- **Real-time Timer**: 타이머 상태 관리
+
+#### 결제 통합
+
+```typescript
+// 결제 게이트웨이 설정
+const PG_SETTINGS = {
+  provider: "EXIMBAY", // 엑심베이
+  paymentMethods: ["paypal", "alipay", "unionpay"], // 지원 결제 수단
+  recommendedByCountry: {
+    cn: "alipay", // 중국
+    hk: "alipay", // 홍콩
+    tw: "alipay", // 대만
+    mo: "alipay", // 마카오
+    default: "paypal",
+  },
+  currency: "USD",
+  timeout: 1200, // 20분 (초 단위)
+};
+```
+
+### 11.4 예약 플로우
+
+```mermaid
+sequenceDiagram
+    participant User as 사용자
+    participant Client as 클라이언트<br/>(Next.js)
+    participant Backend as 백엔드 API
+    participant PG as PG사<br/>(엑심베이)
+
+    User->>Client: 예약 버튼 클릭<br/>(방 상세 페이지)
+    Client->>Backend: POST /api/user/reserve
+    Note over Backend: 예약 생성<br/>(startToReserve, endToReserve)
+    Backend-->>Client: reservationIdentifier 반환
+    Client->>Client: 20분 타이머 시작
+    Client->>Client: /reservation/{id} 이동
+
+    User->>Client: 정보 입력 및 동의
+    Client->>Client: 검증 (이름, 이메일 등)
+    Client->>Client: 결제 페이지로 이동
+
+    User->>Client: /payment/{id} 이동
+    Client->>Backend: GET /api/user/reserve/page/{id}
+    Note over Backend: 상태 검증<br/>(RESERVATION_UNDER_WAY)
+    Backend-->>Client: 예약 정보 반환
+
+    User->>Client: PayPal 결제 버튼 클릭
+    Client->>PG: 결제 요청
+    PG-->>Client: 결제 페이지 리다이렉트
+    User->>PG: 결제 정보 입력
+    PG-->>Client: 결제 완료 콜백
+    Client->>Backend: POST /api/user/reserve/confirm/{id}
+    Backend->>Backend: 예약 상태 업데이트<br/>(RESERVATION_PENDING)
+    Backend-->>Client: 결제 완료
+    Client->>Client: /bookings/{id} 이동
+
+    Note over Client: 20분 타임아웃
+    alt 시간 초과
+        Backend->>Backend: 자동 예약 취소
+        Client-->>User: 예약 만료 메시지
+    end
+```
+
+### 11.5 예약 상태 관리
+
+#### 예약 상태 (Reservation Status)
+
+| 상태                    | 설명                   | 다음 단계        |
+| ----------------------- | ---------------------- | ---------------- |
+| `RESERVATION_UNDER_WAY` | 예약 진행 중 (20분 내) | 결제 또는 취소   |
+| `RESERVATION_PENDING`   | 결제 완료, 승인 대기   | 호스트 승인 대기 |
+| `APPROVED`              | 예약 승인됨            | 예약 확정        |
+| `CANCELLED`             | 예약 취소됨            | -                |
+| `REJECTED`              | 예약 거부됨            | -                |
+
+#### 예약 상태 전환도
+
+```mermaid
+stateDiagram-v2
+    [*] --> RESERVATION_UNDER_WAY: 예약 생성
+    RESERVATION_UNDER_WAY --> RESERVATION_PENDING: 결제 완료
+    RESERVATION_UNDER_WAY --> CANCELLED: 시간 초과 (20분)
+    RESERVATION_UNDER_WAY --> CANCELLED: 사용자 취소
+    RESERVATION_PENDING --> APPROVED: 호스트 승인
+    RESERVATION_PENDING --> REJECTED: 호스트 거부
+    RESERVATION_PENDING --> CANCELLED: 환불 처리
+```
+
+### 11.6 타이머 시스템
+
+#### 클라이언트 타이머 구현
+
+```typescript
+// 한국 시간(KST) 기준 실시간 타이머
+useEffect(() => {
+  if (timeRemaining === null || timeRemaining <= 0 || !endToReserveTime) return;
+
+  const timer = setInterval(() => {
+    // 현재 시간을 한국 시간(KST)으로 변환
+    const now = new Date();
+    const kstTime = new Intl.DateTimeFormat("sv-SE", {
+      timeZone: "Asia/Seoul",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
+    }).format(now);
+
+    const isoKST = kstTime.replace(" ", "T");
+    const remaining = Math.floor(
+      (endToReserveTime.getTime() - new Date(isoKST).getTime()) / 1000
+    );
+    const newTimeRemaining = Math.max(0, remaining);
+
+    if (newTimeRemaining <= 0) {
+      clearInterval(timer);
+      alert("예약 가능 시간이 만료되었습니다.");
+      router.push("/");
+      return;
+    }
+
+    setTimeRemaining(newTimeRemaining);
+  }, 1000);
+
+  return () => clearInterval(timer);
+}, [timeRemaining, endToReserveTime]);
+```
+
+#### 서버 타이머 검증
+
+```typescript
+// 서버에서 받은 endToReserve 시간 검증
+const serverEndTime = new Date(apiData.endToReserve);
+const now = new Date();
+const kstTime = new Intl.DateTimeFormat("sv-SE", {
+  timeZone: "Asia/Seoul",
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit",
+  second: "2-digit",
+  hour12: false,
+}).format(now);
+
+const isoKST = kstTime.replace(" ", "T");
+
+// 현재 한국 시간이 예약 종료 시간을 넘어간 경우 차단
+if (new Date(isoKST) > serverEndTime) {
+  alert("예약 가능 시간이 만료되었습니다.");
+  router.push("/");
+  return;
+}
+```
+
+### 11.7 API 엔드포인트
+
+#### 예약 관련 API
+
+| 메서드   | 엔드포인트                       | 설명                    |
+| -------- | -------------------------------- | ----------------------- |
+| `POST`   | `/api/user/reserve`              | 예약 생성               |
+| `GET`    | `/api/user/reserve/page/{id}`    | 예약 페이지 정보 조회   |
+| `GET`    | `/api/user/reserve/{id}`         | 예약 상세 정보 조회     |
+| `GET`    | `/api/user/reserve`              | 예약 목록 조회 (페이징) |
+| `DELETE` | `/api/user/reserve/{id}`         | 예약 취소               |
+| `POST`   | `/api/user/reserve/confirm/{id}` | 결제 확인               |
+
+#### API 요청 예시
+
+```typescript
+// 예약 생성
+const createReservation = async (
+  roomId: string,
+  checkIn: Date,
+  checkOut: Date
+) => {
+  const { response, data } = await apiPostWithResponse("/api/user/reserve", {
+    identifier: roomId,
+    checkIn: formatDateForAPI(checkIn),
+    checkOut: formatDateForAPI(checkOut),
+    curUnit: "USD",
+    requestTime: getCurrentKST(),
+    languageCode: currentLanguage.code,
+  });
+
+  if (response.ok && data.code === 200) {
+    router.push(`/reservation/${data.data.reservationIdentifier}`);
+  }
+};
+
+// 예약 정보 조회
+const getReservationInfo = async (reservationId: string) => {
+  const response = await apiGet(
+    `/api/user/reserve/page/${reservationId}?languageCode=${languageCode}`
+  );
+
+  if (response.code === 200 && response.data) {
+    return response.data;
+  }
+};
+```
+
+### 11.8 페이지 구조
+
+#### 예약 페이지 (`/reservation/[reservationId]`)
+
+**위치**: `src/app/reservation/[reservationId]/page.tsx`
+
+**주요 기능**:
+
+- ✅ 예약 정보 표시 (방 정보, 날짜, 가격)
+- ✅ 20분 타이머 (실시간 카운트다운)
+- ✅ 사용자 정보 입력 폼 (읽기 전용)
+- ✅ 동의 체크박스 (약관, 개인정보, 제3자 제공)
+- ✅ 결제 페이지로 이동
+- ✅ 예약 취소 기능
+
+**타이머 구현**:
+
+- 서버에서 받은 `endToReserve` 시간 기준
+- 한국 시간(KST)으로 실시간 계산
+- 1초마다 업데이트
+- 만료 시 자동 홈 리다이렉트
+
+#### 결제 페이지 (`/payment/[reservationId]`)
+
+**위치**: `src/app/payment/[reservationId]/page.tsx`
+
+**주요 기능**:
+
+- ✅ 예약 정보 표시
+- ✅ 20분 타이머 유지
+- ⚠️ PayPal 결제 통합 (구현 예정)
+- ✅ 보안 결제 안내
+- ✅ 결제 완료 후 북킹 페이지로 이동
+
+**결제 통합 (JDK 방식)**:
+
+```typescript
+const handlePayment = async () => {
+  // 1. 서버에 결제 요청 (POST /api/payment/create)
+  const response = await apiPost("/api/payment/create", {
+    reservationId: params.reservationId,
+    amount: paymentData.totalPrice,
+    currency: "USD",
+  });
+
+  // 2. 결제창 URL 받아서 팝업 또는 리다이렉트
+  if (response.code === 200) {
+    // 팝업 방식
+    window.open(response.data.paymentUrl, "payment", "width=500,height=700");
+
+    // 또는 리다이렉트 방식
+    // window.location.href = response.data.paymentUrl
+  }
+
+  // 엑심베이 결제창에서 사용자가 결제 수단 선택 (PayPal, Alipay, UnionPay 등)
+};
+```
+
+#### 북킹 페이지 (`/bookings`)
+
+**위치**: `src/app/bookings/page.tsx`
+
+**주요 기능**:
+
+- ✅ 예약 목록 조회 (페이징)
+- ✅ 예약 상태별 필터링
+- ✅ 상태별 색상 및 아이콘 표시
+- ✅ 예약 상세 페이지로 이동
+
+**예약 상태 표시**:
+
+- `RESERVATION_UNDER_WAY`: 주황색 배경 + 시계 아이콘
+- `RESERVATION_PENDING`: 주황색 배경 + 시계 아이콘
+- `APPROVED`: 녹색 배경 + 체크 아이콘
+- `CANCELLED`: 회색 배경 + X 아이콘
+- `REJECTED`: 빨간색 배경 + 경고 아이콘
+
+### 11.9 예약 데이터 구조
+
+#### Reservation API Response
+
+```typescript
+interface ReservationAPIResponse {
+  reservationIdentifier: string; // 예약 고유 ID
+  checkInDate: string; // 체크인 날짜
+  checkOutDate: string; // 체크아웃 날짜
+  totalNights: number; // 숙박 일수
+  roomDailyPrice: number; // 1박 가격
+  totalPrice: number; // 총 가격
+  startToReserve: string; // 예약 시작 시간
+  endToReserve: string; // 예약 종료 시간 (20분 후)
+  reservationStatus: string; // 예약 상태
+  curUnit: string; // 통화 단위
+  roomName: string; // 방 이름
+  roomIdentifier: string; // 방 ID
+  residenceName: string; // 숙소 이름
+  residenceAddress: string; // 숙소 주소
+  residenceLatitude: number; // 위도
+  residenceLongitude: number; // 경도
+  roomImageUrl: string; // 방 이미지
+  roomFacilities: RoomFacility[]; // 시설 정보
+  roomRules: string; // 이용 규칙
+  userFirstName: string; // 사용자 이름
+  userLastName: string; // 사용자 성
+  userEmail: string; // 이메일
+  userPhoneNumber: string; // 전화번호
+  userCountryCode: string; // 국가 코드
+}
+```
+
+### 11.10 에러 처리
+
+#### 예약 생성 에러
+
+```typescript
+// 에러 코드별 처리
+switch (response.code) {
+  case 40500:
+    alert("존재하지 않는 방입니다");
+    router.push("/");
+    break;
+  case 40103:
+    alert("로그인하세요");
+    router.push("/signin");
+    break;
+  default:
+    alert("예약 생성 중 오류가 발생했습니다");
+}
+```
+
+#### 예약 취소 로직
+
+```typescript
+const handleCancelReservation = async () => {
+  const confirmed = window.confirm("예약을 취소하시겠습니까?");
+  if (!confirmed) return;
+
+  try {
+    const response = await apiDelete(`/api/user/reserve/${reservationId}`);
+
+    if (response.code === 200) {
+      alert("예약이 취소되었습니다");
+      router.push("/");
+    } else if (response.code === 40502) {
+      alert("해당 예약은 취소가 불가능합니다");
+    }
+  } catch (error) {
+    alert("예약 취소 중 오류가 발생했습니다");
+  }
+};
+```
+
+### 11.11 보안 고려사항
+
+#### 시간 기반 검증
+
+- ✅ 클라이언트 타이머: UX 개선용
+- ✅ 서버 검증: 필수 보안 검증
+- ✅ 서버 시간 기준: 중앙 시간 기준
+- ✅ 한국 시간(KST): 통일된 시간대 사용
+
+#### 결제 보안
+
+- ✅ SSL/TLS: 암호화 통신
+- ✅ HTTPOnly 쿠키: 토큰 보안
+- ✅ CSRF 방지: SameSite 쿠키
+- ✅ XSS 방지: React 기본 방어
+
+### 11.12 현재 구현 상태
+
+#### ✅ 완료된 기능
+
+1. **예약 생성**
+
+   - 방 상세 페이지에서 예약 버튼 클릭
+   - 한국 시간 기준 requestTime 전송
+   - 예약 ID 생성 및 리다이렉트
+
+2. **예약 페이지**
+
+   - 예약 정보 표시
+   - 20분 타이머 (실시간 업데이트)
+   - 사용자 정보 자동 입력
+   - 동의 체크박스
+   - 예약 취소 기능
+
+3. **결제 페이지 (UI 완료)**
+
+   - 예약 정보 표시
+   - 20분 타이머 유지
+   - PayPal 버튼 UI
+   - 보안 결제 안내
+
+4. **북킹 페이지**
+   - 예약 목록 조회 (페이징)
+   - 상태별 필터링
+   - 예약 상세 페이지 이동
+
+#### ⚠️ 진행 중인 기능
+
+1. **PayPal 결제 통합**
+
+   - Portone MCP Server 연동
+   - 엑심베이 PG 연동
+   - 결제 완료 콜백 처리
+   - 예약 상태 업데이트
+
+2. **결제 완료 처리**
+   - 결제 승인 API 호출
+   - 예약 상태 변경 (`RESERVATION_PENDING`)
+   - 결제 완료 페이지 이동
+
+#### 📝 향후 계획
+
+1. **결제 방법 확장**
+
+   - 신용카드 결제
+   - 가상계좌 결제
+   - 모바일 결제
+
+2. **예약 관리 기능**
+
+   - 예약 변경
+   - 부분 취소
+   - 환불 처리
+
+3. **알림 시스템**
+   - 이메일 알림
+   - SMS 알림
+   - 푸시 알림
 
 ---
 
@@ -1431,4 +1901,5 @@ Vercel 대시보드에서 다음 환경 변수 설정:
 
 **문서 작성일**: 2025년 1월  
 **최종 수정일**: 2025년 1월  
-**문서 버전**: 1.0.0
+**문서 버전**: 1.1.0  
+**예약 및 결제 시스템 문서**: v1.0
