@@ -333,6 +333,45 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
     fetchRelatedRooms()
   }, [roomData, params.residenceId, params.roomId, currentLanguage, currentRoomPage])
 
+  // 네이버 지도 초기화 - roomData가 로드된 후 실행
+  useEffect(() => {
+    if (roomData && (window as any).naver) {
+      const naver = (window as any).naver;
+
+      // 모바일 지도
+      const mobileMapElement = document.getElementById('map');
+      if (mobileMapElement) {
+        const mobileMap = new naver.maps.Map('map', {
+          center: new naver.maps.LatLng(roomData.residenceLatitude, roomData.residenceLongitude),
+          zoom: 15,
+          mapTypeControl: false,
+          zoomControl: false
+        });
+
+        new naver.maps.Marker({
+          position: new naver.maps.LatLng(roomData.residenceLatitude, roomData.residenceLongitude),
+          map: mobileMap
+        });
+      }
+
+      // 데스크톱 지도
+      const desktopMapElement = document.getElementById('map-desktop');
+      if (desktopMapElement) {
+        const desktopMap = new naver.maps.Map('map-desktop', {
+          center: new naver.maps.LatLng(roomData.residenceLatitude, roomData.residenceLongitude),
+          zoom: 15,
+          mapTypeControl: false,
+          zoomControl: false
+        });
+
+        new naver.maps.Marker({
+          position: new naver.maps.LatLng(roomData.residenceLatitude, roomData.residenceLongitude),
+          map: desktopMap
+        });
+      }
+    }
+  }, [roomData])
+
   // 체크인 날짜 필터링 함수 (체크인 전용)
   const filterCheckInDates = (date: Date) => {
     if (!roomData?.reservedDates) return true
@@ -1474,43 +1513,6 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
       <Script
         src={`https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${process.env.NEXT_PUBLIC_NAVER_CLOUD_CLIENT_ID}`}
         strategy="afterInteractive"
-        onLoad={() => {
-          if (roomData && (window as any).naver) {
-            const naver = (window as any).naver;
-            
-            // 모바일 지도
-            const mobileMapElement = document.getElementById('map');
-            if (mobileMapElement) {
-              const mobileMap = new naver.maps.Map('map', {
-                center: new naver.maps.LatLng(roomData.residenceLatitude, roomData.residenceLongitude),
-                zoom: 15,
-                mapTypeControl: false,
-                zoomControl: false
-              });
-
-              new naver.maps.Marker({
-                position: new naver.maps.LatLng(roomData.residenceLatitude, roomData.residenceLongitude),
-                map: mobileMap
-              });
-            }
-
-            // 데스크톱 지도
-            const desktopMapElement = document.getElementById('map-desktop');
-            if (desktopMapElement) {
-              const desktopMap = new naver.maps.Map('map-desktop', {
-                center: new naver.maps.LatLng(roomData.residenceLatitude, roomData.residenceLongitude),
-                zoom: 15,
-                mapTypeControl: false,
-                zoomControl: false
-              });
-
-              new naver.maps.Marker({
-                position: new naver.maps.LatLng(roomData.residenceLatitude, roomData.residenceLongitude),
-                map: desktopMap
-              });
-            }
-          }
-        }}
       />
     </div>
   )
