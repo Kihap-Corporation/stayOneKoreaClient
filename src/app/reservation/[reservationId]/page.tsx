@@ -13,6 +13,9 @@ import { Wifi, Waves, ParkingCircle, Wind, Flame, Radio, ChevronRight, Info, Clo
 import { apiGet, apiDelete, apiPost } from "@/lib/api"
 import { PhoneInput } from 'react-international-phone'
 import 'react-international-phone/style.css'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { apiPut } from "@/lib/api"
+import { toast } from "sonner"
 
 // Facility icon mapping
 const facilityIcons: Record<string, React.ReactNode> = {
@@ -23,6 +26,114 @@ const facilityIcons: Record<string, React.ReactNode> = {
   smokeAlarm: <Flame className="h-5 w-5" />,
   carbonMonoxideAlarm: <Radio className="h-5 w-5" />
 }
+
+// Country list for select dropdown (English only as requested)
+const countries = [
+  { code: "KR", name: "South Korea", flag: "🇰🇷" },
+  { code: "US", name: "United States", flag: "🇺🇸" },
+  { code: "JP", name: "Japan", flag: "🇯🇵" },
+  { code: "CN", name: "China", flag: "🇨🇳" },
+  { code: "GB", name: "United Kingdom", flag: "🇬🇧" },
+  { code: "DE", name: "Germany", flag: "🇩🇪" },
+  { code: "FR", name: "France", flag: "🇫🇷" },
+  { code: "IT", name: "Italy", flag: "🇮🇹" },
+  { code: "ES", name: "Spain", flag: "🇪🇸" },
+  { code: "AU", name: "Australia", flag: "🇦🇺" },
+  { code: "CA", name: "Canada", flag: "🇨🇦" },
+  { code: "BR", name: "Brazil", flag: "🇧🇷" },
+  { code: "IN", name: "India", flag: "🇮🇳" },
+  { code: "RU", name: "Russia", flag: "🇷🇺" },
+  { code: "MX", name: "Mexico", flag: "🇲🇽" },
+  { code: "SG", name: "Singapore", flag: "🇸🇬" },
+  { code: "TH", name: "Thailand", flag: "🇹🇭" },
+  { code: "VN", name: "Vietnam", flag: "🇻🇳" },
+  { code: "MY", name: "Malaysia", flag: "🇲🇾" },
+  { code: "PH", name: "Philippines", flag: "🇵🇭" },
+  { code: "ID", name: "Indonesia", flag: "🇮🇩" },
+  { code: "TW", name: "Taiwan", flag: "🇹🇼" },
+  { code: "HK", name: "Hong Kong", flag: "🇭🇰" },
+  { code: "NZ", name: "New Zealand", flag: "🇳🇿" },
+  { code: "NL", name: "Netherlands", flag: "🇳🇱" },
+  { code: "BE", name: "Belgium", flag: "🇧🇪" },
+  { code: "CH", name: "Switzerland", flag: "🇨🇭" },
+  { code: "AT", name: "Austria", flag: "🇦🇹" },
+  { code: "SE", name: "Sweden", flag: "🇸🇪" },
+  { code: "NO", name: "Norway", flag: "🇳🇴" },
+  { code: "DK", name: "Denmark", flag: "🇩🇰" },
+  { code: "FI", name: "Finland", flag: "🇫🇮" },
+  { code: "PL", name: "Poland", flag: "🇵🇱" },
+  { code: "CZ", name: "Czech Republic", flag: "🇨🇿" },
+  { code: "HU", name: "Hungary", flag: "🇭🇺" },
+  { code: "GR", name: "Greece", flag: "🇬🇷" },
+  { code: "PT", name: "Portugal", flag: "🇵🇹" },
+  { code: "IE", name: "Ireland", flag: "🇮🇪" },
+  { code: "IL", name: "Israel", flag: "🇮🇱" },
+  { code: "TR", name: "Turkey", flag: "🇹🇷" },
+  { code: "SA", name: "Saudi Arabia", flag: "🇸🇦" },
+  { code: "AE", name: "United Arab Emirates", flag: "🇦🇪" },
+  { code: "QA", name: "Qatar", flag: "🇶🇦" },
+  { code: "EG", name: "Egypt", flag: "🇪🇬" },
+  { code: "ZA", name: "South Africa", flag: "🇿🇦" },
+  { code: "NG", name: "Nigeria", flag: "🇳🇬" },
+  { code: "KE", name: "Kenya", flag: "🇰🇪" },
+  { code: "GH", name: "Ghana", flag: "🇬🇭" },
+  { code: "AR", name: "Argentina", flag: "🇦🇷" },
+  { code: "CL", name: "Chile", flag: "🇨🇱" },
+  { code: "CO", name: "Colombia", flag: "🇨🇴" },
+  { code: "PE", name: "Peru", flag: "🇵🇪" },
+  { code: "VE", name: "Venezuela", flag: "🇻🇪" },
+  { code: "UY", name: "Uruguay", flag: "🇺🇾" },
+  { code: "PY", name: "Paraguay", flag: "🇵🇾" },
+  { code: "BO", name: "Bolivia", flag: "🇧🇴" },
+  { code: "EC", name: "Ecuador", flag: "🇪🇨" },
+  { code: "GY", name: "Guyana", flag: "🇬🇾" },
+  { code: "SR", name: "Suriname", flag: "🇸🇷" },
+  { code: "TT", name: "Trinidad and Tobago", flag: "🇹🇹" },
+  { code: "JM", name: "Jamaica", flag: "🇯🇲" },
+  { code: "BS", name: "Bahamas", flag: "🇧🇸" },
+  { code: "BB", name: "Barbados", flag: "🇧🇧" },
+  { code: "LC", name: "Saint Lucia", flag: "🇱🇨" },
+  { code: "VC", name: "Saint Vincent and the Grenadines", flag: "🇻🇨" },
+  { code: "GD", name: "Grenada", flag: "🇬🇩" },
+  { code: "AG", name: "Antigua and Barbuda", flag: "🇦🇬" },
+  { code: "KN", name: "Saint Kitts and Nevis", flag: "🇰🇳" },
+  { code: "DM", name: "Dominica", flag: "🇩🇲" },
+  { code: "MS", name: "Montserrat", flag: "🇲🇸" },
+  { code: "TC", name: "Turks and Caicos Islands", flag: "🇹🇨" },
+  { code: "KY", name: "Cayman Islands", flag: "🇰🇾" },
+  { code: "VG", name: "British Virgin Islands", flag: "🇻🇬" },
+  { code: "VI", name: "U.S. Virgin Islands", flag: "🇻🇮" },
+  { code: "PR", name: "Puerto Rico", flag: "🇵🇷" },
+  { code: "CU", name: "Cuba", flag: "🇨🇺" },
+  { code: "HT", name: "Haiti", flag: "🇭🇹" },
+  { code: "DO", name: "Dominican Republic", flag: "🇩🇴" },
+  { code: "PA", name: "Panama", flag: "🇵🇦" },
+  { code: "CR", name: "Costa Rica", flag: "🇨🇷" },
+  { code: "NI", name: "Nicaragua", flag: "🇳🇮" },
+  { code: "HN", name: "Honduras", flag: "🇭🇳" },
+  { code: "GT", name: "Guatemala", flag: "🇬🇹" },
+  { code: "BZ", name: "Belize", flag: "🇧🇿" },
+  { code: "SV", name: "El Salvador", flag: "🇸🇻" },
+  { code: "MA", name: "Morocco", flag: "🇲🇦" },
+  { code: "DZ", name: "Algeria", flag: "🇩🇿" },
+  { code: "TN", name: "Tunisia", flag: "🇹🇳" },
+  { code: "LY", name: "Libya", flag: "🇱🇾" },
+  { code: "JO", name: "Jordan", flag: "🇯🇴" },
+  { code: "LB", name: "Lebanon", flag: "🇱🇧" },
+  { code: "SY", name: "Syria", flag: "🇸🇾" },
+  { code: "IQ", name: "Iraq", flag: "🇮🇶" },
+  { code: "IR", name: "Iran", flag: "🇮🇷" },
+  { code: "AF", name: "Afghanistan", flag: "🇦🇫" },
+  { code: "PK", name: "Pakistan", flag: "🇵🇰" },
+  { code: "BD", name: "Bangladesh", flag: "🇧🇩" },
+  { code: "NP", name: "Nepal", flag: "🇳🇵" },
+  { code: "LK", name: "Sri Lanka", flag: "🇱🇰" },
+  { code: "MM", name: "Myanmar", flag: "🇲🇲" },
+  { code: "KH", name: "Cambodia", flag: "🇰🇭" },
+  { code: "LA", name: "Laos", flag: "🇱🇦" },
+  { code: "MN", name: "Mongolia", flag: "🇲🇳" },
+  { code: "KP", name: "North Korea", flag: "🇰🇵" }
+]
 
 interface RoomFacility {
   facilityType: string
@@ -91,13 +202,13 @@ export default function ReservationPage() {
   const [timeRemaining, setTimeRemaining] = useState<number | null>(null)
   const [endToReserveTime, setEndToReserveTime] = useState<Date | null>(null)
   
-  // Form state
+  // Form state - editable
   const [firstName, setFirstName] = useState("")
   const [lastName, setLastName] = useState("")
   const [email, setEmail] = useState("")
-  const [country, setCountry] = useState("")
+  const [countryCode, setCountryCode] = useState("KR")
   const [phoneNumber, setPhoneNumber] = useState("")
-  const [countryCode, setCountryCode] = useState("+82")
+  const [isSubmitting, setIsSubmitting] = useState(false)
   
   // Consent checkboxes (사용자 상호작용 가능)
   const [consentAll, setConsentAll] = useState(false)
@@ -331,11 +442,82 @@ export default function ReservationPage() {
   }
 
 
-  const handleSubmit = () => {
+  // API 요청 함수 - 사용자 정보 업데이트
+  const updateUserReservationInfo = async () => {
+    try {
+      setIsSubmitting(true)
+
+      // PhoneInput에서 받아온 전화번호를 처리
+      // PhoneInput은 국제 번호 형식으로 값을 반환하므로 숫자만 추출
+      const processedPhoneNumber = phoneNumber.replace(/\D/g, '') // 숫자만 추출
+      const processedCountryCode = countryCode
+
+      const requestBody = {
+        reservationIdentifier: params.reservationId,
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
+        phoneNumber: processedPhoneNumber,
+        countryCode: processedCountryCode,
+        email: email.trim()
+      }
+
+      const response = await apiPut('/api/user/reserve', requestBody)
+
+      // apiPut은 ApiResponse 형식으로 반환하므로 data.code로 접근
+      const responseCode = response.code
+      const responseMessage = response.message
+
+      if (responseCode >= 200 && responseCode < 300) {
+        return true
+      } else if (responseCode >= 400 && responseCode < 500) {
+        toast.error(responseMessage || messages?.reservation?.invalidRequest || 'Invalid request. Please check your information.')
+        return false
+      } else if (responseCode >= 500) {
+        toast.error(responseMessage || messages?.reservation?.serverError || 'Server error occurred. Please try again.')
+        return false
+      } else {
+        toast.error(responseMessage || messages?.reservation?.updateError || 'Failed to update information')
+        return false
+      }
+    } catch (error) {
+      toast.error(messages?.reservation?.updateError || 'Failed to update information')
+      return false
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const handleSubmit = async () => {
     // 동의 체크박스 검증
     if (!consentAll || !consentTerms || !consentPrivacy || !consentThirdParty) {
-      alert(messages?.reservation?.consentRequired || "모든 동의사항에 체크해주세요.")
+      toast.error(messages?.reservation?.consentRequired || "모든 동의사항에 체크해주세요.")
       return
+    }
+
+    // 필수 필드 검증
+    if (!firstName.trim() || !lastName.trim() || !email.trim() || !phoneNumber.trim()) {
+      toast.error(messages?.reservation?.requiredFields || "모든 필수 필드를 입력해주세요.")
+      return
+    }
+
+    // 이메일 형식 검증
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) {
+      toast.error(messages?.reservation?.invalidEmail || "유효한 이메일 주소를 입력해주세요.")
+      return
+    }
+
+    // 전화번호 형식 검증 (최소 8자리 이상)
+    const phoneDigits = phoneNumber.replace(/\D/g, '')
+    if (phoneDigits.length < 8) {
+      toast.error(messages?.reservation?.invalidPhone || "유효한 전화번호를 입력해주세요.")
+      return
+    }
+
+    // 사용자 정보 업데이트
+    const updateSuccess = await updateUserReservationInfo()
+    if (!updateSuccess) {
+      return // 업데이트 실패 시 다음 단계로 진행하지 않음
     }
 
     // 검증 통과 시 결제 페이지로 이동
@@ -716,9 +898,9 @@ export default function ReservationPage() {
                     </label>
                     <Input
                       value={firstName}
-                      disabled
+                      onChange={(e) => setFirstName(e.target.value)}
                       placeholder={messages?.reservation?.firstNamePlaceholder || "First name"}
-                      className="rounded-xl bg-gray-50 cursor-not-allowed"
+                      className="rounded-xl"
                     />
                   </div>
                   <div className="flex-1">
@@ -727,9 +909,9 @@ export default function ReservationPage() {
                     </label>
                     <Input
                       value={lastName}
-                      disabled
+                      onChange={(e) => setLastName(e.target.value)}
                       placeholder={messages?.reservation?.lastNamePlaceholder || "Last name"}
-                      className="rounded-xl bg-gray-50 cursor-not-allowed"
+                      className="rounded-xl"
                     />
                   </div>
                 </div>
@@ -743,25 +925,34 @@ export default function ReservationPage() {
                     <Input
                       type="email"
                       value={email}
-                      disabled
+                      onChange={(e) => setEmail(e.target.value)}
                       placeholder={messages?.reservation?.emailPlaceholder || "email@email.com"}
-                      className="rounded-xl bg-gray-50 cursor-not-allowed"
+                      className="rounded-xl"
                     />
-                    <div className="flex gap-1 mt-2 text-xs text-[rgba(10,15,41,0.25)]">
-                      <Info className="h-4 w-4 shrink-0" />
-                      <p className="tracking-[0px]">{messages?.reservation?.emailHelper || "Please make sure your email address is correct."}</p>
+                    <div className="flex gap-1 mt-2 text-xs text-[#e6483d]">
+                      <Info className="h-4 w-4 shrink-0 text-[#e6483d]" />
+                      <p className="tracking-[0px]">{messages?.reservation?.emailHelper || "Please make sure your email address is correct. It will be used to send your booking confirmation."}</p>
                     </div>
                   </div>
                   <div className="flex-1">
                     <label className="text-sm font-medium mb-2 block tracking-[-0.1px]">
-                      {messages?.reservation?.countryRegion || "Country/region"} <span className="text-[#e6483d]">*</span>
+                      Country/region <span className="text-[#e6483d]">*</span>
                     </label>
-                    <Input
-                      value={countryCode}
-                      disabled
-                      placeholder={messages?.reservation?.selectPlaceholder || "Select..."}
-                      className="rounded-xl bg-gray-50 cursor-not-allowed"
-                    />
+                    <Select value={countryCode} onValueChange={setCountryCode}>
+                      <SelectTrigger className="rounded-xl">
+                        <SelectValue placeholder="Select..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {countries.map((country) => (
+                          <SelectItem key={country.code} value={country.code}>
+                            <div className="flex items-center gap-2">
+                              <span>{country.flag}</span>
+                              <span>{country.name}</span>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
 
@@ -774,8 +965,14 @@ export default function ReservationPage() {
                     <PhoneInput
                       defaultCountry="kr"
                       value={phoneNumber}
-                      disabled
-                      inputClassName={`flex-1 rounded-lg ${'border-gray-300'}`}
+                      onChange={(phone, meta) => {
+                        setPhoneNumber(phone)
+                        // meta.country.iso2가 있으면 countryCode도 업데이트
+                        if (meta.country && meta.country.iso2) {
+                          setCountryCode(meta.country.iso2.toUpperCase())
+                        }
+                      }}
+                      inputClassName="flex-1 rounded-lg border-gray-300"
                       inputProps={{
                         id: "phoneNumber",
                         required: true,
@@ -869,9 +1066,13 @@ export default function ReservationPage() {
                 <div className="flex flex-col gap-3">
                   <Button
                     onClick={handleSubmit}
-                    className="w-full bg-[#e0004d] hover:bg-[#C2185B] text-white rounded-full py-3"
+                    disabled={isSubmitting}
+                    className="w-full bg-[#e0004d] hover:bg-[#C2185B] text-white rounded-full py-3 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {messages?.reservation?.nextPayment || "Next: Payment information"}
+                    {isSubmitting
+                      ? (messages?.common?.loading || "Processing...")
+                      : (messages?.reservation?.nextPayment || "Next: Payment information")
+                    }
                   </Button>
                   <Button
                     onClick={handleCancel}

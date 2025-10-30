@@ -198,7 +198,8 @@ header: {
     delete: "Delete",
     edit: "Edit",
     close: "Close",
-    noImage: "No image"
+    noImage: "No image",
+    accessDenied: "You do not have access to this page"
   },
   roomDetail: {
     schedule: "Schedule",
@@ -285,7 +286,14 @@ header: {
     invalidInput: "Invalid input provided",
     loadError: "Failed to load reservation information",
     reservationNotAvailable: "Reservation is not available",
-    consentRequired: "Please check all consent items."
+    consentRequired: "Please check all consent items.",
+    updateSuccess: "Information updated successfully",
+    invalidRequest: "Invalid request. Please check your information.",
+    serverError: "Server error occurred. Please try again.",
+    updateError: "Failed to update information",
+    requiredFields: "Please fill in all required fields.",
+    invalidEmail: "Please enter a valid email address.",
+    invalidPhone: "Please enter a valid phone number."
   },
   bookings: {
     title: "Bookings",
@@ -307,7 +315,21 @@ header: {
     clickToComplete: "Click the button above to proceed with payment and complete your booking.",
     paypalProcessing: "Processing PayPal payment...",
     ourPrice: "Our price",
-    discount: "Discount"
+    discount: "Discount",
+    processing: "Processing payment...",
+    success: "Payment successful!",
+    failed: "Payment failed",
+    cancelled: "Payment cancelled",
+    verifying: "Verifying payment...",
+    verificationFailed: "Payment verification failed",
+    redirecting: "Redirecting to booking confirmation...",
+    error: "An error occurred during payment"
+  },
+  bookingResult: {
+    title: "Your Stay is Almost Ready",
+    subtitle1: "Your host is reviewing your booking request.",
+    subtitle2: "You'll receive a confirmation within 24 hours.",
+    viewDetails: "View details in My Bookings"
   },
   like: {
     title: "Saved",
