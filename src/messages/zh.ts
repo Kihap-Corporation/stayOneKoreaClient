@@ -321,6 +321,7 @@ header: {
     failed: "付款失败",
     cancelled: "付款已取消",
     verifying: "正在验证付款...",
+    pleaseWait: "请稍候...",
     verificationFailed: "付款验证失败",
     redirecting: "正在跳转到预订确认页面...",
     error: "付款过程中发生错误"
