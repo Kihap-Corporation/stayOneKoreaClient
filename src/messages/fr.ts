@@ -321,6 +321,7 @@ header: {
     failed: "Le paiement a échoué",
     cancelled: "Paiement annulé",
     verifying: "Vérification du paiement...",
+    pleaseWait: "Veuillez patienter...",
     verificationFailed: "La vérification du paiement a échoué",
     redirecting: "Redirection vers la confirmation de réservation...",
     error: "Une erreur s'est produite lors du paiement"
