@@ -280,6 +280,7 @@ export default function PaymentPage() {
       // 고유한 paymentId 생성 (reservationIdentifier + 한국 시간)
       const randomPaymentId = generateUniquePaymentId(reservationData.reservationIdentifier)
       const productsLink = process.env.NEXT_PUBLIC_PORTONE_PRODUCTS_LINK!
+      const redirectUrl = process.env.NEXT_PUBLIC_PORTONE_REDIRECT_URL!
 
       // 포트원 결제창 호출 (+결제페이지 띄워줌)
       const response = await PortOne.requestPayment({
@@ -297,6 +298,10 @@ export default function PaymentPage() {
           email: reservationData.userEmail,
           phoneNumber: reservationData.userPhoneNumber,
         },
+        windowType: {
+          mobile: "REDIRECTION"
+        },
+        redirectUrl: redirectUrl + "/payment/" + reservationData.reservationIdentifier,
         customData: {
           reservationIdentifier: reservationData.reservationIdentifier,
           paymentId: randomPaymentId,
