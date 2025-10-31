@@ -322,6 +322,7 @@ header: {
     cancelled: "Payment cancelled",
     verifying: "Verifying payment...",
     pleaseWait: "Please wait...",
+    processingMessage: "Payment processing may take up to 5 minutes. Please wait.",
     verificationFailed: "Payment verification failed",
     redirecting: "Redirecting to booking confirmation...",
     error: "An error occurred during payment"
