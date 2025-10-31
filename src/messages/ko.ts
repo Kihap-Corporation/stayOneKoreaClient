@@ -331,6 +331,7 @@ header: {
     cancelled: "결제가 취소되었습니다",
     verifying: "결제 정보를 확인하는 중...",
     pleaseWait: "잠시만 기다려주세요...",
+    processingMessage: "결제 처리가 최대 5분 정도 걸릴 수 있습니다. 잠시만 기다려주세요.",
     verificationFailed: "결제 확인에 실패했습니다",
     redirecting: "예약 확인 페이지로 이동합니다...",
     error: "결제 중 오류가 발생했습니다"

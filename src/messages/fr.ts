@@ -322,6 +322,7 @@ header: {
     cancelled: "Paiement annulé",
     verifying: "Vérification du paiement...",
     pleaseWait: "Veuillez patienter...",
+    processingMessage: "Le traitement du paiement peut prendre jusqu'à 5 minutes. Veuillez patienter.",
     verificationFailed: "La vérification du paiement a échoué",
     redirecting: "Redirection vers la confirmation de réservation...",
     error: "Une erreur s'est produite lors du paiement"

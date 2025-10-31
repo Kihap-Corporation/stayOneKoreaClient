@@ -305,7 +305,7 @@ export default function PaymentPage() {
         windowType: {
           mobile: "REDIRECTION"
         },
-        redirectUrl: redirectUrl + "/payment/" + reservationData.reservationIdentifier,
+        redirectUrl: redirectUrl + `/payment/processing/${reservationData.reservationIdentifier}?paymentId=${randomPaymentId}`,
         customData: {
           reservationIdentifier: reservationData.reservationIdentifier,
           paymentId: randomPaymentId,
@@ -339,31 +339,15 @@ export default function PaymentPage() {
         return
       }
       
-      // 결제 성공 - 서버에서 검증
-      setVerifyingPayment(true)
-      toast.info(messages?.payment?.verifying || "결제 정보를 확인하는 중...")
-
-      // response가 성공했다면 paymentId가 존재함
+      // 결제 실패처리
       if (!response?.paymentId) {
-        setVerifyingPayment(false)
         toast.error(messages?.payment?.verificationFailed || "결제 확인에 실패했습니다")
         return
       }
 
-      const verifyResponse = await apiPost('/api/user/payment/complete', {
-        paymentId: response.paymentId,
-        reservationId: reservationData.reservationIdentifier
-      })
-      
-      if (verifyResponse.code === 200) {
-        setVerifyingPayment(false)
-        toast.success(messages?.payment?.success || "결제가 완료되었습니다!")
-
-        router.push(`/payment/result/${reservationData.reservationIdentifier}`)
-      } else {
-        setVerifyingPayment(false)
-        toast.error(messages?.payment?.verificationFailed || "결제 확인에 실패했습니다")
-      }
+      // 결제 성공 - 결제중 페이지로 이동 (paymentId 전달)
+      // 모바일은 redirectUrl을 통해 자동으로 이동하고, 데스크톱은 여기서 이동
+      router.push(`/payment/processing/${reservationData.reservationIdentifier}?paymentId=${response.paymentId}`)
       
     } catch (error) {
       setVerifyingPayment(false)
