@@ -56,7 +56,7 @@ header: {
       searchRequirements: {
         selectLocation: "请选择地点",
         selectDates: "请选择日期",
-        minimumStay: "请至少选择3晚"
+        minimumStay: "请至少选择1晚"
       }
     },
     features: {
@@ -185,7 +185,7 @@ header: {
     validation: {
       selectLocation: "请从 Algolia 搜索中选择位置",
       selectDates: "请选择入住和退房日期",
-      minStay: "最少住宿 3 天"
+      minStay: "最少住宿 1 天"
     }
   },
   common: {

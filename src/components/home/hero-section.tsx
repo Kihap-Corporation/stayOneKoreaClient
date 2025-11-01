@@ -86,7 +86,7 @@ export function HeroSection() {
 
   // Validation
   const isSearchValid = () => {
-    return selectedLocationData && checkIn && checkOut && nights >= 3
+    return selectedLocationData && checkIn && checkOut && nights >= 1
   }
 
   // Get validation message
@@ -97,8 +97,8 @@ export function HeroSection() {
     if (!checkIn || !checkOut) {
       return messages?.home?.hero?.searchRequirements?.selectDates || "Please select dates"
     }
-    if (nights < 3) {
-      return messages?.home?.hero?.searchRequirements?.minimumStay || "Please select at least 3 nights"
+    if (nights < 1) {
+      return messages?.home?.hero?.searchRequirements?.minimumStay || "Please select at least 1 night"
     }
     return null
   }
@@ -129,8 +129,8 @@ export function HeroSection() {
     }
 
     // Validate minimum stay
-    if (nights < 3) {
-      alert(messages?.searchResult?.validation?.minStay || "Minimum stay is 3 days")
+    if (nights < 1) {
+      alert(messages?.searchResult?.validation?.minStay || "Minimum stay is 1 day")
       return
     }
 

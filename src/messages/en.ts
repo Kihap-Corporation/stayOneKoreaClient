@@ -56,7 +56,7 @@ header: {
       searchRequirements: {
         selectLocation: "Please select a location",
         selectDates: "Please select dates",
-        minimumStay: "Please select at least 3 nights"
+        minimumStay: "Please select at least 1 night"
       }
     },
     features: {
@@ -185,7 +185,7 @@ header: {
     validation: {
       selectLocation: "Please select a location from Algolia search",
       selectDates: "Please select check-in and check-out dates",
-      minStay: "Minimum stay is 3 days"
+      minStay: "Minimum stay is 1 day"
     }
   },
   common: {

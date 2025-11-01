@@ -56,7 +56,7 @@ header: {
       searchRequirements: {
         selectLocation: "위치를 선택해주세요",
         selectDates: "날짜를 선택해주세요",
-        minimumStay: "최소 3박 이상 선택해주세요"
+        minimumStay: "최소 1박 이상 선택해주세요"
       }
     },
     features: {
@@ -185,7 +185,7 @@ header: {
     validation: {
       selectLocation: "알고리아 검색에서 위치를 선택해주세요",
       selectDates: "체크인/체크아웃 날짜를 선택해주세요",
-      minStay: "최소 3일 이상 숙박해야 합니다"
+      minStay: "최소 1일 이상 숙박해야 합니다"
     }
   },
   common: {
