@@ -362,10 +362,10 @@ export function BookingSidebar({
   }
 
   return (
-    <div className="sticky top-24 space-y-6">
+    <div className="sticky top-24 space-y-6 overflow-visible">
       {/* 날짜 및 인원 선택 필드 - Figma 디자인 기반 */}
-      <div className="rounded-2xl bg-white border border-[#dee0e3] p-4 shadow-[0px_18px_24px_-5px_rgba(20,21,26,0.1),0px_8px_8px_-5px_rgba(20,21,26,0.05)]">
-        <div className="flex flex-col gap-4" ref={calendarRef}>
+      <div className="rounded-2xl bg-white border border-[#dee0e3] p-4 shadow-[0px_18px_24px_-5px_rgba(20,21,26,0.1),0px_8px_8px_-5px_rgba(20,21,26,0.05)] overflow-visible">
+        <div className="flex flex-col gap-4 overflow-visible" ref={calendarRef}>
           {/* Schedule Label */}
           <label className="text-[14px] font-medium leading-[20px] tracking-[-0.1px] text-[#14151a]">
             {messages?.roomDetail?.schedule || 'Schedule'}
@@ -436,7 +436,7 @@ export function BookingSidebar({
 
             {/* Range 달력 - 하나로 통합, 체크인 바로 밑에 absolute 배치 */}
             {isCalendarOpen && (
-              <div className="absolute top-full left-0 mt-2 z-50">
+              <div className="absolute top-full left-0 mt-2 z-50 w-max">
                 <CustomDateRangePicker
                   checkIn={checkInDate ?? null}
                   checkOut={checkOutDate ?? null}
