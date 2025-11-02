@@ -103,15 +103,9 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
   const [roomData, setRoomData] = useState<RoomDetail | null>(null)
   const [relatedRooms, setRelatedRooms] = useState<RelatedRoom[]>([])
 
-  // 세션 스토리지에서 날짜 가져오기
-  const [checkInDate, setCheckInDate] = useState<Date | null>(() => {
-    const { checkIn } = getBookingDates()
-    return checkIn
-  })
-  const [checkOutDate, setCheckOutDate] = useState<Date | null>(() => {
-    const { checkOut } = getBookingDates()
-    return checkOut
-  })
+  // 세션 스토리지에서 날짜 가져오기 (하이드레이션 에러 방지를 위해 초기값은 null)
+  const [checkInDate, setCheckInDate] = useState<Date | null>(null)
+  const [checkOutDate, setCheckOutDate] = useState<Date | null>(null)
   const [guests, setGuests] = useState(1)
   const [showAllFacilities, setShowAllFacilities] = useState(false)
   const [showFullDescription, setShowFullDescription] = useState(false)
@@ -127,6 +121,37 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
 
   const handleGuestsChange = (newGuests: number) => {
     setGuests(Math.max(1, Math.min(1, newGuests)))
+  }
+
+  // 날짜 범위가 예약 가능한지 확인하는 함수
+  const isDateRangeAvailable = (checkIn: Date | null, checkOut: Date | null, reservedDates: ReservedDate[]): boolean => {
+    if (!checkIn || !checkOut) return true // 날짜가 없으면 체크하지 않음
+    
+    const normalizedCheckIn = new Date(checkIn.getFullYear(), checkIn.getMonth(), checkIn.getDate())
+    const normalizedCheckOut = new Date(checkOut.getFullYear(), checkOut.getMonth(), checkOut.getDate())
+    normalizedCheckIn.setHours(0, 0, 0, 0)
+    normalizedCheckOut.setHours(0, 0, 0, 0)
+    
+    for (const reserved of reservedDates) {
+      const reservedCheckIn = new Date(reserved.checkIn)
+      const reservedCheckOut = new Date(reserved.checkOut)
+      reservedCheckIn.setHours(0, 0, 0, 0)
+      reservedCheckOut.setHours(0, 0, 0, 0)
+      
+      // 예약 기간과 겹치는지 확인
+      // 1. 선택한 체크인이 예약 기간 내에 있는 경우
+      // 2. 선택한 체크아웃이 예약 기간 내에 있는 경우
+      // 3. 선택한 기간이 예약 기간을 포함하는 경우
+      if (
+        (normalizedCheckIn.getTime() >= reservedCheckIn.getTime() && normalizedCheckIn.getTime() < reservedCheckOut.getTime()) ||
+        (normalizedCheckOut.getTime() > reservedCheckIn.getTime() && normalizedCheckOut.getTime() <= reservedCheckOut.getTime()) ||
+        (normalizedCheckIn.getTime() <= reservedCheckIn.getTime() && normalizedCheckOut.getTime() >= reservedCheckOut.getTime())
+      ) {
+        return false
+      }
+    }
+    
+    return true
   }
 
   // 날짜를 YYYY-MM-DD 형식으로 변환
@@ -244,6 +269,13 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
     return years > 0 ? years : 1
   }
 
+  // 클라이언트 사이드에서만 세션 스토리지 읽기 (하이드레이션 에러 방지)
+  useEffect(() => {
+    const { checkIn, checkOut } = getBookingDates()
+    setCheckInDate(checkIn)
+    setCheckOutDate(checkOut)
+  }, [])
+
   // 모바일용 달력 로케일 로드
   useEffect(() => {
     const loadLocale = async () => {
@@ -317,6 +349,17 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
 
     fetchRoomDetail()
   }, [params.residenceId, params.roomId, currentLanguage])
+
+  // 세션 스토리지의 날짜가 예약 가능한지 확인
+  useEffect(() => {
+    if (roomData && roomData.reservedDates) {
+      // 세션 스토리지에서 가져온 날짜가 예약된 날짜와 겹치면 초기화
+      if (!isDateRangeAvailable(checkInDate, checkOutDate, roomData.reservedDates)) {
+        setCheckInDate(null)
+        setCheckOutDate(null)
+      }
+    }
+  }, [roomData])
 
   // 관련 방 목록 조회
   useEffect(() => {
@@ -395,6 +438,13 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
     const currentDate = new Date(date.getFullYear(), date.getMonth(), date.getDate())
     currentDate.setHours(0, 0, 0, 0)
 
+    // 오늘 이전 날짜는 선택 불가
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    if (currentDate.getTime() < today.getTime()) {
+      return false
+    }
+
     for (const reserved of roomData.reservedDates) {
       const reservedCheckIn = new Date(reserved.checkIn)
       const reservedCheckOut = new Date(reserved.checkOut)
@@ -402,7 +452,8 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
       reservedCheckOut.setHours(0, 0, 0, 0)
 
       // 예약 기간 [checkIn, checkOut) 동안은 체크인 불가
-      // 예약된 체크인 날짜와 체크아웃 날짜 사이의 모든 날짜는 체크인 불가
+      // 예: 11월 7일 ~ 11월 12일 예약이면 11월 7일 ~ 11월 11일은 체크인 불가
+      // 11월 6일 이전 또는 11월 12일 이후만 체크인 가능
       if (currentDate.getTime() >= reservedCheckIn.getTime() && currentDate.getTime() < reservedCheckOut.getTime()) {
         return false
       }
@@ -443,8 +494,10 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
       }
     }
 
-    // 가장 가까운 예약의 체크인 날짜까지 선택 가능 (체크인 날짜 포함)
-    // 즉, 체크아웃 날짜는 다음 예약의 체크인 날짜까지 가능
+    // 가장 가까운 예약의 체크인 날짜까지만 선택 가능
+    // 예: 체크인이 11월 1일이고, 가장 가까운 예약이 11월 7일 ~ 11월 12일이면
+    // 체크아웃은 11월 2일 ~ 11월 7일까지 가능 (11월 7일 포함)
+    // 다음 예약의 체크인 날짜(11월 7일)까지 체크아웃 가능
     if (nearestReservedCheckIn && currentDate.getTime() > nearestReservedCheckIn.getTime()) {
       return false
     }
@@ -1147,9 +1200,9 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
         </div>
 
         {/* 메인 컨텐츠 - 데스크톱 */}
-        <div className="hidden lg:block bg-[#f7f7f8] pt-10 pb-20">
-          <div className="mx-auto max-w-[1200px] px-4">
-            <div className="flex flex-col lg:flex-row gap-6">
+        <div className="hidden lg:block bg-[#f7f7f8] pt-10 pb-20 overflow-visible">
+          <div className="mx-auto max-w-[1200px] px-4 overflow-visible">
+            <div className="flex flex-col lg:flex-row gap-6 overflow-visible">
               {/* 좌측 컨텐츠 */}
               <div className="flex-1 flex flex-col gap-4">
                 {/* Facilities - 데스크톱 */}
@@ -1256,7 +1309,7 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
               </div>
 
               {/* 우측 예약 사이드바 - 데스크톱만 표시 */}
-              <div className="w-[368px]">
+              <div className="w-[368px] overflow-visible">
                 <BookingSidebar
                   price={roomData.pricePerNight}
                   originalPrice={roomData.pricePerNight}

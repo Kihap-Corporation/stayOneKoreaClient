@@ -56,7 +56,7 @@ header: {
       searchRequirements: {
         selectLocation: "위치를 선택해주세요",
         selectDates: "날짜를 선택해주세요",
-        minimumStay: "최소 3박 이상 선택해주세요"
+        minimumStay: "최소 1박 이상 선택해주세요"
       }
     },
     features: {
@@ -154,8 +154,10 @@ header: {
     logoutError: "로그아웃 중 오류가 발생했습니다.",
     currentPasswordIncorrect: "현재 비밀번호가 일치하지 않습니다.",
     sessionExpired: "세션이 만료되었습니다. 다시 로그인해주세요.",
-    loginRequired: "로그인이 필요한 서비스입니다",
-    loginRequiredDesc: "로그인 페이지로 이동하시겠습니까?"
+    loginRequired: "로그인이 필요합니다",
+    loginRequiredDesc: "로그인 페이지로 이동하시겠습니까?",
+    loginRequiredMessage: "이 기능을 사용하려면 로그인이 필요합니다.",
+    goToLogin: "로그인하러 가기"
   },
   error: {
     accessDenied: "접근이 불가능합니다",
@@ -185,7 +187,7 @@ header: {
     validation: {
       selectLocation: "알고리아 검색에서 위치를 선택해주세요",
       selectDates: "체크인/체크아웃 날짜를 선택해주세요",
-      minStay: "최소 3일 이상 숙박해야 합니다"
+      minStay: "최소 1일 이상 숙박해야 합니다"
     }
   },
   common: {

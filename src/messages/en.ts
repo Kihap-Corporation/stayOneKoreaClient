@@ -56,7 +56,7 @@ header: {
       searchRequirements: {
         selectLocation: "Please select a location",
         selectDates: "Please select dates",
-        minimumStay: "Please select at least 3 nights"
+        minimumStay: "Please select at least 1 night"
       }
     },
     features: {
@@ -154,8 +154,10 @@ header: {
     logoutError: "An error occurred during logout.",
     currentPasswordIncorrect: "Current password is incorrect.",
     sessionExpired: "Session has expired. Please log in again.",
-    loginRequired: "Login is required for this service",
-    loginRequiredDesc: "Would you like to go to the login page?"
+    loginRequired: "Login Required",
+    loginRequiredDesc: "Would you like to go to the login page?",
+    loginRequiredMessage: "You need to log in to use this feature.",
+    goToLogin: "Go to Login"
   },
   error: {
     accessDenied: "Access denied",
@@ -185,7 +187,7 @@ header: {
     validation: {
       selectLocation: "Please select a location from Algolia search",
       selectDates: "Please select check-in and check-out dates",
-      minStay: "Minimum stay is 3 days"
+      minStay: "Minimum stay is 1 day"
     }
   },
   common: {

@@ -11,6 +11,8 @@ interface CustomDateRangePickerProps {
   locale?: string
   monthsShown?: number
   showBorder?: boolean
+  filterCheckInDate?: (date: Date) => boolean
+  filterCheckOutDate?: (date: Date) => boolean
 }
 
 // 날짜를 YYYY-MM-DD 형식으로 비교하기 위한 키 생성
@@ -94,6 +96,8 @@ export function CustomDateRangePicker({
   locale = "en",
   monthsShown = 2,
   showBorder = true,
+  filterCheckInDate,
+  filterCheckOutDate,
 }: CustomDateRangePickerProps) {
   const today = new Date()
   const [currentMonth, setCurrentMonth] = useState(today.getMonth())
@@ -177,7 +181,18 @@ export function CustomDateRangePicker({
             const isSelected = isSameDay(date, checkIn) || isSameDay(date, checkOut)
             const inRange = isInRange(date, checkIn, checkOut)
             const isPast = date < new Date(today.getFullYear(), today.getMonth(), today.getDate())
-            const isDisabled = !isCurrentMonth || isPast
+            
+            // 필터 함수를 사용하여 선택 가능 여부 확인
+            let isFilterDisabled = false
+            if (checkIn && !checkOut) {
+              // 체크인만 선택된 경우 -> 체크아웃 필터 적용
+              isFilterDisabled = filterCheckOutDate ? !filterCheckOutDate(date) : false
+            } else {
+              // 체크인 미선택 또는 둘 다 선택된 경우 -> 체크인 필터 적용
+              isFilterDisabled = filterCheckInDate ? !filterCheckInDate(date) : false
+            }
+            
+            const isDisabled = !isCurrentMonth || isPast || isFilterDisabled
 
             // 호버 시 범위 미리보기
             const inHoverRange = checkIn && !checkOut && hoverDate && !isDisabled

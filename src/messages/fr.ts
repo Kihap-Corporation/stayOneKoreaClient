@@ -56,7 +56,7 @@ header: {
       searchRequirements: {
         selectLocation: "Veuillez sélectionner un lieu",
         selectDates: "Veuillez sélectionner des dates",
-        minimumStay: "Veuillez sélectionner au moins 3 nuits"
+        minimumStay: "Veuillez sélectionner au moins 1 nuit"
       }
     },
     features: {
@@ -154,8 +154,10 @@ header: {
     logoutError: "Une erreur s'est produite lors de la déconnexion.",
     currentPasswordIncorrect: "Le mot de passe actuel est incorrect.",
     sessionExpired: "La session a expiré. Veuillez vous reconnecter.",
-    loginRequired: "La connexion est requise pour ce service",
-    loginRequiredDesc: "Souhaitez-vous aller à la page de connexion ?"
+    loginRequired: "Connexion requise",
+    loginRequiredDesc: "Souhaitez-vous aller à la page de connexion ?",
+    loginRequiredMessage: "Vous devez vous connecter pour utiliser cette fonctionnalité.",
+    goToLogin: "Aller à la connexion"
   },
   error: {
     accessDenied: "Accès refusé",
@@ -185,7 +187,7 @@ header: {
     validation: {
       selectLocation: "Veuillez sélectionner un emplacement dans la recherche Algolia",
       selectDates: "Veuillez sélectionner les dates d'arrivée et de départ",
-      minStay: "Séjour minimum de 3 jours"
+      minStay: "Séjour minimum de 1 jour"
     }
   },
   common: {

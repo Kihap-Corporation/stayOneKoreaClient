@@ -34,8 +34,27 @@ export function FeaturedRoomsSection() {
   const [rooms, setRooms] = useState<Room[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [isLanguageReady, setIsLanguageReady] = useState(false)
+
+  // 언어 설정이 완료될 때까지 대기
+  useEffect(() => {
+    // localStorage에서 언어 설정을 확인
+    const savedLanguage = typeof window !== 'undefined' ? localStorage.getItem('selectedLanguage') : null
+    // 저장된 언어가 있으면 현재 언어와 일치할 때까지 대기
+    if (savedLanguage) {
+      if (currentLanguage.code === savedLanguage) {
+        setIsLanguageReady(true)
+      }
+    } else {
+      // 저장된 언어가 없으면 기본 언어(영어)로 바로 준비 완료
+      setIsLanguageReady(true)
+    }
+  }, [currentLanguage.code])
 
   useEffect(() => {
+    // 언어가 준비되지 않았으면 API 호출 안 함
+    if (!isLanguageReady) return
+
     const fetchRooms = async () => {
       try {
         setLoading(true)
@@ -66,7 +85,7 @@ export function FeaturedRoomsSection() {
     }
 
     fetchRooms()
-  }, [currentLanguage.code])
+  }, [currentLanguage.code, isLanguageReady])
 
   // 로딩 중일 때
   if (loading) {
