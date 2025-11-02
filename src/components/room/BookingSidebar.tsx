@@ -12,6 +12,8 @@ import Image from "next/image"
 import { CustomDateRangePicker } from "@/components/home/custom-date-range-picker"
 import { MobileCustomDateRangePicker } from "@/components/home/mobile-custom-date-range-picker"
 import { saveBookingDates } from "@/lib/session-storage"
+import { useLoginRequired } from "@/hooks/useLoginRequired"
+import { LoginRequiredModal } from "@/components/auth/login-required-modal"
 
 // 로케일 맵핑 - 동적 import 사용
 const getLocale = async (lang: string) => {
@@ -115,6 +117,7 @@ export function BookingSidebar({
   const [isLiked, setIsLiked] = useState(roomLikeCheck)
   const [showFullHostDescription, setShowFullHostDescription] = useState(false)
   const calendarRef = useRef<HTMLDivElement>(null)
+  const { isModalOpen, modalMessage, returnUrl, requireLogin, closeModal } = useLoginRequired()
   const handleCheckInChange = (date: Date | null) => {
     if (onCheckInDateChange) onCheckInDateChange(date)
   }
@@ -255,13 +258,22 @@ export function BookingSidebar({
     }
   }
 
-  // 예약 처리 함수
+  // 예약 처리 함수 (로그인 체크 포함)
   const handleReservation = async () => {
     if (!checkInDate || !checkOutDate) {
-      alert(messages?.roomDetail?.pleaseSelectDates || '날짜를 선택해주세요')
+      toast.error(messages?.roomDetail?.pleaseSelectDates || '날짜를 선택해주세요')
       return
     }
 
+    // 로그인 체크
+    requireLogin(
+      processReservation,
+      messages?.auth?.loginRequiredMessage || '예약하려면 로그인이 필요합니다.'
+    )
+  }
+
+  // 실제 예약 처리 로직
+  const processReservation = async () => {
     setIsReserving(true)
 
     try {
@@ -621,6 +633,14 @@ export function BookingSidebar({
           </button>
         </div>
       </div>
+
+      {/* 로그인 필요 모달 */}
+      <LoginRequiredModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        message={modalMessage}
+        returnUrl={returnUrl}
+      />
     </div>
   )
 }

@@ -154,8 +154,10 @@ header: {
     logoutError: "登出过程中发生错误。",
     currentPasswordIncorrect: "当前密码不正确。",
     sessionExpired: "会话已过期。请重新登录。",
-    loginRequired: "此服务需要登录",
-    loginRequiredDesc: "您想前往登录页面吗？"
+    loginRequired: "需要登录",
+    loginRequiredDesc: "您想前往登录页面吗？",
+    loginRequiredMessage: "您需要登录才能使用此功能。",
+    goToLogin: "前往登录"
   },
   error: {
     accessDenied: "访问被拒绝",

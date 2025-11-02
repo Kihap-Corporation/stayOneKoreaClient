@@ -103,15 +103,9 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
   const [roomData, setRoomData] = useState<RoomDetail | null>(null)
   const [relatedRooms, setRelatedRooms] = useState<RelatedRoom[]>([])
 
-  // 세션 스토리지에서 날짜 가져오기
-  const [checkInDate, setCheckInDate] = useState<Date | null>(() => {
-    const { checkIn } = getBookingDates()
-    return checkIn
-  })
-  const [checkOutDate, setCheckOutDate] = useState<Date | null>(() => {
-    const { checkOut } = getBookingDates()
-    return checkOut
-  })
+  // 세션 스토리지에서 날짜 가져오기 (하이드레이션 에러 방지를 위해 초기값은 null)
+  const [checkInDate, setCheckInDate] = useState<Date | null>(null)
+  const [checkOutDate, setCheckOutDate] = useState<Date | null>(null)
   const [guests, setGuests] = useState(1)
   const [showAllFacilities, setShowAllFacilities] = useState(false)
   const [showFullDescription, setShowFullDescription] = useState(false)
@@ -274,6 +268,13 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
     const years = now.getFullYear() - start.getFullYear()
     return years > 0 ? years : 1
   }
+
+  // 클라이언트 사이드에서만 세션 스토리지 읽기 (하이드레이션 에러 방지)
+  useEffect(() => {
+    const { checkIn, checkOut } = getBookingDates()
+    setCheckInDate(checkIn)
+    setCheckOutDate(checkOut)
+  }, [])
 
   // 모바일용 달력 로케일 로드
   useEffect(() => {
