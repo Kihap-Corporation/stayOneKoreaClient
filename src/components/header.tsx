@@ -13,12 +13,14 @@ import {
 import { useLanguage, languages } from "./language-provider"
 import { logout } from "@/lib/api"
 import { useState, useEffect } from "react"
+import { SearchModal } from "./header/search-modal"
 
 export function Header() {
   const { currentLanguage, setCurrentLanguage, messages } = useLanguage()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isProfileOpen, setIsProfileOpen] = useState(false)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false)
 
   // 로그인 상태 확인
   useEffect(() => {
@@ -76,18 +78,18 @@ export function Header() {
 
               {/* Search Bar */}
               <div className="w-[300px]">
-                <div className="relative w-full">
-                  <Input
-                    type="text"
-                    placeholder={messages?.header?.search?.placeholder || "Find your stay in Korea"}
-                    className="w-full h-10 pr-10 pl-4 rounded-full border border-[#dee0e3] hover:border-gray-300 focus:border-[#E91E63] transition-colors bg-white text-sm"
-                  />
-                  <Button
-                    size="icon"
-                    className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-[#e0004d] hover:bg-[#C2185B] shadow-sm transition-all"
-                  >
+                <div 
+                  className="relative w-full cursor-pointer"
+                  onClick={() => setIsSearchModalOpen(true)}
+                >
+                  <div className="w-full h-10 pr-10 pl-4 rounded-full border border-[#dee0e3] hover:border-gray-300 transition-colors bg-white text-sm flex items-center">
+                    <span className="text-gray-400">
+                      {messages?.header?.search?.placeholder || "Find your stay in Korea"}
+                    </span>
+                  </div>
+                  <div className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-[#e0004d] hover:bg-[#C2185B] shadow-sm transition-all flex items-center justify-center">
                     <Search className="h-4 w-4 text-white" />
-                  </Button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -325,18 +327,18 @@ export function Header() {
           </div>
 
           {/* Mobile Search Bar - 헤더 밑에 항상 표시 */}
-          <div className="relative w-full">
-            <Input
-              type="text"
-              placeholder={messages?.header?.search?.placeholder || "Find your stay in Korea"}
-              className="w-full h-11 pr-14 pl-5 rounded-full border-2 border-gray-200 hover:border-gray-300 focus:border-[#E91E63] transition-colors bg-gray-50/50 focus:bg-white"
-            />
-            <Button
-              size="icon"
-              className="absolute right-1 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-[#E91E63] hover:bg-[#C2185B] shadow-lg hover:shadow-xl transition-all duration-200"
-            >
+          <div 
+            className="relative w-full cursor-pointer"
+            onClick={() => setIsSearchModalOpen(true)}
+          >
+            <div className="w-full h-11 pr-14 pl-5 rounded-full border-2 border-gray-200 hover:border-gray-300 transition-colors bg-gray-50/50 flex items-center">
+              <span className="text-gray-400 text-sm">
+                {messages?.header?.search?.placeholder || "Find your stay in Korea"}
+              </span>
+            </div>
+            <div className="absolute right-1 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-[#E91E63] hover:bg-[#C2185B] shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center">
               <Search className="h-4 w-4 text-white" />
-            </Button>
+            </div>
           </div>
         </div>
 
@@ -407,6 +409,12 @@ export function Header() {
           </div>
         )}
       </div>
+
+      {/* Search Modal */}
+      <SearchModal 
+        isOpen={isSearchModalOpen} 
+        onClose={() => setIsSearchModalOpen(false)} 
+      />
     </header>
   )
 }
