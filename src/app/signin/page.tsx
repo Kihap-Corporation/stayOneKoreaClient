@@ -26,12 +26,19 @@ export default function SignInPage() {
   const { messages } = useLanguage()
 
   // 클라이언트 사이드에서만 URL 파라미터 읽기
+  const [redirectUrl, setRedirectUrl] = useState<string>('/')
+  
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const urlParams = new URLSearchParams(window.location.search)
       const emailParam = urlParams.get('email')
+      const redirectParam = urlParams.get('redirect')
+      
       if (emailParam) {
         setEmail(emailParam)
+      }
+      if (redirectParam) {
+        setRedirectUrl(decodeURIComponent(redirectParam))
       }
     }
   }, [])
@@ -53,8 +60,8 @@ export default function SignInPage() {
         if (typeof window !== 'undefined') {
           localStorage.setItem('isLoggedIn', 'true')
         }
-        // 성공 시 루트 페이지로 리다이렉트
-        router.push('/')
+        // 성공 시 redirect URL 또는 루트 페이지로 리다이렉트
+        router.push(redirectUrl)
       } else if (data.code === 40107) {
         // 이메일 인증이 필요한 경우 verify-email 페이지로 리다이렉트
         router.push('/verify-email')

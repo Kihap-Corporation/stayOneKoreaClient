@@ -3,48 +3,62 @@
 import { useState, useRef, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { useLanguage } from "@/components/language-provider"
-import { Calendar, Users } from "lucide-react"
-import { CustomDateRangePicker } from "./custom-date-range-picker"
-import { MobileCustomDateRangePicker } from "./mobile-custom-date-range-picker"
-import { AlgoliaSearch, SearchHit } from "./algolia-search"
+import { Calendar, Users, X } from "lucide-react"
+import { CustomDateRangePicker } from "@/components/home/custom-date-range-picker"
+import { MobileCustomDateRangePicker } from "@/components/home/mobile-custom-date-range-picker"
+import { AlgoliaSearch, SearchHit } from "@/components/home/algolia-search"
 import { getBookingDates, saveBookingDates } from "@/lib/session-storage"
 
-export function HeroSection() {
+interface SearchModalProps {
+  isOpen: boolean
+  onClose: () => void
+}
+
+export function SearchModal({ isOpen, onClose }: SearchModalProps) {
   const { messages, currentLanguage } = useLanguage()
   const router = useRouter()
-  const [people, setPeople] = useState(1)
-
-  // 세션 스토리지에서 날짜 가져오기 (하이드레이션 에러 방지를 위해 초기값은 null)
+  
+  // 세션 스토리지에서 날짜 가져오기 (하이드레이션 에러 방지)
   const [checkIn, setCheckIn] = useState<Date | null>(null)
   const [checkOut, setCheckOut] = useState<Date | null>(null)
-
+  
+  useEffect(() => {
+    if (isOpen) {
+      const { checkIn, checkOut } = getBookingDates()
+      setCheckIn(checkIn)
+      setCheckOut(checkOut)
+    }
+  }, [isOpen])
+  
   const [showDatePicker, setShowDatePicker] = useState(false)
   const [selectedLocationData, setSelectedLocationData] = useState<SearchHit | null>(null)
   const checkInRef = useRef<HTMLDivElement>(null)
 
-  // 클라이언트 사이드에서만 세션 스토리지 읽기
+  // 모달 열릴 때 body 스크롤 막기
   useEffect(() => {
-    const { checkIn, checkOut } = getBookingDates()
-    setCheckIn(checkIn)
-    setCheckOut(checkOut)
-  }, [])
+    if (isOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'unset'
+    }
+
+    return () => {
+      document.body.style.overflow = 'unset'
+    }
+  }, [isOpen])
 
   // 달력 외부 클릭 감지 (데스크톱 전용)
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      // 모바일에서는 모달이므로 외부 클릭 감지 불필요
       if (window.innerWidth < 1024) return
       
       const target = event.target as HTMLElement
       
-      // Check-in div 내부 클릭은 무시
       if (checkInRef.current && checkInRef.current.contains(target)) {
         return
       }
       
-      // DatePicker 내부 클릭인지 확인
       if (!target.closest('.react-datepicker') && !target.closest('.react-datepicker-popper')) {
         setShowDatePicker(false)
       }
@@ -56,19 +70,6 @@ export function HeroSection() {
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [showDatePicker])
-
-  // 모바일 모달 열릴 때 body 스크롤 막기
-  useEffect(() => {
-    if (showDatePicker && window.innerWidth < 1024) {
-      document.body.style.overflow = 'hidden'
-    } else {
-      document.body.style.overflow = 'unset'
-    }
-
-    return () => {
-      document.body.style.overflow = 'unset'
     }
   }, [showDatePicker])
 
@@ -104,7 +105,7 @@ export function HeroSection() {
     return null
   }
 
-  // Helper function to get location name based on current language
+  // Helper function to get location name
   const getLocationName = (location: SearchHit) => {
     const langMap: { [key: string]: string } = {
       ko: location.nameKo,
@@ -115,27 +116,23 @@ export function HeroSection() {
     return langMap[currentLanguage.code] || location.nameEn || location.nameKo
   }
 
-  // Handle search button click
+  // Handle search
   const handleSearch = () => {
-    // Validate location
     if (!selectedLocationData) {
-      alert(messages?.searchResult?.validation?.selectLocation || "Please select a location from Algolia search")
+      alert(messages?.searchResult?.validation?.selectLocation || "Please select a location")
       return
     }
 
-    // Validate dates
     if (!checkIn || !checkOut) {
-      alert(messages?.searchResult?.validation?.selectDates || "Please select check-in and check-out dates")
+      alert(messages?.searchResult?.validation?.selectDates || "Please select dates")
       return
     }
 
-    // Validate minimum stay
     if (nights < 1) {
       alert(messages?.searchResult?.validation?.minStay || "Minimum stay is 1 day")
       return
     }
 
-    // Format dates as yyyy-MM-dd
     const formatDate = (date: Date) => {
       const year = date.getFullYear()
       const month = String(date.getMonth() + 1).padStart(2, '0')
@@ -143,7 +140,6 @@ export function HeroSection() {
       return `${year}-${month}-${day}`
     }
 
-    // Build query params
     const params = new URLSearchParams({
       lat: selectedLocationData.latitude.toString(),
       lng: selectedLocationData.longitude.toString(),
@@ -153,14 +149,16 @@ export function HeroSection() {
       sort: 'RECOMMEND'
     })
 
-    // Navigate to search results page
+    onClose()
     router.push(`/search?${params.toString()}`)
   }
 
+  if (!isOpen) return null
+
   return (
-    <div className="relative w-full py-20 px-4 flex items-center justify-center">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center">
       {/* Background Image */}
-      <div className="absolute inset-0">
+      <div className="absolute inset-0 h-screen">
         <img 
           src="/home-search-background.png" 
           alt="Background" 
@@ -169,8 +167,16 @@ export function HeroSection() {
         <div className="absolute inset-0 bg-black/40" />
       </div>
 
+      {/* Close Button */}
+      <button
+        onClick={onClose}
+        className="absolute top-6 right-6 p-3 bg-white/10 hover:bg-white/20 rounded-full transition-colors z-10"
+      >
+        <X className="h-6 w-6 text-white" />
+      </button>
+
       {/* Content */}
-      <div className="relative z-10 max-w-[1200px] w-full flex flex-col items-center gap-[18px]">
+      <div className="relative z-10 max-w-[1200px] w-full mx-4 flex flex-col items-center gap-[18px]">
         <h1 className="text-[30px] font-bold leading-[36px] text-white text-center tracking-[-0.5px]">
           {messages?.home?.hero?.title || "Find Your Stay in Korea"}
         </h1>
@@ -235,7 +241,7 @@ export function HeroSection() {
                 </div>
               </div>
 
-              {/* Desktop Calendar - absolute positioning below check-in/check-out wrapper */}
+              {/* Desktop Calendar */}
               {showDatePicker && (
                 <div className="hidden lg:block absolute top-full left-0 mt-2 z-50">
                   <CustomDateRangePicker
@@ -248,7 +254,6 @@ export function HeroSection() {
                     onCheckOutChange={(date) => {
                       setCheckOut(date)
                       saveBookingDates(checkIn, date)
-                      // 체크아웃이 선택되면 달력 닫기
                       if (date) {
                         setShowDatePicker(false)
                       }
@@ -288,6 +293,7 @@ export function HeroSection() {
           </Button>
         </div>
       </div>
+
       {/* Mobile Calendar Modal */}
       <MobileCustomDateRangePicker
         isOpen={showDatePicker}
@@ -307,7 +313,4 @@ export function HeroSection() {
     </div>
   )
 }
-
-
-
 
