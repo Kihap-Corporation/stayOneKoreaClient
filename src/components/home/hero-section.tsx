@@ -16,19 +16,20 @@ export function HeroSection() {
   const router = useRouter()
   const [people, setPeople] = useState(1)
 
-  // 세션 스토리지에서 날짜 가져오기
-  const [checkIn, setCheckIn] = useState<Date | null>(() => {
-    const { checkIn } = getBookingDates()
-    return checkIn
-  })
-  const [checkOut, setCheckOut] = useState<Date | null>(() => {
-    const { checkOut } = getBookingDates()
-    return checkOut
-  })
+  // 세션 스토리지에서 날짜 가져오기 (하이드레이션 에러 방지를 위해 초기값은 null)
+  const [checkIn, setCheckIn] = useState<Date | null>(null)
+  const [checkOut, setCheckOut] = useState<Date | null>(null)
 
   const [showDatePicker, setShowDatePicker] = useState(false)
   const [selectedLocationData, setSelectedLocationData] = useState<SearchHit | null>(null)
   const checkInRef = useRef<HTMLDivElement>(null)
+
+  // 클라이언트 사이드에서만 세션 스토리지 읽기
+  useEffect(() => {
+    const { checkIn, checkOut } = getBookingDates()
+    setCheckIn(checkIn)
+    setCheckOut(checkOut)
+  }, [])
 
   // 달력 외부 클릭 감지 (데스크톱 전용)
   useEffect(() => {

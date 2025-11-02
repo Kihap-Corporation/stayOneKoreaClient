@@ -56,8 +56,8 @@ interface BookingSidebarProps {
   nights: number
   totalPrice: number
   host: Host
-  checkInDate?: Date | null
-  checkOutDate?: Date | null
+  checkInDate: Date | null
+  checkOutDate: Date | null
   guests?: number
   onCheckInDateChange?: (date: Date | null) => void
   onCheckOutDateChange?: (date: Date | null) => void
