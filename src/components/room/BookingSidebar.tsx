@@ -445,6 +445,8 @@ export function BookingSidebar({
                   locale={currentLanguage.code}
                   monthsShown={2}
                   showBorder={true}
+                  filterCheckInDate={filterCheckInDate}
+                  filterCheckOutDate={filterCheckOutDate}
                 />
               </div>
             )}
