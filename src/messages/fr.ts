@@ -305,7 +305,17 @@ header: {
     checkIn: "Arrivée",
     checkOut: "Départ",
     nights: "nuits",
-    noBookings: "Aucune réservation trouvée"
+    noBookings: "Aucune réservation trouvée",
+    refundSuccess: "Le traitement du remboursement a été terminé avec succès.",
+    refundFailed: "Le remboursement a échoué.",
+    refundNotAllowedCheckIn: "Les remboursements ne sont pas possibles à partir de la date d'arrivée.",
+    refundNotAllowedPayment: "Les remboursements ne sont pas possibles car le paiement n'est pas terminé. Veuillez essayer le remboursement après l'achèvement du paiement.",
+    refundAlreadyCompleted: "Les remboursements ne sont pas possibles car le remboursement a déjà été terminé.",
+    refundError: "Le traitement du remboursement a échoué.",
+    confirmCancelTitle: "Confirmer l'annulation",
+    confirmCancelMessage: "Êtes-vous sûr de vouloir annuler cette réservation ? Cette action ne peut pas être annulée.",
+    confirmButton: "Annuler la réservation",
+    cancelButton: "Annuler"
   },
   payment: {
     securePayment: "Paiement sécurisé",

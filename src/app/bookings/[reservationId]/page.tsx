@@ -6,8 +6,10 @@ import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { useLanguage } from "@/components/language-provider"
 import { Button } from "@/components/ui/button"
-import { apiGet } from "@/lib/api"
+import { ConfirmationDialog } from "@/components/confirmation-dialog"
+import { apiGet, apiPost } from "@/lib/api"
 import { ChevronLeft, ChevronRight, Wifi, WashingMachine, AirVent, Bell, Flame, Globe, Clock, CheckCircle, XCircle, AlertTriangle } from "lucide-react"
+import { toast } from "sonner"
 
 // Room Facility 타입 정의 (새로운 응답 구조에 맞게 수정)
 interface RoomFacility {
@@ -151,6 +153,8 @@ export default function BookingDetailPage() {
   const [loading, setLoading] = useState(true)
   const [booking, setBooking] = useState<BookingDetail | null>(null)
   const [showAllFacilities, setShowAllFacilities] = useState(false)
+  const [showCancelDialog, setShowCancelDialog] = useState(false)
+  const [isCancelling, setIsCancelling] = useState(false)
 
   const reservationId = params.reservationId as string
 
@@ -184,11 +188,71 @@ export default function BookingDetailPage() {
     fetchBookingDetail()
   }, [reservationId, currentLanguage, messages, router])
 
-  // 예약 취소 기능은 다른 페이지에서 처리됨
-  const handleCancelBooking = () => {
-    // 예약 취소 버튼 클릭 시 처리할 로직
-    // 현재는 API 연결 없이 UI만 표시
-    console.log('Cancel booking clicked for reservation:', reservationId)
+  // 예약 취소 버튼 클릭 핸들러 (모달 표시)
+  const handleCancelBookingClick = () => {
+    setShowCancelDialog(true)
+  }
+
+  // 실제 예약 취소 API 호출
+  const handleCancelBookingConfirm = async () => {
+    if (!booking) return
+
+    setIsCancelling(true)
+
+    try {
+      // 한국 시간 기준 오늘 날짜 생성 (YYYY-MM-DD 형식)
+      const now = new Date()
+      const kstDate = new Intl.DateTimeFormat('sv-SE', {
+        timeZone: 'Asia/Seoul',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      }).format(now)
+
+      // API 요청
+      const response = await apiPost('/api/user/refund', {
+        refundRequestTime: kstDate,
+        reservationIdentifier: booking.reservationIdentifier,
+        reason: "환불 요청"
+      })
+
+      // 응답 처리
+      if (response.code === 20103) {
+        // 환불 처리 성공
+        toast.success(messages?.bookings?.refundSuccess || "환불 처리가 완료되었습니다.")
+        setShowCancelDialog(false)
+        // 예약 목록으로 돌아가기
+        setTimeout(() => {
+          router.push('/bookings')
+        }, 2000)
+      } else if (response.code === 40903) {
+        // 환불 실패
+        alert(messages?.bookings?.refundFailed || "환불에 실패했습니다.")
+        setShowCancelDialog(false)
+      } else if (response.code === 40904) {
+        // 체크인 당일/이후 환불 불가능
+        toast.error(messages?.bookings?.refundNotAllowedCheckIn || "체크인 당일이나 이후에는 환불이 불가능합니다.")
+        setShowCancelDialog(false)
+      } else if (response.code === 40905) {
+        // 결제 미완료
+        toast.error(messages?.bookings?.refundNotAllowedPayment || "결제가 완료되지 않아서 환불이 불가능합니다. 결제가 완료된 후, 환불을 시도해주세요.")
+        setShowCancelDialog(false)
+      } else if (response.code === 40906) {
+        // 이미 환불 완료
+        toast.error(messages?.bookings?.refundAlreadyCompleted || "이미 환불이 완료되어 환불이 불가능합니다.")
+        setShowCancelDialog(false)
+      } else {
+        // 기타 에러
+        toast.error(messages?.bookings?.refundError || "환불 처리에 실패했습니다.")
+        setShowCancelDialog(false)
+      }
+    } catch (error: any) {
+      console.error('Refund error:', error)
+      toast.error(messages?.bookings?.refundError || "환불 처리에 실패했습니다.")
+      setShowCancelDialog(false)
+    } finally {
+      setIsCancelling(false)
+    }
   }
 
   if (loading) {
@@ -499,7 +563,7 @@ export default function BookingDetailPage() {
                 Cancel for free before check-in date
               </p>
               <button
-                onClick={handleCancelBooking}
+                onClick={handleCancelBookingClick}
                 className="bg-[rgba(230,72,61,0.1)] hover:bg-[rgba(230,72,61,0.15)] flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl transition-colors cursor-pointer"
               >
                 <span className="text-sm font-medium text-[#e6483d] tracking-[-0.1px]">
@@ -512,6 +576,18 @@ export default function BookingDetailPage() {
       </main>
 
       <Footer />
+
+      {/* 예약 취소 확인 모달 */}
+      <ConfirmationDialog
+        isOpen={showCancelDialog}
+        onClose={() => setShowCancelDialog(false)}
+        onConfirm={handleCancelBookingConfirm}
+        title={messages?.bookings?.confirmCancelTitle || "예약 취소 확인"}
+        description={messages?.bookings?.confirmCancelMessage || "정말 예약을 취소하시겠습니까? 이 작업은 되돌릴 수 없습니다."}
+        confirmText={messages?.bookings?.confirmButton || "예약 취소"}
+        cancelText={messages?.bookings?.cancelButton || "취소"}
+        isLoading={isCancelling}
+      />
     </div>
   )
 }

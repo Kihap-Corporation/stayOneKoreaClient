@@ -305,7 +305,17 @@ header: {
     checkIn: "Check-in",
     checkOut: "Check-out",
     nights: "nights",
-    noBookings: "No bookings found"
+    noBookings: "No bookings found",
+    refundSuccess: "Refund processing completed successfully.",
+    refundFailed: "Refund failed.",
+    refundNotAllowedCheckIn: "Refunds are not possible on or after check-in date.",
+    refundNotAllowedPayment: "Refunds are not possible because payment is not completed. Please try refund after payment is completed.",
+    refundAlreadyCompleted: "Refunds are not possible because refund has already been completed.",
+    refundError: "Refund processing failed.",
+    confirmCancelTitle: "Confirm Cancellation",
+    confirmCancelMessage: "Are you sure you want to cancel this booking? This action cannot be undone.",
+    confirmButton: "Cancel Booking",
+    cancelButton: "Cancel"
   },
   payment: {
     securePayment: "Secure payment",
