@@ -317,11 +317,6 @@ export default function PaymentPage() {
             }
           }
         },
-        offerPeriod : {
-          range : {
-           to : endToReserveTime?.toISOString() || "",
-          }
-        },
         products: [{
           id : reservationData.reservationIdentifier,
           name : paymentData.room.title,

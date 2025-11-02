@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useRouter, useParams } from "next/navigation"
+import { useRouter, useParams, useSearchParams } from "next/navigation"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { useLanguage } from "@/components/language-provider"
@@ -44,6 +44,7 @@ interface BookingDetail {
   userEmail: string
   userPhoneNumber: string
   userCountryCode: string
+  refundStatus: string
 }
 
 // 시설 아이콘 매핑
@@ -146,15 +147,49 @@ const getStatusInfo = (status: string) => {
   }
 }
 
+// 환불 상태에 따른 메시지
+const getRefundStatusInfo = (refundStatus: string, messages: any) => {
+  switch (refundStatus) {
+    case 'CANNOT_REFUND':
+      return {
+        message: messages?.bookings?.refundStatusCannotRefund || "환불이 불가능합니다.",
+        color: 'bg-red-50 border-red-200',
+        textColor: 'text-red-800'
+      }
+    case 'SUCCESS':
+      return {
+        message: messages?.bookings?.refundStatusSuccess || "환불이 성공적으로 처리되었습니다. 환불에는 영업일 5~10일이 소요될 수 있습니다.",
+        color: 'bg-green-50 border-green-200',
+        textColor: 'text-green-800'
+      }
+    case 'FAILURE':
+      return {
+        message: messages?.bookings?.refundStatusFailure || "환불에 실패했습니다.",
+        color: 'bg-red-50 border-red-200',
+        textColor: 'text-red-800'
+      }
+    case 'PENDING':
+      return {
+        message: messages?.bookings?.refundStatusPending || "환불 요청이 접수되었습니다. 환불 요청이 접수되기까지 영업일 3일 이상 소요될 수 있습니다.",
+        color: 'bg-blue-50 border-blue-200',
+        textColor: 'text-blue-800'
+      }
+    default:
+      return null
+  }
+}
+
 export default function BookingDetailPage() {
   const router = useRouter()
   const params = useParams()
+  const searchParams = useSearchParams()
   const { messages, currentLanguage } = useLanguage()
   const [loading, setLoading] = useState(true)
   const [booking, setBooking] = useState<BookingDetail | null>(null)
   const [showAllFacilities, setShowAllFacilities] = useState(false)
   const [showCancelDialog, setShowCancelDialog] = useState(false)
   const [isCancelling, setIsCancelling] = useState(false)
+
 
   const reservationId = params.reservationId as string
 
@@ -572,6 +607,21 @@ export default function BookingDetailPage() {
               </button>
             </div>
           )}
+
+          {/* Refund Status Section - CANCELLED 상태일 때만 표시 */}
+          {booking.reservationStatus === 'CANCELLED' && (() => {
+            const refundInfo = getRefundStatusInfo(booking.refundStatus, messages)
+            return refundInfo ? (
+              <div className={`rounded-[16px] px-5 py-4 border flex flex-col gap-[12px] ${refundInfo.color}`}>
+                <p className="text-base font-bold tracking-[-0.2px] leading-[24px]">
+                  {messages?.bookings?.refundStatusTitle || "Refund Status"}
+                </p>
+                <p className={`text-sm font-medium tracking-[-0.1px] leading-[20px] ${refundInfo.textColor}`}>
+                  {refundInfo.message}
+                </p>
+              </div>
+            ) : null
+          })()}
         </div>
       </main>
 

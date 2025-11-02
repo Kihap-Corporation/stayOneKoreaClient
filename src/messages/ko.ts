@@ -317,7 +317,12 @@ header: {
     confirmCancelTitle: "예약 취소 확인",
     confirmCancelMessage: "정말 예약을 취소하시겠습니까? 이 작업은 되돌릴 수 없습니다.",
     confirmButton: "예약 취소",
-    cancelButton: "취소"
+    cancelButton: "취소",
+    refundStatusCannotRefund: "환불이 불가능합니다.",
+    refundStatusSuccess: "환불이 성공적으로 처리되었습니다. 환불에는 영업일 5~10일이 소요될 수 있습니다.",
+    refundStatusFailure: "환불에 실패했습니다.",
+    refundStatusPending: "환불 요청이 접수되었습니다. 환불 요청이 접수되기까지 영업일 3일 이상 소요될 수 있습니다.",
+    refundStatusTitle: "환불 상태"
   },
   payment: {
     securePayment: "안전한 결제",

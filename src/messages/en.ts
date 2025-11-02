@@ -317,7 +317,12 @@ header: {
     confirmCancelTitle: "Confirm Cancellation",
     confirmCancelMessage: "Are you sure you want to cancel this booking? This action cannot be undone.",
     confirmButton: "Cancel Booking",
-    cancelButton: "Cancel"
+    cancelButton: "Cancel",
+    refundStatusCannotRefund: "Refunds are not possible.",
+    refundStatusSuccess: "Refund has been processed successfully. Refund may take 5-10 business days.",
+    refundStatusFailure: "Refund failed.",
+    refundStatusPending: "Refund request has been received. It may take more than 3 business days to process the refund request.",
+    refundStatusTitle: "Refund Status"
   },
   payment: {
     securePayment: "Secure payment",

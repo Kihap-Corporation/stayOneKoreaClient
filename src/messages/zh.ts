@@ -317,7 +317,12 @@ header: {
     confirmCancelTitle: "确认取消",
     confirmCancelMessage: "您确定要取消此预订吗？此操作无法撤销。",
     confirmButton: "取消预订",
-    cancelButton: "取消"
+    cancelButton: "取消",
+    refundStatusCannotRefund: "退款不可用。",
+    refundStatusSuccess: "退款已成功处理。退款可能需要5-10个工作日。",
+    refundStatusFailure: "退款失败。",
+    refundStatusPending: "退款请求已收到。处理退款请求可能需要超过3个工作日。",
+    refundStatusTitle: "退款状态"
   },
   payment: {
     securePayment: "安全支付",

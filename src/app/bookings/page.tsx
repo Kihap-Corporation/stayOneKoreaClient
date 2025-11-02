@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { useLanguage } from "@/components/language-provider"
@@ -25,10 +25,14 @@ interface Booking {
 
 export default function BookingsPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const { messages, currentLanguage } = useLanguage()
   const [loading, setLoading] = useState(true)
   const [bookings, setBookings] = useState<Booking[]>([])
-  const [currentPage, setCurrentPage] = useState(0) // 0부터 시작하는 페이지
+
+  // URL 쿼리 파라미터에서 초기 페이지 번호 읽기 (0부터 시작)
+  const initialPage = parseInt(searchParams.get('page') || '0')
+  const [currentPage, setCurrentPage] = useState(initialPage)
   const [totalPages, setTotalPages] = useState(1)
   const [totalElements, setTotalElements] = useState(0)
 
@@ -150,6 +154,17 @@ export default function BookingsPage() {
       // 예약 완료된 상태 - 예약 상세 페이지로 이동
       router.push(`/bookings/${reservationIdentifier}`)
     }
+  }
+
+  // 페이지 변경 핸들러 - URL 쿼리 파라미터 업데이트
+  const handlePageChange = (pageIndex: number) => {
+    // URL 쿼리 파라미터 업데이트
+    const params = new URLSearchParams(searchParams.toString())
+    params.set('page', pageIndex.toString())
+    router.push(`/bookings?${params.toString()}`, { scroll: false })
+
+    // 상태 업데이트
+    setCurrentPage(pageIndex)
   }
 
   if (loading) {
@@ -401,7 +416,7 @@ export default function BookingsPage() {
                         key={pageIndex}
                         variant={pageIndex === currentPage ? "default" : "outline"}
                         size="sm"
-                        onClick={() => setCurrentPage(pageIndex)} // API에서는 0부터 시작
+                        onClick={() => handlePageChange(pageIndex)} // API에서는 0부터 시작
                         className={`w-10 h-10 lg:w-10 lg:h-10 rounded-xl text-sm lg:text-base ${
                           pageIndex === currentPage
                             ? 'bg-[rgba(10,15,41,0.04)] text-[#14151a] border-[#dee0e3]'

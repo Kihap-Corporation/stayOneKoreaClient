@@ -317,7 +317,12 @@ header: {
     confirmCancelTitle: "Confirmer l'annulation",
     confirmCancelMessage: "Êtes-vous sûr de vouloir annuler cette réservation ? Cette action ne peut pas être annulée.",
     confirmButton: "Annuler la réservation",
-    cancelButton: "Annuler"
+    cancelButton: "Annuler",
+    refundStatusCannotRefund: "Les remboursements ne sont pas possibles.",
+    refundStatusSuccess: "Le remboursement a été traité avec succès. Le remboursement peut prendre 5 à 10 jours ouvrables.",
+    refundStatusFailure: "Le remboursement a échoué.",
+    refundStatusPending: "La demande de remboursement a été reçue. Le traitement de la demande de remboursement peut prendre plus de 3 jours ouvrables.",
+    refundStatusTitle: "Statut du remboursement"
   },
   payment: {
     securePayment: "Paiement sécurisé",
