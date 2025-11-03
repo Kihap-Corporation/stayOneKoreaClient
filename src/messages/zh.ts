@@ -308,6 +308,7 @@ header: {
     checkOut: "退房",
     nights: "晚",
     noBookings: "未找到预订",
+    findBookings: "查找预订",
     refundSuccess: "退款处理已完成。",
     refundFailed: "退款失败。",
     refundNotAllowedCheckIn: "入住当天或之后无法退款。",

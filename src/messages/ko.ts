@@ -308,6 +308,7 @@ header: {
     checkOut: "체크아웃",
     nights: "박",
     noBookings: "예약 내역이 없습니다",
+    findBookings: "예약 찾아보기",
     refundSuccess: "환불 처리가 완료되었습니다.",
     refundFailed: "환불에 실패했습니다.",
     refundNotAllowedCheckIn: "체크인 당일이나 이후에는 환불이 불가능합니다.",

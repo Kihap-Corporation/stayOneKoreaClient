@@ -308,6 +308,7 @@ header: {
     checkOut: "Départ",
     nights: "nuits",
     noBookings: "Aucune réservation trouvée",
+    findBookings: "Trouver des réservations",
     refundSuccess: "Le traitement du remboursement a été terminé avec succès.",
     refundFailed: "Le remboursement a échoué.",
     refundNotAllowedCheckIn: "Les remboursements ne sont pas possibles à partir de la date d'arrivée.",

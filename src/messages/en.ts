@@ -308,6 +308,7 @@ header: {
     checkOut: "Check-out",
     nights: "nights",
     noBookings: "No bookings found",
+    findBookings: "Find Bookings",
     refundSuccess: "Refund processing completed successfully.",
     refundFailed: "Refund failed.",
     refundNotAllowedCheckIn: "Refunds are not possible on or after check-in date.",
