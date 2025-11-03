@@ -4,6 +4,19 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  // Static export 명시적으로 비활성화
+  output: undefined,
+
+  // Export 관련 설정
+  trailingSlash: false,
+
+  // 빌드 출력 디렉토리
+  distDir: '.next',
+
+  // 이미지 설정
+  images: {
+    unoptimized: false, // static export에서는 true로 설정해야 하지만, SSR에서는 false
+  },
   
   // Windows 파일 시스템 에러 방지
   experimental: {
@@ -13,6 +26,8 @@ const nextConfig = {
         // 별칭 최적화
       },
     },
+    // Google Fonts 로딩 비활성화 (빌드 시 네트워크 문제 방지)
+    disableOptimizedLoading: true,
   },
   
   // 웹팩 설정 (Turbopack 사용하지 않을 때)

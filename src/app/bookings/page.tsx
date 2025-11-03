@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
@@ -23,7 +23,7 @@ interface Booking {
   createdAt: string
 }
 
-export default function BookingsPage() {
+function BookingsPageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { messages, currentLanguage } = useLanguage()
@@ -436,5 +436,23 @@ export default function BookingsPage() {
 
       <Footer />
     </div>
+  )
+}
+
+export default function BookingsPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex min-h-screen flex-col">
+        <Header />
+        <main className="flex-1 flex items-center justify-center">
+          <div className="text-center">
+            <p className="text-lg">Loading...</p>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    }>
+      <BookingsPageContent />
+    </Suspense>
   )
 }
