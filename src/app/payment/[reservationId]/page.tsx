@@ -8,7 +8,7 @@ import { useLanguage } from "@/components/language-provider"
 import { Button } from "@/components/ui/button"
 import { ChevronRight, Clock, ShieldCheck } from "lucide-react"
 import { apiGet, apiPost } from "@/lib/api"
-import * as PortOne from "@portone/browser-sdk/v2"
+// import * as PortOne from "@portone/browser-sdk/v2"
 import { toast } from "sonner"
 
 interface RoomFacility {
@@ -277,9 +277,12 @@ export default function PaymentPage() {
 
   const handlePayPalPayment = async () => {
     if (!paymentData || !reservationData) return
-    
+
     try {
       toast.info(messages?.payment?.processing || "결제 처리 중...")
+
+      // PortOne SDK 동적 import
+      const { default: PortOne } = await import("@portone/browser-sdk/v2")
 
       // 고유한 paymentId 생성 (reservationIdentifier + 한국 시간)
       const randomPaymentId = generateUniquePaymentId(reservationData.reservationIdentifier)
