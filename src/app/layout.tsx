@@ -1,18 +1,23 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+// import { Inter, JetBrains_Mono } from "next/font/google"; // 빌드 시 네트워크 문제로 임시 주석 처리
 import { LanguageProvider } from "@/components/language-provider";
 import { Toaster } from "sonner";
 import "./globals.css";
 
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-});
+// Google Fonts 임시 비활성화 - 빌드 시 네트워크 문제 방지
+// const inter = Inter({
+//   variable: "--font-inter",
+//   subsets: ["latin"],
+//   display: "swap",
+//   preload: false,
+// });
 
-const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-jetbrains-mono",
-  subsets: ["latin"],
-});
+// const jetbrainsMono = JetBrains_Mono({
+//   variable: "--font-jetbrains-mono",
+//   subsets: ["latin"],
+//   display: "swap",
+//   preload: false,
+// });
 
 // SUIT Variable 폰트 설정
 const suit = {
@@ -41,7 +46,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${inter.variable} ${jetbrainsMono.variable} ${suit.variable} antialiased`}
+        className={`${suit.variable} antialiased`}
         style={{ fontFamily: "'SUIT Variable', sans-serif" }}
       >
         <LanguageProvider>
