@@ -105,21 +105,21 @@ const getStatusInfo = (status: string) => {
     case 'RESERVATION_UNDER_WAY':
       return {
         label: 'Under Way',
-        color: 'bg-[#f48e2f] border-[#fad0a9]',
+        color: 'bg-[#f48e2f]',
         textColor: 'text-white',
         icon: Clock
       }
     case 'RESERVATION_PENDING':
       return {
         label: 'Pending',
-        color: 'bg-[#ffa726] border-[#ffcc02]',
+        color: 'bg-[#ffa726] ',
         textColor: 'text-white',
         icon: Clock
       }
     case 'APPROVED':
       return {
         label: 'Approved',
-        color: 'bg-[#26bd6c] border-[#9af4c3]',
+        color: 'bg-[#26bd6c]',
         textColor: 'text-white',
         icon: CheckCircle
       }
@@ -133,7 +133,7 @@ const getStatusInfo = (status: string) => {
     case 'REJECTED':
       return {
         label: 'Rejected',
-        color: 'bg-[#f44336] border-[#ffcdd2]',
+        color: 'bg-[#f44336]',
         textColor: 'text-white',
         icon: AlertTriangle
       }
