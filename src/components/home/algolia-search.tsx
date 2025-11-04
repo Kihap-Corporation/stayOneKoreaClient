@@ -102,7 +102,15 @@ export function AlgoliaSearch({
 
     setIsLoading(true)
     try {
-      const response = await searchAlgoliaIndex<SearchHit>('dev_places', {
+      const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX_NAME
+      if (!indexName) {
+        console.error('NEXT_PUBLIC_ALGOLIA_INDEX_NAME is not defined')
+        setResults([])
+        setIsLoading(false)
+        return
+      }
+      
+      const response = await searchAlgoliaIndex<SearchHit>(indexName, {
         query: searchQuery,
         hitsPerPage: 5,
       })
