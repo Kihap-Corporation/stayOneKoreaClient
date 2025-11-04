@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useRouter, useParams } from "next/navigation"
 import { apiGet, apiPutFormData, apiDelete } from "@/lib/api"
+import { AddressSearchInput } from "@/components/admin/address-search-input"
 
 interface I18nField {
   ko: string
@@ -66,9 +67,21 @@ export default function ResidenceDetailPage() {
   const [description, setDescription] = useState<I18nField>({ ko: "", en: "", zh: "", fr: "" })
   const [address, setAddress] = useState("")
   const [addressDetail, setAddressDetail] = useState("")
+  const [zipNo, setZipNo] = useState("") // 우편번호 추가
   const [hostingStartDate, setHostingStartDate] = useState("")
   const [contactNumber, setContactNumber] = useState("")
   const [email, setEmail] = useState("")
+  
+  // 주소 검색 결과 콜백 핸들러
+  const handleAddressSelected = (roadAddr: string, zipNo: string) => {
+    setAddress(roadAddr)
+    setZipNo(zipNo)
+    
+    // 상세주소 입력란에 포커스
+    setTimeout(() => {
+      document.getElementById('addressDetail')?.focus()
+    }, 100)
+  }
   
   // 이미지
   const [profileImage, setProfileImage] = useState<File | null>(null)
@@ -568,39 +581,70 @@ export default function ResidenceDetailPage() {
             <h3 className="text-lg font-semibold text-gray-900 mb-4">기본 정보</h3>
             
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="address">
-                    주소 <span className="text-red-500">*</span>
-                  </Label>
+              {/* 주소 검색 */}
+              <div>
+                <Label htmlFor="address">
+                  주소 <span className="text-red-500">*</span>
+                </Label>
+                {isEditMode ? (
+                  <div className="mt-1">
+                    <AddressSearchInput
+                      onAddressSelected={handleAddressSelected}
+                      disabled={isSaving}
+                    />
+                  </div>
+                ) : (
                   <Input
                     id="address"
                     value={address}
-                    onChange={(e) => setAddress(e.target.value)}
-                    disabled={!isEditMode || isSaving}
-                    readOnly={!isEditMode}
-                    className={isEditMode && !address.trim() ? 'border-red-300' : ''}
+                    readOnly
+                    disabled
+                    className="mt-1"
                   />
-                  {isEditMode && !address.trim() && (
-                    <p className="text-xs text-red-500 mt-1">필수 입력 항목입니다</p>
-                  )}
-                </div>
-                <div>
-                  <Label htmlFor="addressDetail">
-                    상세 주소 <span className="text-red-500">*</span>
-                  </Label>
-                  <Input
-                    id="addressDetail"
-                    value={addressDetail}
-                    onChange={(e) => setAddressDetail(e.target.value)}
-                    disabled={!isEditMode || isSaving}
-                    readOnly={!isEditMode}
-                    className={isEditMode && !addressDetail.trim() ? 'border-red-300' : ''}
-                  />
-                  {isEditMode && !addressDetail.trim() && (
-                    <p className="text-xs text-red-500 mt-1">필수 입력 항목입니다</p>
-                  )}
-                </div>
+                )}
+                {address && (
+                  <div className="mt-2 p-3 bg-blue-50 rounded-md">
+                    <p className="text-sm text-gray-700">
+                      {isEditMode ? (
+                        <>
+                          <span className="font-semibold">선택된 주소:</span> {address}
+                        </>
+                      ) : (
+                        address
+                      )}
+                    </p>
+                    {zipNo && (
+                      <p className="text-xs text-gray-500 mt-1">우편번호: {zipNo}</p>
+                    )}
+                  </div>
+                )}
+                {isEditMode && !address.trim() && (
+                  <p className="text-xs text-red-500 mt-1">필수 입력 항목입니다</p>
+                )}
+              </div>
+
+              {/* 상세 주소 */}
+              <div>
+                <Label htmlFor="addressDetail">
+                  상세 주소 <span className="text-red-500">*</span>
+                </Label>
+                {isEditMode && (
+                  <p className="text-xs text-gray-500 mt-1 mb-1">
+                    Please enter in English (e.g., 2F, Room 201)
+                  </p>
+                )}
+                <Input
+                  id="addressDetail"
+                  value={addressDetail}
+                  onChange={(e) => setAddressDetail(e.target.value)}
+                  placeholder={isEditMode ? "2F, Room 201" : ""}
+                  disabled={!isEditMode || isSaving}
+                  readOnly={!isEditMode}
+                  className={isEditMode && !addressDetail.trim() ? 'border-red-300' : ''}
+                />
+                {isEditMode && !addressDetail.trim() && (
+                  <p className="text-xs text-red-500 mt-1">필수 입력 항목입니다</p>
+                )}
               </div>
 
               <div className="grid grid-cols-2 gap-4">
@@ -785,4 +829,3 @@ export default function ResidenceDetailPage() {
     </AdminLayout>
   )
 }
-
