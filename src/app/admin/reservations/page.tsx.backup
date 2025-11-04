@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, Suspense } from "react"
+import { useState, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { AdminLayout } from "@/components/admin/admin-layout"
 import { Button } from "@/components/ui/button"
@@ -68,7 +68,7 @@ const statusColors = {
   RESERVATION_UNDER_WAY: 'bg-blue-100 text-blue-800'
 }
 
-function AdminReservationsPageContent() {
+export default function AdminReservationsPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [reservations, setReservations] = useState<Reservation[]>([])
@@ -450,20 +450,5 @@ function AdminReservationsPageContent() {
         )}
       </div>
     </AdminLayout>
-  )
-}
-
-export default function AdminReservationsPage() {
-  return (
-    <Suspense fallback={
-      <div className="flex min-h-screen items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#E91E63] mx-auto mb-4"></div>
-          <p className="text-gray-600">로딩 중...</p>
-        </div>
-      </div>
-    }>
-      <AdminReservationsPageContent />
-    </Suspense>
   )
 }

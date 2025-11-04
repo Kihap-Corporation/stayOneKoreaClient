@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { AdminLayout } from "@/components/admin/admin-layout"
 import { AdminConfirmationDialog } from "@/components/admin-confirmation-dialog"
@@ -99,7 +99,7 @@ const paymentStatusColors = {
   REFUNDED: 'bg-blue-100 text-blue-800'
 }
 
-export default function AdminReservationDetailPage() {
+function AdminReservationDetailPageContent() {
   const params = useParams()
   const router = useRouter()
   const [reservation, setReservation] = useState<ReservationDetail | null>(null)
@@ -552,5 +552,20 @@ export default function AdminReservationDetailPage() {
         variant="reject"
       />
     </AdminLayout>
+  )
+}
+
+export default function AdminReservationDetailPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex min-h-screen items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#E91E63] mx-auto mb-4"></div>
+          <p className="text-gray-600">로딩 중...</p>
+        </div>
+      </div>
+    }>
+      <AdminReservationDetailPageContent />
+    </Suspense>
   )
 }
