@@ -102,7 +102,7 @@ export function AlgoliaSearch({
 
     setIsLoading(true)
     try {
-      const response = await searchAlgoliaIndex<SearchHit>('dev_places', {
+      const response = await searchAlgoliaIndex<SearchHit>('prod_places', {
         query: searchQuery,
         hitsPerPage: 5,
       })
