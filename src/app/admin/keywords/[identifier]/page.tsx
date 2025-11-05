@@ -94,7 +94,6 @@ export default function AdminKeywordDetailPage() {
       setLatitude(data.latitude.toString())
       setLongitude(data.longitude.toString())
     } catch (error) {
-      console.error("키워드 조회 실패:", error)
       alert("키워드 정보를 불러오는데 실패했습니다.")
       router.push("/admin/keywords")
     } finally {
@@ -129,7 +128,6 @@ export default function AdminKeywordDetailPage() {
       setIsEditMode(false)
       await fetchKeywordDetail()
     } catch (error) {
-      console.error("키워드 수정 실패:", error)
       alert("키워드 수정 중 오류가 발생했습니다.")
     } finally {
       setIsSaving(false)
@@ -151,7 +149,6 @@ export default function AdminKeywordDetailPage() {
       alert("키워드가 삭제되었습니다.")
       router.push("/admin/keywords")
     } catch (error) {
-      console.error("키워드 삭제 실패:", error)
       alert("키워드 삭제에 실패했습니다.")
     } finally {
       setIsDeleting(false)

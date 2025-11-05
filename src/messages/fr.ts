@@ -29,7 +29,16 @@ header: {
     notifications: "Notifications",
     paymentMethods: "Moyens de paiement",
     help: "Aide",
-    logout: "Déconnexion"
+    logout: "Déconnexion",
+    deleteAccount: "Supprimer le compte",
+    deleteAccountTitle: "Supprimer le compte",
+    deleteWarningTitle: "Avertissement",
+    deleteWarningMessage: "Une fois votre compte supprimé, toutes vos réservations, paiements et autres données seront définitivement supprimés et ne pourront pas être récupérés, et les paiements ne pourront pas être remboursés.",
+    currentPassword: "Mot de passe actuel",
+    enterCurrentPassword: "Saisir le mot de passe actuel",
+    deleteSuccess: "Le compte a été supprimé avec succès.",
+    wrongPassword: "Le mot de passe actuel est incorrect. Veuillez réessayer.",
+    deleteNotAllowedUpcomingReservation: "Vous avez des réservations à venir qui empêchent la suppression du compte. Vous devez annuler ces réservations d'abord pour supprimer votre compte."
   },
   footer: {
     company: "Nom de l'entreprise",

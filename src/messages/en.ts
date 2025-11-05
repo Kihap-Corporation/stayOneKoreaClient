@@ -29,7 +29,16 @@ header: {
     notifications: "Notifications",
     paymentMethods: "Payment Methods",
     help: "Help",
-    logout: "Logout"
+    logout: "Logout",
+    deleteAccount: "Delete Account",
+    deleteAccountTitle: "Delete Account",
+    deleteWarningTitle: "Warning",
+    deleteWarningMessage: "Once you delete your account, all your bookings, payments, and other data will be permanently deleted and cannot be recovered, and the payments cannot be refunded.",
+    currentPassword: "Current Password",
+    enterCurrentPassword: "Enter current password",
+    deleteSuccess: "Account has been successfully deleted.",
+    wrongPassword: "Current password is incorrect. Please try again.",
+    deleteNotAllowedUpcomingReservation: "You have upcoming reservations that prevent account deletion. You must cancel those reservations first to delete your account."
   },
   footer: {
     company: "Company Name",

@@ -36,7 +36,6 @@ const getLocale = async (lang: string) => {
         return defaultKo
     }
   } catch (error) {
-    console.error('Failed to load locale:', error)
     // 폴백으로 undefined 반환 (DatePicker가 기본 로케일 사용)
     return undefined
   }
@@ -230,7 +229,6 @@ export function BookingSidebar({
         setIsLiked(prev => !prev)
       }
     } catch (error) {
-      console.error('좋아요 토글 실패:', error)
       // 에러 발생 시 롤백
       setIsLiked(prev => !prev)
     }
@@ -249,7 +247,6 @@ export function BookingSidebar({
          language === 'zh' ? '链接已复制到剪贴板!' :
          'Lien copié dans le presse-papiers!'))
     } catch (error) {
-      console.error('링크 복사 실패:', error)
       toast.error(messages?.roomDetail?.shareError || 
         (language === 'ko' ? '링크 복사에 실패했습니다' :
          language === 'en' ? 'Failed to copy link' :

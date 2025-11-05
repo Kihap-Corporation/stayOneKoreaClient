@@ -124,7 +124,6 @@ function AdminReservationDetailPageContent() {
         router.push('/admin/reservations')
       }
     } catch (error) {
-      console.error("예약 상세 조회 실패:", error)
       toast.error("예약 정보를 불러오는데 실패했습니다.")
       router.push('/admin/reservations')
     } finally {
@@ -162,7 +161,6 @@ function AdminReservationDetailPageContent() {
         handleStatusUpdateError(response, newStatus)
       }
     } catch (error) {
-      console.error("예약 상태 변경 실패:", error)
       toast.error("예약 상태 변경에 실패했습니다.")
     } finally {
       setIsUpdatingStatus(false)

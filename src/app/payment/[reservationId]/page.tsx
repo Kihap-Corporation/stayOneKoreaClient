@@ -320,8 +320,6 @@ export default function PaymentPage() {
       // 결제 실패 처리
       if (response?.code !== undefined) {
         toast.error(messages?.payment?.failed || "Payment failed")
-        console.log(response)
-        console.error("Payment failed:", response.message)
         return
       }
       
@@ -331,7 +329,6 @@ export default function PaymentPage() {
       
     } catch (error) {
       setVerifyingPayment(false)
-      console.error("Payment error:", error)
       toast.error(messages?.payment?.error || "결제 중 오류가 발생했습니다")
     }
   }

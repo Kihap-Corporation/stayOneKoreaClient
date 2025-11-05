@@ -553,7 +553,6 @@ export default function ReservationPage() {
         try {
           await apiPost('/api/auth/logout')
         } catch (error) {
-          console.error('Logout error:', error)
         }
         router.push('/account_check')
       } else {
@@ -561,7 +560,6 @@ export default function ReservationPage() {
         alert(messages?.reservation?.invalidInput || "잘못된 입력을 했습니다.")
       }
     } catch (error) {
-      console.error('Cancel reservation error:', error)
       alert(messages?.reservation?.cancelError || "예약 취소 중 오류가 발생했습니다.")
     }
   }

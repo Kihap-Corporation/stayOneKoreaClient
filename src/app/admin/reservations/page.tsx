@@ -108,7 +108,6 @@ function AdminReservationsPageContent() {
         toast.error("예약 목록을 불러오는데 실패했습니다.")
       }
     } catch (error) {
-      console.error("예약 리스트 조회 실패:", error)
       toast.error("예약 목록을 불러오는데 실패했습니다.")
     } finally {
       setIsLoading(false)

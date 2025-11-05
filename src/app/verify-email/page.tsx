@@ -48,7 +48,6 @@ export default function VerifyEmailPage() {
         alert(data.message || (messages?.common?.error || "An error occurred"))
       }
     } catch (error) {
-      console.error('Resend email API call failed:', error)
       alert(messages?.common?.error || "An error occurred")
     }
   }
@@ -114,7 +113,7 @@ export default function VerifyEmailPage() {
             )}
 
             <button
-              onClick={() => handleNavigation('/signin')}
+              onClick={() => handleNavigation('/account_check')}
               className="inline-block w-full rounded-full bg-[#E91E63] px-6 py-3 text-center font-medium text-white transition-colors hover:bg-[#C2185B]"
             >
               {messages?.verifyEmail?.goToSignin || "Go to Sign In"}
