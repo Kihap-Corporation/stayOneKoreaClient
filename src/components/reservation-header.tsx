@@ -178,7 +178,7 @@ export function ReservationHeader({ currentStep = 1 }: ReservationHeaderProps) {
                           <span className="text-sm font-medium text-[#14151a] tracking-tight">Bookings</span>
                         </Link>
                         <Link
-                          href="#"
+                          href="/like"
                           className="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 rounded-lg transition-colors cursor-pointer"
                           onClick={() => setIsProfileOpen(false)}
                         >

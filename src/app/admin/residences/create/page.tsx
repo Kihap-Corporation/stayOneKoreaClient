@@ -215,7 +215,6 @@ export default function CreateResidencePage() {
       alert("고시원이 등록되었습니다.")
       router.push("/admin/residences")
     } catch (error) {
-      console.error("고시원 등록 실패:", error)
       alert("고시원 등록 중 오류가 발생했습니다.")
     } finally {
       setIsLoading(false)

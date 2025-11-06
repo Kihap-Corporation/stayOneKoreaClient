@@ -49,7 +49,6 @@ export default function ResidenceRoomsPage() {
       setTotalPages(data.totalPages)
       setTotalElements(data.totalElements)
     } catch (error) {
-      console.error("룸 리스트 조회 실패:", error)
       alert("룸 리스트를 불러오는데 실패했습니다.")
     } finally {
       setIsLoading(false)
@@ -74,7 +73,6 @@ export default function ResidenceRoomsPage() {
       // 리스트 새로고침
       fetchRooms(currentPage)
     } catch (error) {
-      console.error("룸 삭제 실패:", error)
       alert("룸 삭제에 실패했습니다.")
     } finally {
       setDeletingId(null)

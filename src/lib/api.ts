@@ -45,7 +45,6 @@ const handleLogout = async () => {
       alert(data.message || (globalMessages?.auth?.logoutError || "로그아웃 중 오류가 발생했습니다."))
     }
   } catch (error) {
-    console.error('Logout error:', error)
     alert(globalMessages?.auth?.logoutError || "로그아웃 중 오류가 발생했습니다.")
   }
 
@@ -56,7 +55,7 @@ const handleLogout = async () => {
 
   // 로그인 페이지로 리다이렉트
   if (typeof window !== 'undefined') {
-    window.location.href = '/signin'
+    window.location.href = '/account_check'
   }
 }
 

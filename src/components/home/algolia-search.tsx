@@ -104,7 +104,6 @@ export function AlgoliaSearch({
     try {
       const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX_NAME
       if (!indexName) {
-        console.error('NEXT_PUBLIC_ALGOLIA_INDEX_NAME is not defined')
         setResults([])
         setIsLoading(false)
         return
@@ -118,7 +117,6 @@ export function AlgoliaSearch({
       setResults(response.hits)
       setIsOpen(true)
     } catch (error) {
-      console.error('Algolia search error:', error)
       setResults([])
     } finally {
       setIsLoading(false)

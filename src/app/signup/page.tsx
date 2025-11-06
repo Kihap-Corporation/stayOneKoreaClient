@@ -422,7 +422,6 @@ export default function SignupPage() {
         router.push('/account_check')
       }
     } catch (error) {
-      console.error('Signup API call failed:', error)
       alert(messages?.signup?.signupError || "Failed to create account. Please try again.")
       router.push('/account_check')
     } finally {

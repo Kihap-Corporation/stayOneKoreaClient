@@ -283,7 +283,6 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
         const { ko } = await import('date-fns/locale/ko')
         setDatePickerLocale(ko)
       } catch (error) {
-        console.error('Failed to load locale:', error)
         setDatePickerLocale(undefined)
       }
     }
@@ -340,7 +339,6 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
           setError("LOAD_ERROR")
         }
       } catch (error) {
-        console.error('Error fetching room detail:', error)
         setError("LOAD_ERROR")
       } finally {
         setLoading(false)
@@ -384,7 +382,6 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
           setRelatedRooms([])
         }
       } catch (error) {
-        console.error('Error fetching related rooms:', error)
         setRelatedRooms([])
       }
     }
@@ -548,7 +545,6 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
         )
       }
     } catch (error) {
-      console.error('좋아요 토글 실패:', error)
       // 에러 발생 시 롤백
       setRelatedRooms(prevRooms =>
         prevRooms.map(room =>
@@ -912,7 +908,6 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
                   await navigator.clipboard.writeText(currentUrl)
                   toast.success(messages?.roomDetail?.shareSuccess || 'Link copied to clipboard!')
                 } catch (error) {
-                  console.error('링크 복사 실패:', error)
                   toast.error(messages?.roomDetail?.shareError || 'Failed to copy link')
                 }
               }}
@@ -936,7 +931,6 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
                     setRoomData(prev => prev ? { ...prev, roomLikeCheck: !prev.roomLikeCheck } : prev)
                   }
                 } catch (error) {
-                  console.error('좋아요 토글 실패:', error)
                   // 에러 발생 시 롤백
                   setRoomData(prev => prev ? { ...prev, roomLikeCheck: !prev.roomLikeCheck } : prev)
                 }

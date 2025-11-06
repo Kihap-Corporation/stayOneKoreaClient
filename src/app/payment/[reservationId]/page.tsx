@@ -43,6 +43,7 @@ interface ReservationAPIResponse {
   userEmail: string
   userPhoneNumber: string
   userCountryCode: string
+  paymentId: string
 }
 
 interface PaymentPageData {
@@ -256,24 +257,6 @@ export default function PaymentPage() {
     }
   }
 
-  // 고유한 paymentId 생성 함수 (reservationIdentifier + 한국 시간)
-  const generateUniquePaymentId = (reservationIdentifier: string) => {
-    // 한국 시간 타임스탬프 생성 (YYYYMMDDHHmmss 형식)
-    const now = new Date()
-    const kstTime = new Intl.DateTimeFormat('sv-SE', {
-      timeZone: 'Asia/Seoul',
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit'
-    }).format(now).replace(/\D/g, '') // 모든 구분자 제거
-
-    // reservationIdentifier의 마지막 8자리 + 한국 시간 타임스탬프
-    const shortReservationId = reservationIdentifier.slice(-8)
-    return `${shortReservationId}-${kstTime}`
-  }
 
   const handlePayPalPayment = async () => {
     if (!paymentData || !reservationData) return
@@ -284,8 +267,8 @@ export default function PaymentPage() {
       // PortOne SDK 동적 import
       const { default: PortOne } = await import("@portone/browser-sdk/v2")
 
-      // 고유한 paymentId 생성 (reservationIdentifier + 한국 시간)
-      const randomPaymentId = generateUniquePaymentId(reservationData.reservationIdentifier)
+      // 서버에서 받은 paymentId 사용
+      const paymentId = reservationData.paymentId
       const productsLink = process.env.NEXT_PUBLIC_PORTONE_PRODUCTS_LINK!
       const redirectUrl = process.env.NEXT_PUBLIC_PORTONE_REDIRECT_URL!
 
@@ -293,7 +276,7 @@ export default function PaymentPage() {
       const response = await PortOne.requestPayment({
         storeId: process.env.NEXT_PUBLIC_PORTONE_STORE_ID!,
         channelKey: process.env.NEXT_PUBLIC_PORTONE_CHANNEL_KEY!,
-        paymentId: randomPaymentId,
+        paymentId: paymentId,
         orderName: paymentData.room.title,
         totalAmount: paymentData.totalPrice*100,
         currency: "CURRENCY_USD",
@@ -308,10 +291,10 @@ export default function PaymentPage() {
         windowType: {
           mobile: "REDIRECTION"
         },
-        redirectUrl: redirectUrl + `/payment/processing/${reservationData.reservationIdentifier}?paymentId=${randomPaymentId}`,
+        redirectUrl: redirectUrl + `/payment/processing/${reservationData.reservationIdentifier}?paymentId=${paymentId}`,
         customData: {
           reservationIdentifier: reservationData.reservationIdentifier,
-          paymentId: randomPaymentId,
+          paymentId: paymentId,
         },
         bypass: { 
           eximbay_v2 : {
@@ -337,24 +320,15 @@ export default function PaymentPage() {
       // 결제 실패 처리
       if (response?.code !== undefined) {
         toast.error(messages?.payment?.failed || "Payment failed")
-        console.log(response)
-        console.error("Payment failed:", response.message)
         return
       }
       
-      // 결제 실패처리
-      if (!response?.paymentId) {
-        toast.error(messages?.payment?.verificationFailed || "결제 확인에 실패했습니다")
-        return
-      }
-
       // 결제 성공 - 결제중 페이지로 이동 (paymentId 전달)
       // 모바일은 redirectUrl을 통해 자동으로 이동하고, 데스크톱은 여기서 이동
-      router.push(`/payment/processing/${reservationData.reservationIdentifier}?paymentId=${response.paymentId}`)
+      router.push(`/payment/processing/${reservationData.reservationIdentifier}?paymentId=${paymentId}`)
       
     } catch (error) {
       setVerifyingPayment(false)
-      console.error("Payment error:", error)
       toast.error(messages?.payment?.error || "결제 중 오류가 발생했습니다")
     }
   }

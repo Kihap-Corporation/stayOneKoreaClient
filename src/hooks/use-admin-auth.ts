@@ -30,7 +30,6 @@ export function useAdminAuth(redirectToSignin = true): AdminAuthResult {
         setEmail(response.data?.email || null)
       } catch (error) {
         // 403 에러 = 관리자 권한 없음
-        console.error("Admin auth check failed:", error)
         setIsAdmin(false)
         if (redirectToSignin) {
           router.push("/admin/signin")

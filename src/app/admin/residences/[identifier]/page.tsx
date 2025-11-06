@@ -152,7 +152,6 @@ export default function ResidenceDetailPage() {
         }))
       )
     } catch (error) {
-      console.error("고시원 조회 실패:", error)
       alert("고시원 정보를 불러오는데 실패했습니다.")
       router.push("/admin/residences")
     } finally {
@@ -175,7 +174,6 @@ export default function ResidenceDetailPage() {
       alert("고시원이 삭제되었습니다.")
       router.push("/admin/residences")
     } catch (error) {
-      console.error("고시원 삭제 실패:", error)
       alert("고시원 삭제에 실패했습니다.")
     } finally {
       setIsDeleting(false)
@@ -298,28 +296,18 @@ export default function ResidenceDetailPage() {
       } else if (residence?.profileImage?.imageUrl) {
         // 기존 이미지를 다시 보내야 함 - URL에서 fetch해서 File로 변환
         try {
-          console.log("🖼️ 프로필 이미지 URL:", residence.profileImage.imageUrl)
-          
           const response = await fetch(residence.profileImage.imageUrl)
-          console.log("📥 Fetch 응답:", response.status, response.statusText)
-          
+
           if (!response.ok) {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`)
           }
-          
+
           const blob = await response.blob()
-          console.log("✅ Blob 생성 성공:", blob.type, blob.size, "bytes")
-          
+
           const filename = residence.profileImage.imageUrl.split('/').pop() || 'profile.png'
           const file = new File([blob], filename, { type: blob.type })
           formData.append("profileImage", file)
-          console.log("✅ 프로필 이미지 FormData 추가 완료")
         } catch (error) {
-          console.error("❌ 프로필 이미지 로드 실패:", error)
-          console.error("❌ 에러 상세:", {
-            message: error instanceof Error ? error.message : 'Unknown error',
-            url: residence.profileImage.imageUrl
-          })
           alert(`프로필 이미지 로드 실패:\n${error instanceof Error ? error.message : '알 수 없는 오류'}\n\nCloudflare R2 CORS 설정을 확인하거나 이미지를 새로 업로드해주세요.`)
           setIsSaving(false)
           return
@@ -341,17 +329,13 @@ export default function ResidenceDetailPage() {
         } else if (img.imageUrl) {
           // 기존 이미지 - URL에서 fetch해서 File로 변환
           try {
-            console.log(`🖼️ 갤러리 이미지 ${index} URL:`, img.imageUrl)
-            
             const response = await fetch(img.imageUrl)
-            console.log(`📥 갤러리 ${index} Fetch 응답:`, response.status, response.statusText)
-            
+
             if (!response.ok) {
               throw new Error(`HTTP ${response.status}: ${response.statusText}`)
             }
-            
+
             const blob = await response.blob()
-            console.log(`✅ 갤러리 ${index} Blob 생성 성공:`, blob.type, blob.size, "bytes")
             
             const filename = img.imageUrl.split('/').pop() || `gallery_${index}.png`
             const file = new File([blob], filename, { type: blob.type })
@@ -360,11 +344,6 @@ export default function ResidenceDetailPage() {
               file: file
             }
           } catch (error) {
-            console.error(`❌ 갤러리 이미지 ${index} 로드 실패:`, error)
-            console.error(`❌ 갤러리 ${index} 에러 상세:`, {
-              message: error instanceof Error ? error.message : 'Unknown error',
-              url: img.imageUrl
-            })
             return null
           }
         }
@@ -381,20 +360,12 @@ export default function ResidenceDetailPage() {
         }
       })
 
-      // FormData 내용 확인 (디버깅)
-      console.log("=== 전송되는 FormData 내용 ===")
-      for (let [key, value] of formData.entries()) {
-        console.log(`${key}:`, value instanceof File ? `File(${value.name})` : value)
-      }
-      console.log("=== FormData 끝 ===")
-
       await apiPutFormData(`/api/v1/admin/residences/${identifier}`, formData)
 
       alert("고시원이 수정되었습니다.")
       setIsEditMode(false)
       fetchResidenceDetail()  // 데이터 다시 로드
     } catch (error) {
-      console.error("고시원 수정 실패:", error)
       alert("고시원 수정 중 오류가 발생했습니다.")
     } finally {
       setIsSaving(false)

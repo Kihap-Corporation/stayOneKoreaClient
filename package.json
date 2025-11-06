@@ -7,6 +7,8 @@
     "dev:legacy": "next dev",
     "build": "next build",
     "start": "next start",
+    "start:port": "PORT=3001 next start",
+    "start:local": "next start --hostname 127.0.0.1",
     "lint": "next lint"
   },
   "dependencies": {

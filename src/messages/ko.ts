@@ -29,7 +29,16 @@ header: {
     notifications: "알림 설정",
     paymentMethods: "결제 수단",
     help: "도움말",
-    logout: "로그아웃"
+    logout: "로그아웃",
+    deleteAccount: "계정 삭제",
+    deleteAccountTitle: "계정 삭제",
+    deleteWarningTitle: "경고",
+    deleteWarningMessage: "계정을 삭제하면 모든 예약, 결제 및 기타 데이터가 영구적으로 삭제되며 복구할 수 없고, 해당 결제를 환불할 수 없습니다.",
+    currentPassword: "현재 비밀번호",
+    enterCurrentPassword: "현재 비밀번호를 입력하세요",
+    deleteSuccess: "계정이 성공적으로 삭제되었습니다.",
+    wrongPassword: "현재 비밀번호가 올바르지 않습니다. 다시 시도해주세요.",
+    deleteNotAllowedUpcomingReservation: "다가오는 예약된 방이 있어서 회원탈퇴가 불가능합니다. 해당 예약을 취소해야만 회원탈퇴가 가능합니다."
   },
   footer: {
     company: "스테이원코리아",

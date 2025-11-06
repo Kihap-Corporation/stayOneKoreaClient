@@ -232,81 +232,8 @@ export function Header() {
               </div>
             </Link>
 
-            {/* Mobile Profile + Hamburger - Right */}
+            {/* Mobile Hamburger Menu Only - Right */}
             <div className="flex items-center gap-2">
-              {/* Mobile Profile Icon */}
-              <div className="relative">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-11 w-8 p-0 rounded-full overflow-hidden hover:bg-transparent"
-                  onClick={() => setIsProfileOpen(!isProfileOpen)}
-                >
-                  <img
-                    src="/icons/profile.png"
-                    alt="Profile"
-                    className="h-8 w-8 rounded-full object-cover"
-                  />
-                </Button>
-
-                {isProfileOpen && (
-                  <>
-                    <div className="fixed inset-0 z-10" onClick={() => setIsProfileOpen(false)} />
-                    <div className="absolute right-0 top-12 z-20 w-[220px] bg-white rounded-2xl shadow-lg border border-[#dee0e3] py-2 px-1">
-                      {isLoggedIn ? (
-                        <>
-                          <Link
-                            href="/mypage"
-                            className="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 rounded-lg transition-colors"
-                            onClick={() => setIsProfileOpen(false)}
-                          >
-                            <User className="h-5 w-5 text-gray-600" />
-                            <span className="text-sm font-medium text-[#14151a] tracking-tight">My account</span>
-                          </Link>
-                            <Link
-                              href="/bookings"
-                              className="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 rounded-lg transition-colors"
-                              onClick={() => setIsProfileOpen(false)}
-                            >
-                              <Calendar className="h-5 w-5 text-gray-600" />
-                              <span className="text-sm font-medium text-[#14151a] tracking-tight">Bookings</span>
-                            </Link>
-                          <Link
-                            href="/like"
-                            className="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 rounded-lg transition-colors"
-                            onClick={() => setIsProfileOpen(false)}
-                          >
-                            <Heart className="h-5 w-5 text-gray-600" />
-                            <span className="text-sm font-medium text-[#14151a] tracking-tight">Saved</span>
-                          </Link>
-                          <button
-                            className="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 rounded-lg transition-colors w-full text-left"
-                            onClick={() => {
-                              setIsProfileOpen(false)
-                              logout()
-                            }}
-                          >
-                            <LogOut className="h-5 w-5 text-gray-600" />
-                            <span className="text-sm font-medium text-[#14151a] tracking-tight">Sign out</span>
-                          </button>
-                        </>
-                      ) : (
-                        <button
-                          className="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 rounded-lg transition-colors w-full text-left"
-                          onClick={() => {
-                            setIsProfileOpen(false)
-                            window.location.href = '/account_check'
-                          }}
-                        >
-                          <LogOut className="h-5 w-5 text-gray-600" />
-                          <span className="text-sm font-medium text-[#14151a] tracking-tight">Sign in</span>
-                        </button>
-                      )}
-                    </div>
-                  </>
-                )}
-              </div>
-
               {/* Mobile Hamburger Menu */}
               <Button
                 variant="ghost"
@@ -345,65 +272,109 @@ export function Header() {
 
         {/* Mobile Menu - Hidden Desktop Elements */}
         {isMobileMenuOpen && (
-          <div className="lg:hidden border-t bg-white/95 backdrop-blur mt-3 py-4 animate-in slide-in-from-top-2 duration-200">
-            <div className="flex flex-col gap-4">
+          <div className="lg:hidden bg-[#f7f7f8] duration-200">
+            <div className="bg-white py-10">
+              <div className="max-w-[1200px] mx-auto px-4">
+                <div className="flex flex-col gap-6">
+                  {/* Navigation Items */}
+                  <div className="flex items-center gap-1.5">
+                    <Bed className="h-5 w-5 text-[#14151a]" />
+                    <span className="text-[16px] font-medium leading-[24px] tracking-[-0.2px] text-[#14151a]">
+                      {messages?.header?.navigation?.stays || "Stays"}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <img src="/icons/info.png" alt="About" className="h-5 w-5" />
+                    <span className="text-[16px] font-medium leading-[24px] tracking-[-0.2px] text-[#14151a]">
+                      {messages?.header?.navigation?.about || "About Gosiwon"}
+                    </span>
+                  </div>
 
-              {/* Mobile Search Bar - 특정 페이지에서만 숨김 */}
-              {!shouldHideMobileMenuSearch() && (
-                <div className="relative">
-                  <Input
-                    type="text"
-                    placeholder={messages?.header?.search?.placeholder || "Loading..."}
-                    className="w-full h-11 pr-14 pl-5 rounded-full border-2 border-gray-200 hover:border-gray-300 focus:border-[#E91E63] transition-colors bg-gray-50/50 focus:bg-white"
-                  />
-                  <Button
-                    size="icon"
-                    className="absolute right-1 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-[#E91E63] hover:bg-[#C2185B] shadow-lg hover:shadow-xl transition-all duration-200"
-                  >
-                    <Search className="h-4 w-4 text-white" />
-                  </Button>
-                </div>
-              )}
+                  {/* Divider */}
+                  <div className="h-px bg-[#e9eaec] w-full" />
 
-              {/* Mobile Navigation */}
-              <div className="flex flex-col gap-3">
-                <Button className="bg-[#E91E63] hover:bg-[#C2185B] text-white rounded-full justify-start h-11 shadow-lg hover:shadow-xl transition-all duration-200">
-                  <span className="font-medium">{messages?.header?.navigation?.stays || "Loading..."}</span>
-                </Button>
-                <Link href="#" className="text-sm text-gray-700 hover:text-gray-900 flex items-center gap-2 py-3 px-2 hover:bg-gray-50 rounded-lg transition-colors">
-                  <img
-                    src="/icons/info.png"
-                    alt="About"
-                    className="h-5 w-5"
-                  />
-                  <span className="font-medium">{messages?.header?.navigation?.about || "Loading..."}</span>
-                </Link>
-              </div>
-
-              {/* Mobile Settings & Language */}
-              <div className="border-t border-gray-100 pt-4 space-y-3">
-                {/* Language Selector */}
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="w-full justify-start text-sm h-11 border-2 hover:border-gray-300 transition-colors">
-                      <Globe className="h-4 w-4 mr-2 text-gray-600" />
-                      <img src={currentLanguage.flag} alt={currentLanguage.name} className="w-5 h-5 mr-2 rounded-sm" />
-                      <span className="font-medium">{currentLanguage.name}</span>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start" className="w-full">
-                    {languages.map((language) => (
-                      <DropdownMenuItem
-                        key={language.code}
-                        onClick={() => setCurrentLanguage(language)}
-                        className={`flex items-center gap-3 px-3 py-2 cursor-pointer ${language.code === currentLanguage.code ? "bg-pink-50 text-[#E91E63]" : "hover:bg-gray-50"}`}
+                  {/* Profile Menu Items */}
+                  {isLoggedIn ? (
+                    <>
+                      <Link
+                        href="/mypage"
+                        className="flex items-center gap-1.5 hover:bg-gray-50 rounded px-1 py-1 transition-colors"
+                        onClick={() => setIsMobileMenuOpen(false)}
                       >
-                        <img src={language.flag} alt={language.name} className="w-5 h-5 rounded-sm" />
-                        <span className="font-medium">{language.name}</span>
-                      </DropdownMenuItem>
-                    ))}
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                        <User className="h-5 w-5 text-gray-600" />
+                        <span className="text-[16px] font-medium leading-[24px] tracking-[-0.2px] text-[#14151a]">My account</span>
+                      </Link>
+                      <Link
+                        href="/bookings"
+                        className="flex items-center gap-1.5 hover:bg-gray-50 rounded px-1 py-1 transition-colors"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        <Calendar className="h-5 w-5 text-gray-600" />
+                        <span className="text-[16px] font-medium leading-[24px] tracking-[-0.2px] text-[#14151a]">Bookings</span>
+                      </Link>
+                      <Link
+                        href="/like"
+                        className="flex items-center gap-1.5 hover:bg-gray-50 rounded px-1 py-1 transition-colors"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        <Heart className="h-5 w-5 text-gray-600" />
+                        <span className="text-[16px] font-medium leading-[24px] tracking-[-0.2px] text-[#14151a]">Saved</span>
+                      </Link>
+                      <button
+                        className="flex items-center gap-1.5 hover:bg-gray-50 rounded px-1 py-1 transition-colors w-full text-left"
+                        onClick={() => {
+                          setIsMobileMenuOpen(false)
+                          logout()
+                        }}
+                      >
+                        <LogOut className="h-5 w-5 text-gray-600" />
+                        <span className="text-[16px] font-medium leading-[24px] tracking-[-0.2px] text-[#14151a]">Sign out</span>
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      className="flex items-center gap-1.5 hover:bg-gray-50 rounded px-1 py-1 transition-colors w-full text-left"
+                      onClick={() => {
+                        setIsMobileMenuOpen(false)
+                        window.location.href = '/account_check'
+                      }}
+                    >
+                      <LogOut className="h-5 w-5 text-gray-600" />
+                      <span className="text-[16px] font-medium leading-[24px] tracking-[-0.2px] text-[#14151a]">Sign in</span>
+                    </button>
+                  )}
+
+                  {/* Divider */}
+                  <div className="h-px bg-[#e9eaec] w-full" />
+
+                  {/* Language Selector */}
+                  <div className="flex items-center justify-center gap-4">
+                    {/* Language Selector */}
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <div className="flex items-center gap-1 cursor-pointer">
+                          <img src={currentLanguage.flag} alt={currentLanguage.name} className="w-5 h-5 rounded-sm" />
+                          <span className="text-[14px] font-medium leading-[20px] tracking-[-0.1px] text-[#14151a] uppercase">
+                            {currentLanguage.code}
+                          </span>
+                          <ChevronDown className="h-4 w-4 text-gray-600" />
+                        </div>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="center" className="w-48">
+                        {languages.map((language) => (
+                          <DropdownMenuItem
+                            key={language.code}
+                            onClick={() => setCurrentLanguage(language)}
+                            className={`flex items-center gap-3 px-3 py-2 cursor-pointer ${language.code === currentLanguage.code ? "bg-pink-50 text-[#E91E63]" : "hover:bg-gray-50"}`}
+                          >
+                            <img src={language.flag} alt={language.name} className="w-5 h-5 rounded-sm" />
+                            <span className="font-medium">{language.name}</span>
+                          </DropdownMenuItem>
+                        ))}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

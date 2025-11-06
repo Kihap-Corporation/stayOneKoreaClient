@@ -22,7 +22,6 @@ export function getAlgoliaClient() {
     cachedClient = algoliasearch(APP_ID, API_KEY)
     return cachedClient
   } catch (error) {
-    console.error("Failed to initialize Algolia client:", error)
     return null
   }
 }

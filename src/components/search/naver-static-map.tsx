@@ -46,7 +46,6 @@ export function NaverStaticMap({
   // Check if script is already loaded
   useEffect(() => {
     if (typeof window !== 'undefined' && window.naver && window.naver.maps && !isLoaded) {
-      console.log('Naver Maps already loaded')
       setIsLoaded(true)
     }
   }, [isLoaded])
@@ -58,7 +57,6 @@ export function NaverStaticMap({
     // 이미 지도가 있으면 초기화하지 않음
     if (map) return
 
-    console.log('Initializing Naver Map...')
 
     const mapOptions = {
       center: new window.naver.maps.LatLng(center.lat, center.lng),
@@ -78,7 +76,6 @@ export function NaverStaticMap({
   useEffect(() => {
     if (!map || !window.naver) return
 
-    console.log('Updating map center:', center.lat, center.lng)
     map.setCenter(new window.naver.maps.LatLng(center.lat, center.lng))
     map.setZoom(level)
   }, [map, center.lat, center.lng, level])
@@ -139,7 +136,6 @@ export function NaverStaticMap({
   // API 로드 실패 처리
   useEffect(() => {
     window.navermap_authFailure = () => {
-      console.error('네이버 지도 API 인증 실패')
       alert('지도를 불러올 수 없습니다. API 키를 확인해주세요.')
     }
   }, [])
@@ -151,7 +147,6 @@ export function NaverStaticMap({
         strategy="lazyOnload"
         onLoad={() => setIsLoaded(true)}
         onError={() => {
-          console.error('네이버 지도 API 로드 실패')
           setIsLoaded(false)
         }}
       />

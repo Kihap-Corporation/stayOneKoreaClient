@@ -26,7 +26,7 @@ export function LoginRequiredModal({
   const handleLoginClick = () => {
     // 현재 페이지 URL을 returnUrl로 저장
     const redirectUrl = returnUrl || (typeof window !== 'undefined' ? window.location.pathname + window.location.search : '/')
-    router.push(`/signin?redirect=${encodeURIComponent(redirectUrl)}`)
+    router.push(`/account_check?redirect=${encodeURIComponent(redirectUrl)}`)
   }
 
   return (
