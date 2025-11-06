@@ -77,7 +77,6 @@ export function FeaturedRoomsSection() {
           setRooms(formattedRooms)
         }
       } catch (err) {
-        console.error('Failed to fetch rooms:', err)
         setError('Failed to load rooms')
       } finally {
         setLoading(false)

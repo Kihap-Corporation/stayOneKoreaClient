@@ -82,7 +82,6 @@ function SearchResultContent() {
         setTotalPages(response.totalPages)
         setTotalElements(response.totalElements)
       } catch (err) {
-        console.error('Search error:', err)
         setError(messages?.searchResult?.searchError || 'An error occurred while searching')
       } finally {
         setLoading(false)
@@ -166,7 +165,6 @@ function SearchResultContent() {
         )
       }
     } catch (error) {
-      console.error('좋아요 토글 실패:', error)
       // 에러 발생 시 롤백
       setRooms(prevRooms =>
         prevRooms.map(room =>

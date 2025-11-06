@@ -29,7 +29,16 @@ header: {
     notifications: "Notifications",
     paymentMethods: "Payment Methods",
     help: "Help",
-    logout: "Logout"
+    logout: "Logout",
+    deleteAccount: "Delete Account",
+    deleteAccountTitle: "Delete Account",
+    deleteWarningTitle: "Warning",
+    deleteWarningMessage: "Once you delete your account, all your bookings, payments, and other data will be permanently deleted and cannot be recovered, and the payments cannot be refunded.",
+    currentPassword: "Current Password",
+    enterCurrentPassword: "Enter current password",
+    deleteSuccess: "Account has been successfully deleted.",
+    wrongPassword: "Current password is incorrect. Please try again.",
+    deleteNotAllowedUpcomingReservation: "You have upcoming reservations that prevent account deletion. You must cancel those reservations first to delete your account."
   },
   footer: {
     company: "Company Name",
@@ -307,7 +316,23 @@ header: {
     checkIn: "Check-in",
     checkOut: "Check-out",
     nights: "nights",
-    noBookings: "No bookings found"
+    noBookings: "No bookings found",
+    findBookings: "Find Bookings",
+    refundSuccess: "Refund processing completed successfully.",
+    refundFailed: "Refund failed.",
+    refundNotAllowedCheckIn: "Refunds are not possible on or after check-in date.",
+    refundNotAllowedPayment: "Refunds are not possible because payment is not completed. Please try refund after payment is completed.",
+    refundAlreadyCompleted: "Refunds are not possible because refund has already been completed.",
+    refundError: "Refund processing failed.",
+    confirmCancelTitle: "Confirm Cancellation",
+    confirmCancelMessage: "Are you sure you want to cancel this booking? This action cannot be undone.",
+    confirmButton: "Cancel Booking",
+    cancelButton: "Cancel",
+    refundStatusCannotRefund: "Refunds are not possible.",
+    refundStatusSuccess: "Refund has been processed successfully. Refund may take 5-10 business days.",
+    refundStatusFailure: "Refund failed.",
+    refundStatusPending: "Refund request has been received. It may take more than 3 business days to process the refund request.",
+    refundStatusTitle: "Refund Status"
   },
   payment: {
     securePayment: "Secure payment",

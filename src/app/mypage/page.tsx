@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
-import { apiGet, apiPut, apiPost } from "@/lib/api"
+import { apiGet, apiPut, apiPostWithResponse } from "@/lib/api"
 import { useLanguage } from "@/components/language-provider"
 import { PhoneInput } from 'react-international-phone'
 import 'react-international-phone/style.css'
@@ -91,7 +91,6 @@ export default function MyPage() {
         }
       } catch (error) {
         if (isMounted) {
-          console.error('Failed to fetch user data:', error)
           setError("Failed to load user data")
         }
       } finally {
@@ -127,7 +126,6 @@ export default function MyPage() {
         alert(response.message || "Failed to update name")
       }
     } catch (error) {
-      console.error('Name change error:', error)
       alert(messages?.common?.error || "Failed to update name")
     }
   }
@@ -165,7 +163,6 @@ export default function MyPage() {
         alert(response.message || "Failed to update phone number")
       }
     } catch (error) {
-      console.error('Phone change error:', error)
       alert(messages?.common?.error || "Failed to update phone number")
     }
   }
@@ -214,36 +211,46 @@ export default function MyPage() {
     setPasswordError("")
 
     try {
-      const response = await apiPost('/api/auth/withdraw', {
+      // 현재 날짜를 yyyy-MM-dd 형식으로 생성 (한국 시간 기준)
+      const now = new Date()
+      const kstDate = new Intl.DateTimeFormat('sv-SE', {
+        timeZone: 'Asia/Seoul',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      }).format(now)
+
+      const { response: httpResponse, data } = await apiPostWithResponse('/api/auth/withdraw', {
         currentPassword: currentPassword,
+        requestTime: kstDate,
       })
 
-      if (response.code === 200) {
+      // 디버깅용
+      console.log('회원탈퇴 API 응답:', { httpResponse, data })
+      console.log('응답 코드:', data.code, '타입:', typeof data.code)
+
+      if (data.code === 200) {
         // 성공 시 성공 메시지 표시 후 account_check 페이지로 리다이렉트
         alert(messages?.mypage?.deleteSuccess || "Account has been successfully deleted.")
         localStorage.clear()
         sessionStorage.clear()
         window.location.href = '/account_check'
-      } else if (response.code === 40103) {
+      } else if (data.code === 40103) {
         // 로그인 다시하라는 메시지 후 강제 로그아웃
         alert(messages?.auth?.sessionExpired || "Session expired. Please login again.")
         localStorage.clear()
         sessionStorage.clear()
-        window.location.href = '/signin'
-      } else if (response.code === 40106) {
+        window.location.href = '/account_check'
+      } else if (data.code === 40106) {
         // 비밀번호가 틀렸다는 메시지 (비밀번호 입력칸 아래에 표시)
         setPasswordError(messages?.mypage?.wrongPassword || "Current password is incorrect. Please try again.")
+      } else if (data.code === 40014) {
+        // 다가오는 예약이 있어서 탈퇴 불가능
+        alert(messages?.mypage?.deleteNotAllowedUpcomingReservation || "You have upcoming reservations that prevent account deletion. You must cancel those reservations first to delete your account.")
       } else {
-        setDeleteError(response.message || "Failed to delete account")
+        setDeleteError(data.message || "Failed to delete account")
       }
     } catch (error: any) {
-      console.error('Account deletion error:', error)
-      console.error('Error details:', {
-        message: error.message,
-        status: error.status,
-        data: error.data,
-        response: error.response
-      })
 
       // 더 구체적인 오류 메시지 처리
       if (error.message?.includes('Network')) {
@@ -459,7 +466,7 @@ export default function MyPage() {
                   onClick={() => setShowDeleteModal(true)}
                   className="cursor-pointer rounded-[10px] bg-transparent px-2.5 py-1.5 text-[14px] font-medium leading-[20px] tracking-[-0.1px] text-[rgba(15,19,36,0.6)] hover:text-[rgba(15,19,36,0.8)]"
                 >
-                  Delete my account
+                  {messages?.mypage?.deleteAccount || "Delete my account"}
                 </button>
               </div>
             </>

@@ -58,7 +58,6 @@ export function RoomSelectModal({ isOpen, onClose, onSelect, displayOrder }: Roo
       setRooms(data.rooms)
       setTotalPages(data.totalPages)
     } catch (error) {
-      console.error("룸 목록 조회 실패:", error)
       alert("룸 목록을 불러오는데 실패했습니다.")
     } finally {
       setIsLoading(false)

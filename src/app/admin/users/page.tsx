@@ -49,7 +49,6 @@ export default function AdminUsersPage() {
       setTotalPages(data.totalPages)
       setTotalElements(data.totalElements)
     } catch (error) {
-      console.error("유저 목록 조회 실패:", error)
       alert(messages.admin.users.loadError)
     } finally {
       setIsLoading(false)

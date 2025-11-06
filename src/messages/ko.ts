@@ -29,7 +29,16 @@ header: {
     notifications: "알림 설정",
     paymentMethods: "결제 수단",
     help: "도움말",
-    logout: "로그아웃"
+    logout: "로그아웃",
+    deleteAccount: "계정 삭제",
+    deleteAccountTitle: "계정 삭제",
+    deleteWarningTitle: "경고",
+    deleteWarningMessage: "계정을 삭제하면 모든 예약, 결제 및 기타 데이터가 영구적으로 삭제되며 복구할 수 없고, 해당 결제를 환불할 수 없습니다.",
+    currentPassword: "현재 비밀번호",
+    enterCurrentPassword: "현재 비밀번호를 입력하세요",
+    deleteSuccess: "계정이 성공적으로 삭제되었습니다.",
+    wrongPassword: "현재 비밀번호가 올바르지 않습니다. 다시 시도해주세요.",
+    deleteNotAllowedUpcomingReservation: "다가오는 예약된 방이 있어서 회원탈퇴가 불가능합니다. 해당 예약을 취소해야만 회원탈퇴가 가능합니다."
   },
   footer: {
     company: "스테이원코리아",
@@ -307,7 +316,23 @@ header: {
     checkIn: "체크인",
     checkOut: "체크아웃",
     nights: "박",
-    noBookings: "예약 내역이 없습니다"
+    noBookings: "예약 내역이 없습니다",
+    findBookings: "예약 찾아보기",
+    refundSuccess: "환불 처리가 완료되었습니다.",
+    refundFailed: "환불에 실패했습니다.",
+    refundNotAllowedCheckIn: "체크인 당일이나 이후에는 환불이 불가능합니다.",
+    refundNotAllowedPayment: "결제가 완료되지 않아서 환불이 불가능합니다. 결제가 완료된 후, 환불을 시도해주세요.",
+    refundAlreadyCompleted: "이미 환불이 완료되어 환불이 불가능합니다.",
+    refundError: "환불 처리에 실패했습니다.",
+    confirmCancelTitle: "예약 취소 확인",
+    confirmCancelMessage: "정말 예약을 취소하시겠습니까? 이 작업은 되돌릴 수 없습니다.",
+    confirmButton: "예약 취소",
+    cancelButton: "취소",
+    refundStatusCannotRefund: "환불이 불가능합니다.",
+    refundStatusSuccess: "환불이 성공적으로 처리되었습니다. 환불에는 영업일 5~10일이 소요될 수 있습니다.",
+    refundStatusFailure: "환불에 실패했습니다.",
+    refundStatusPending: "환불 요청이 접수되었습니다. 환불 요청이 접수되기까지 영업일 3일 이상 소요될 수 있습니다.",
+    refundStatusTitle: "환불 상태"
   },
   payment: {
     securePayment: "안전한 결제",

@@ -1,13 +1,15 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useRouter, useParams } from "next/navigation"
+import { useRouter, useParams, useSearchParams } from "next/navigation"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { useLanguage } from "@/components/language-provider"
 import { Button } from "@/components/ui/button"
-import { apiGet } from "@/lib/api"
+import { ConfirmationDialog } from "@/components/confirmation-dialog"
+import { apiGet, apiPostWithResponse } from "@/lib/api"
 import { ChevronLeft, ChevronRight, Wifi, WashingMachine, AirVent, Bell, Flame, Globe, Clock, CheckCircle, XCircle, AlertTriangle } from "lucide-react"
+import { toast } from "sonner"
 
 // Room Facility 타입 정의 (새로운 응답 구조에 맞게 수정)
 interface RoomFacility {
@@ -42,6 +44,7 @@ interface BookingDetail {
   userEmail: string
   userPhoneNumber: string
   userCountryCode: string
+  refundStatus: string
 }
 
 // 시설 아이콘 매핑
@@ -102,21 +105,21 @@ const getStatusInfo = (status: string) => {
     case 'RESERVATION_UNDER_WAY':
       return {
         label: 'Under Way',
-        color: 'bg-[#f48e2f] border-[#fad0a9]',
+        color: 'bg-[#2196f3]',
         textColor: 'text-white',
         icon: Clock
       }
     case 'RESERVATION_PENDING':
       return {
         label: 'Pending',
-        color: 'bg-[#ffa726] border-[#ffcc02]',
+        color: 'bg-[#ffa726] ',
         textColor: 'text-white',
         icon: Clock
       }
     case 'APPROVED':
       return {
         label: 'Approved',
-        color: 'bg-[#26bd6c] border-[#9af4c3]',
+        color: 'bg-[#26bd6c]',
         textColor: 'text-white',
         icon: CheckCircle
       }
@@ -130,27 +133,63 @@ const getStatusInfo = (status: string) => {
     case 'REJECTED':
       return {
         label: 'Rejected',
-        color: 'bg-[#f44336] border-[#ffcdd2]',
+        color: 'bg-[#f44336]',
         textColor: 'text-white',
         icon: AlertTriangle
       }
     default:
       return {
         label: status,
-        color: 'bg-[#f48e2f]',
-        textColor: 'text-white',
+        color: 'bg-gray-100',
+        textColor: 'text-gray-600',
         icon: Clock
       }
+  }
+}
+
+// 환불 상태에 따른 메시지
+const getRefundStatusInfo = (refundStatus: string, messages: any) => {
+  switch (refundStatus) {
+    case 'CANNOT_REFUND':
+      return {
+        message: messages?.bookings?.refundStatusCannotRefund || "환불이 불가능합니다.",
+        color: 'bg-red-50 border-red-200',
+        textColor: 'text-red-800'
+      }
+    case 'SUCCESS':
+      return {
+        message: messages?.bookings?.refundStatusSuccess || "환불이 성공적으로 처리되었습니다. 환불에는 영업일 5~10일이 소요될 수 있습니다.",
+        color: 'bg-green-50 border-green-200',
+        textColor: 'text-green-800'
+      }
+    case 'FAILURE':
+      return {
+        message: messages?.bookings?.refundStatusFailure || "환불에 실패했습니다.",
+        color: 'bg-red-50 border-red-200',
+        textColor: 'text-red-800'
+      }
+    case 'PENDING':
+      return {
+        message: messages?.bookings?.refundStatusPending || "환불 요청이 접수되었습니다. 환불 요청이 접수되기까지 영업일 3일 이상 소요될 수 있습니다.",
+        color: 'bg-blue-50 border-blue-200',
+        textColor: 'text-blue-800'
+      }
+    default:
+      return null
   }
 }
 
 export default function BookingDetailPage() {
   const router = useRouter()
   const params = useParams()
+  const searchParams = useSearchParams()
   const { messages, currentLanguage } = useLanguage()
   const [loading, setLoading] = useState(true)
   const [booking, setBooking] = useState<BookingDetail | null>(null)
   const [showAllFacilities, setShowAllFacilities] = useState(false)
+  const [showCancelDialog, setShowCancelDialog] = useState(false)
+  const [isCancelling, setIsCancelling] = useState(false)
+
 
   const reservationId = params.reservationId as string
 
@@ -171,11 +210,8 @@ export default function BookingDetailPage() {
           router.push('/account_check')
         } else if (response.code === 40500) {
           alert(messages?.roomDetail?.roomNotFound || "존재하지 않는 방입니다.")
-        } else {
-          console.error('Failed to fetch booking detail:', response)
         }
       } catch (error) {
-        console.error('Error fetching booking detail:', error)
       } finally {
         setLoading(false)
       }
@@ -184,11 +220,74 @@ export default function BookingDetailPage() {
     fetchBookingDetail()
   }, [reservationId, currentLanguage, messages, router])
 
-  // 예약 취소 기능은 다른 페이지에서 처리됨
-  const handleCancelBooking = () => {
-    // 예약 취소 버튼 클릭 시 처리할 로직
-    // 현재는 API 연결 없이 UI만 표시
-    console.log('Cancel booking clicked for reservation:', reservationId)
+  // 예약 취소 버튼 클릭 핸들러 (모달 표시)
+  const handleCancelBookingClick = () => {
+    setShowCancelDialog(true)
+  }
+
+  // 실제 예약 취소 API 호출
+  const handleCancelBookingConfirm = async () => {
+    if (!booking) return
+
+    setIsCancelling(true)
+
+    try {
+      // 한국 시간 기준 오늘 날짜 생성 (YYYY-MM-DD 형식)
+      const now = new Date()
+      const kstDate = new Intl.DateTimeFormat('sv-SE', {
+        timeZone: 'Asia/Seoul',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      }).format(now)
+
+      // API 요청
+      const { response: httpResponse, data } = await apiPostWithResponse('/api/user/refund', {
+        refundRequestTime: kstDate,
+        reservationIdentifier: booking.reservationIdentifier,
+        reason: "환불 요청"
+      })
+
+      // 응답 처리 - 디버깅용
+      console.log('HTTP Response status:', httpResponse.status)
+      console.log('Response data:', data)
+      console.log('Data code:', data.code, 'Type:', typeof data.code)
+
+      if (data.code === 20103) {
+        // 환불 처리 성공
+        toast.success(messages?.bookings?.refundSuccess || "환불 처리가 완료되었습니다.")
+        setShowCancelDialog(false)
+        // 예약 목록으로 돌아가기
+        setTimeout(() => {
+          router.push('/bookings')
+        }, 2000)
+      } else if (data.code === 40903) {
+        // 환불 실패
+        alert(messages?.bookings?.refundFailed || "환불에 실패했습니다.")
+        setShowCancelDialog(false)
+      } else if (data.code === 40904) {
+        // 체크인 당일/이후 환불 불가능
+        toast.error(messages?.bookings?.refundNotAllowedCheckIn || "체크인 당일이나 이후에는 환불이 불가능합니다.")
+        setShowCancelDialog(false)
+      } else if (data.code === 40905) {
+        // 결제 미완료
+        toast.error(messages?.bookings?.refundNotAllowedPayment || "결제가 완료되지 않아서 환불이 불가능합니다. 결제가 완료된 후, 환불을 시도해주세요.")
+        setShowCancelDialog(false)
+      } else if (data.code === 40906) {
+        // 이미 환불 완료
+        toast.error(messages?.bookings?.refundAlreadyCompleted || "이미 환불이 완료되어 환불이 불가능합니다.")
+        setShowCancelDialog(false)
+      } else {
+        // 기타 에러
+        toast.error(messages?.bookings?.refundError || "환불 처리에 실패했습니다.")
+        setShowCancelDialog(false)
+      }
+    } catch (error: any) {
+      toast.error(messages?.bookings?.refundError || "환불 처리에 실패했습니다.")
+      setShowCancelDialog(false)
+    } finally {
+      setIsCancelling(false)
+    }
   }
 
   if (loading) {
@@ -499,7 +598,7 @@ export default function BookingDetailPage() {
                 Cancel for free before check-in date
               </p>
               <button
-                onClick={handleCancelBooking}
+                onClick={handleCancelBookingClick}
                 className="bg-[rgba(230,72,61,0.1)] hover:bg-[rgba(230,72,61,0.15)] flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl transition-colors cursor-pointer"
               >
                 <span className="text-sm font-medium text-[#e6483d] tracking-[-0.1px]">
@@ -508,10 +607,37 @@ export default function BookingDetailPage() {
               </button>
             </div>
           )}
+
+          {/* Refund Status Section - CANCELLED 상태일 때만 표시 */}
+          {booking.reservationStatus === 'CANCELLED' && (() => {
+            const refundInfo = getRefundStatusInfo(booking.refundStatus, messages)
+            return refundInfo ? (
+              <div className={`rounded-[16px] px-5 py-4 border flex flex-col gap-[12px] ${refundInfo.color}`}>
+                <p className="text-base font-bold tracking-[-0.2px] leading-[24px]">
+                  {messages?.bookings?.refundStatusTitle || "Refund Status"}
+                </p>
+                <p className={`text-sm font-medium tracking-[-0.1px] leading-[20px] ${refundInfo.textColor}`}>
+                  {refundInfo.message}
+                </p>
+              </div>
+            ) : null
+          })()}
         </div>
       </main>
 
       <Footer />
+
+      {/* 예약 취소 확인 모달 */}
+      <ConfirmationDialog
+        isOpen={showCancelDialog}
+        onClose={() => setShowCancelDialog(false)}
+        onConfirm={handleCancelBookingConfirm}
+        title={messages?.bookings?.confirmCancelTitle || "예약 취소 확인"}
+        description={messages?.bookings?.confirmCancelMessage || "정말 예약을 취소하시겠습니까? 이 작업은 되돌릴 수 없습니다."}
+        confirmText={messages?.bookings?.confirmButton || "예약 취소"}
+        cancelText={messages?.bookings?.cancelButton || "취소"}
+        isLoading={isCancelling}
+      />
     </div>
   )
 }
