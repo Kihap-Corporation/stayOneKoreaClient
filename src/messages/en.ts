@@ -58,6 +58,91 @@ header: {
       contentProtection: "The content of this site is protected by copyright law and unauthorized reproduction, copying, or distribution is prohibited."
     }
   },
+  aboutGosiwon: {
+    title: "About Gosiwon",
+    hero: {
+      subtitle: "Just Bring Your Bag",
+      title: "GOSIWON, K-Compact Studio",
+      description: "Near-Zero Deposit · All-inclusive",
+      content: "Rooted in Korea's tradition of dedicated study culture, this space has evolved into the most intelligent and efficient living experience for modern life in Seoul.",
+      ctaButton: "Find your stay"
+    },
+    bigPoints: {
+      title: "3 Big Points",
+      points: [
+        {
+          title: "Near-Zero Deposit & Flexible Lease",
+          description: "Flexible daily, weekly, and monthly contracts with the lowest deposit in Korea, tailored to your stay purpose."
+        },
+        {
+          title: "Fully Furnished & All-Inclusive",
+          description: "Fully furnished with appliances — all utilities included, no extra charges."
+        },
+        {
+          title: "Safety & Prime Location",
+          description: "24-hour security and prime locations near subway stations, universities, and business districts across Seoul."
+        }
+      ]
+    },
+    livingGuide: {
+      title: "Your Living Guide",
+      subtitle: "& Stay One Korea Guarantee",
+      guides: [
+        {
+          title: "Compact Living",
+          description: "Experience your own private space — compact, easy to maintain, and perfectly yours."
+        },
+        {
+          title: "Verification",
+          description: "Stay One Korea carefully selects facilities that are safe, clean, and welcoming to international residents."
+        }
+      ]
+    },
+    ctaSection: {
+      title: "Find Your Stay in Korea",
+      buttonText: "Find your stay"
+    },
+    introduction: {
+      title: "What is Gosiwon?",
+      content: "Gosiwon is a unique form of housing in Korea, primarily used by students, job seekers, and young professionals as affordable accommodation.\n\nEach small room comes equipped with basic furniture such as a bed, desk, and chair, allowing for independent living. Common facilities include restrooms, showers, and laundry rooms."
+    },
+    features: {
+      title: "Features of Gosiwon",
+      costEffective: {
+        title: "Cost Effective",
+        content: "Monthly rent is low, making it economically affordable."
+      },
+      convenience: {
+        title: "Convenience",
+        content: "Located in convenient downtown areas with good transportation."
+      },
+      privacy: {
+        title: "Privacy",
+        content: "Individual rooms allow for independent living."
+      },
+      facilities: {
+        title: "Well-equipped",
+        content: "Basic furniture and common facilities are well provided."
+      }
+    },
+    companyInfo: {
+      title: "Company Information",
+      company: "Company",
+      businessNumber: "Business Registration Number",
+      representative: "Representative",
+      mailOrder: "Mail Order Business Report",
+      hosting: "Hosting Service Provider",
+      customerService: "Customer Service",
+      address: "Address"
+    },
+    importantLinks: {
+      title: "Important Links",
+      inquiry: "Contact Us"
+    },
+    disclaimer: {
+      title: "Legal Notice"
+    }
+  },
   home: {
     hero: {
       title: "Find Your Stay in Korea",

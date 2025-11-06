@@ -58,6 +58,91 @@ header: {
       contentProtection: "Le contenu de ce site est protégé par la loi sur le droit d'auteur et la reproduction, copie ou distribution non autorisée est interdite."
     }
   },
+  aboutGosiwon: {
+    title: "À propos du Gosiwon",
+    hero: {
+      subtitle: "Apportez simplement vos bagages",
+      title: "GOSIWON, Studio Compact Coréen",
+      description: "Dépôt Quasi-Zéro · Tout Inclus",
+      content: "Enraciné dans la tradition coréenne de la culture d'étude dédiée, cet espace a évolué vers l'expérience de vie la plus intelligente et efficace pour la vie moderne à Séoul.",
+      ctaButton: "Trouvez votre séjour"
+    },
+    bigPoints: {
+      title: "3 Grands Points",
+      points: [
+        {
+          title: "Dépôt Quasi-Zéro & Location Flexible",
+          description: "Contrats quotidiens, hebdomadaires et mensuels flexibles avec le dépôt le plus bas en Corée, adaptés à votre objectif de séjour."
+        },
+        {
+          title: "Entièrement Meublé & Tout Inclus",
+          description: "Entièrement meublé avec électroménagers — tous les services publics inclus, pas de frais supplémentaires."
+        },
+        {
+          title: "Sécurité & Emplacement Premium",
+          description: "Sécurité 24h/24 et emplacements premium près des stations de métro, universités et quartiers d'affaires à travers Séoul."
+        }
+      ]
+    },
+    livingGuide: {
+      title: "Votre Guide de Vie",
+      subtitle: "& Garantie Stay One Korea",
+      guides: [
+        {
+          title: "Vie Compacte",
+          description: "Expérimentez votre propre espace privé — compact, facile à entretenir, et parfaitement le vôtre."
+        },
+        {
+          title: "Vérification",
+          description: "Stay One Korea sélectionne soigneusement des installations sûres, propres et accueillantes pour les résidents internationaux."
+        }
+      ]
+    },
+    ctaSection: {
+      title: "Trouvez Votre Séjour en Corée",
+      buttonText: "Trouvez votre séjour"
+    },
+    introduction: {
+      title: "Qu'est-ce que le Gosiwon ?",
+      content: "Le Gosiwon est une forme d'hébergement unique en Corée, principalement utilisée par les étudiants, les chercheurs d'emploi et les jeunes professionnels comme logement abordable.\n\nChaque petite chambre est équipée de meubles de base tels qu'un lit, un bureau et une chaise, permettant une vie indépendante. Les installations communes comprennent des salles de bain, des douches et des buanderies."
+    },
+    features: {
+      title: "Caractéristiques du Gosiwon",
+      costEffective: {
+        title: "Économique",
+        content: "Le loyer mensuel est bas, ce qui le rend économiquement abordable."
+      },
+      convenience: {
+        title: "Pratique",
+        content: "Situé dans des zones centrales facilement accessibles."
+      },
+      privacy: {
+        title: "Confidentialité",
+        content: "Chambres individuelles permettant une vie indépendante."
+      },
+      facilities: {
+        title: "Bien équipé",
+        content: "Meubles de base et installations communes bien fournis."
+      }
+    },
+    companyInfo: {
+      title: "Informations sur l'entreprise",
+      company: "Entreprise",
+      businessNumber: "Numéro d'enregistrement commercial",
+      representative: "Représentant",
+      mailOrder: "Rapport d'affaires postales",
+      hosting: "Fournisseur de services d'hébergement",
+      customerService: "Service client",
+      address: "Adresse"
+    },
+    importantLinks: {
+      title: "Liens importants",
+      inquiry: "Nous contacter"
+    },
+    disclaimer: {
+      title: "Avis juridique"
+    }
+  },
   home: {
     hero: {
       title: "Trouvez votre séjour en Corée",
