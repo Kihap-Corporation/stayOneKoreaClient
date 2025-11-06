@@ -30,6 +30,9 @@ const suit = {
 export const metadata: Metadata = {
   title: "Stay One Korea",
   description: "A platform that introduces beautiful accommodations in Korea",
+  icons: {
+    icon: "/icons/sok_logo.png",
+  },
 };
 
 export default function RootLayout({
