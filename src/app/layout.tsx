@@ -33,6 +33,24 @@ export const metadata: Metadata = {
   icons: {
     icon: "/icons/sok_logo.png",
   },
+  openGraph: {
+    title: "Stay One Korea",
+    description: "A platform that introduces beautiful accommodations in Korea",
+    images: [
+      {
+        url: "/sok-og.png",
+        width: 1200,
+        height: 630,
+        alt: "Stay One Korea Logo",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Stay One Korea",
+    description: "A platform that introduces beautiful accommodations in Korea",
+    images: ["/sok-og.png"],
+  },
 };
 
 export default function RootLayout({
