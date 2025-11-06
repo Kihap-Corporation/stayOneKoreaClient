@@ -63,7 +63,10 @@ export default function SignInPage() {
         // 성공 시 redirect URL 또는 루트 페이지로 리다이렉트
         router.push(redirectUrl)
       } else if (data.code === 40107) {
-        // 이메일 인증이 필요한 경우 verify-email 페이지로 리다이렉트
+        // 이메일 인증이 필요한 경우 이메일을 저장하고 verify-email 페이지로 리다이렉트
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('verifyEmail', email)
+        }
         router.push('/verify-email')
       } else {
         // 기타 실패 시 비밀번호 입력란 아래에 에러 메시지 표시

@@ -58,6 +58,91 @@ header: {
       contentProtection: "本网站的内容受版权法保护，禁止未经授权的转载、复制、分发。"
     }
   },
+  aboutGosiwon: {
+    title: "高士院介绍",
+    hero: {
+      subtitle: "只需带上你的行李",
+      title: "高士院，韩国紧凑型工作室",
+      description: "零押金 · 全包",
+      content: "源于韩国专注学习文化的传统，这个空间已经演变为现代首尔生活中最智能和高效的生活体验。",
+      ctaButton: "寻找您的住宿"
+    },
+    bigPoints: {
+      title: "三大要点",
+      points: [
+        {
+          title: "零押金与灵活租赁",
+          description: "根据您的住宿目的灵活使用韩国最低押金的日租、周租、月租合同。"
+        },
+        {
+          title: "全家具配备与全包",
+          description: "配备电器产品 — 所有水电费均包含，无额外费用。"
+        },
+        {
+          title: "安全与优越位置",
+          description: "24小时安保和首尔各地地铁站、大学、商业区附近的优越位置。"
+        }
+      ]
+    },
+    livingGuide: {
+      title: "您的生活指南",
+      subtitle: "& Stay One Korea 保证",
+      guides: [
+        {
+          title: "紧凑生活",
+          description: "体验您自己的私人空间 — 紧凑、易于维护，完全属于您。"
+        },
+        {
+          title: "验证",
+          description: "Stay One Korea 精心挑选安全、干净、欢迎国际居民的设施。"
+        }
+      ]
+    },
+    ctaSection: {
+      title: "在韩国寻找您的住宿",
+      buttonText: "寻找您的住宿"
+    },
+    introduction: {
+      title: "什么是高士院？",
+      content: "高士院是韩国独特的居住形式，主要由学生、求职者和职场新人使用的经济型住宿设施。\n\n每个小房间配备床、书桌、椅子等基本家具，可以独立生活。公共设施包括卫生间、淋浴间、洗衣房等。"
+    },
+    features: {
+      title: "高士院的特色",
+      costEffective: {
+        title: "经济实惠",
+        content: "月租便宜，经济负担小。"
+      },
+      convenience: {
+        title: "交通便利",
+        content: "位于交通便利的市中心地带。"
+      },
+      privacy: {
+        title: "隐私保护",
+        content: "独立房间，可以独立生活。"
+      },
+      facilities: {
+        title: "设施齐全",
+        content: "基本家具和公共设施配备完善。"
+      }
+    },
+    companyInfo: {
+      title: "公司信息",
+      company: "公司名称",
+      businessNumber: "营业执照号",
+      representative: "代表",
+      mailOrder: "网上销售申报",
+      hosting: "主机服务提供商",
+      customerService: "客服中心",
+      address: "地址"
+    },
+    importantLinks: {
+      title: "重要链接",
+      inquiry: "咨询"
+    },
+    disclaimer: {
+      title: "法律声明"
+    }
+  },
   home: {
     hero: {
       title: "在韩国寻找您的住宿",

@@ -98,19 +98,22 @@ export default function VerifyEmailPage() {
               {messages?.verifyEmail?.activationInstructions || "To activate your account, please check your email and click the verification button in the email."}
             </p>
 
-            {email && (
-              <p className="mb-6 text-sm text-gray-600">
-                {messages?.verifyEmail?.subtitle || "We've sent you a verification email to your email address."}{" "}
-                <br></br>
-                <br></br>
-                <button
-                  onClick={handleResendEmail}
-                  className="text-[#E91E63] underline hover:no-underline font-medium"
-                >
-                  {messages?.verifyEmail?.resendVerificationEmail || "Resend verification email"}
-                </button>
-              </p>
-            )}
+            <p className="mb-6 text-sm text-gray-600">
+              {messages?.verifyEmail?.subtitle || "We've sent you a verification email to your email address."}{" "}
+              <br></br>
+              <br></br>
+              <button
+                onClick={handleResendEmail}
+                disabled={!email}
+                className={`font-medium ${
+                  !email
+                    ? "text-gray-400 cursor-not-allowed"
+                    : "text-[#E91E63] underline hover:no-underline"
+                }`}
+              >
+                {messages?.verifyEmail?.resendVerificationEmail || "Resend verification email"}
+              </button>
+            </p>
 
             <button
               onClick={() => handleNavigation('/account_check')}
