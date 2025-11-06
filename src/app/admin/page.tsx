@@ -32,7 +32,7 @@ export default function AdminHomePage() {
       icon: "📅",
       title: "예약 관리",
       description: "예약 내역을 조회하고 관리합니다",
-      href: "/admin/bookings",
+      href: "/admin/reservations",
       color: "green"
     },
     {

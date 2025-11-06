@@ -29,7 +29,16 @@ header: {
     notifications: "通知",
     paymentMethods: "支付方式",
     help: "帮助",
-    logout: "登出"
+    logout: "登出",
+    deleteAccount: "删除账户",
+    deleteAccountTitle: "删除账户",
+    deleteWarningTitle: "警告",
+    deleteWarningMessage: "删除账户后，所有预订、付款和其他数据将被永久删除，无法恢复，且无法退款。",
+    currentPassword: "当前密码",
+    enterCurrentPassword: "输入当前密码",
+    deleteSuccess: "账户已成功删除。",
+    wrongPassword: "当前密码不正确。请重试。",
+    deleteNotAllowedUpcomingReservation: "您有即将到来的预订，无法删除账户。您必须先取消这些预订才能删除账户。"
   },
   footer: {
     company: "公司名称",
@@ -307,7 +316,23 @@ header: {
     checkIn: "入住",
     checkOut: "退房",
     nights: "晚",
-    noBookings: "未找到预订"
+    noBookings: "未找到预订",
+    findBookings: "查找预订",
+    refundSuccess: "退款处理已完成。",
+    refundFailed: "退款失败。",
+    refundNotAllowedCheckIn: "入住当天或之后无法退款。",
+    refundNotAllowedPayment: "由于付款未完成，无法退款。请在付款完成后尝试退款。",
+    refundAlreadyCompleted: "由于退款已完成，无法退款。",
+    refundError: "退款处理失败。",
+    confirmCancelTitle: "确认取消",
+    confirmCancelMessage: "您确定要取消此预订吗？此操作无法撤销。",
+    confirmButton: "取消预订",
+    cancelButton: "取消",
+    refundStatusCannotRefund: "退款不可用。",
+    refundStatusSuccess: "退款已成功处理。退款可能需要5-10个工作日。",
+    refundStatusFailure: "退款失败。",
+    refundStatusPending: "退款请求已收到。处理退款请求可能需要超过3个工作日。",
+    refundStatusTitle: "退款状态"
   },
   payment: {
     securePayment: "安全支付",

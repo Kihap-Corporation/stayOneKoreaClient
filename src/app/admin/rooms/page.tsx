@@ -60,7 +60,6 @@ export default function AdminRoomsPage() {
       setTotalPages(data.totalPages)
       setTotalElements(data.totalElements)
     } catch (error) {
-      console.error("룸 목록 조회 실패:", error)
       alert("룸 목록을 불러오는데 실패했습니다.")
     } finally {
       setIsLoading(false)
@@ -101,7 +100,6 @@ export default function AdminRoomsPage() {
       alert("룸이 삭제되었습니다.")
       await fetchRooms()
     } catch (error) {
-      console.error("룸 삭제 실패:", error)
       alert("룸 삭제에 실패했습니다.")
     } finally {
       setDeletingId(null)

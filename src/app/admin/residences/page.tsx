@@ -55,7 +55,6 @@ export default function ResidencesPage() {
       setTotalPages(data.totalPages)
       setTotalElements(data.totalElements)
     } catch (error) {
-      console.error("고시원 리스트 조회 실패:", error)
       alert("고시원 리스트를 불러오는데 실패했습니다.")
     } finally {
       setIsLoading(false)
@@ -74,7 +73,6 @@ export default function ResidencesPage() {
       // 리스트 새로고침
       await fetchResidences()
     } catch (error) {
-      console.error("고시원 삭제 실패:", error)
       alert("고시원 삭제에 실패했습니다.")
     } finally {
       setDeletingId(null)

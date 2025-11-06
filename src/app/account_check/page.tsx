@@ -56,11 +56,9 @@ export default function AccountCheckPage() {
         router.push(`/signin?email=${encodeURIComponent(email)}`)
       } else {
         // 기타 에러 처리
-        console.error('Unexpected response:', data)
         alert('오류가 발생했습니다. 다시 시도해주세요.')
       }
     } catch (error) {
-      console.error('API call failed:', error)
       alert('네트워크 오류가 발생했습니다. 다시 시도해주세요.')
     } finally {
       setIsLoading(false)

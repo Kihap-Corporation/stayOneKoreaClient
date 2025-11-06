@@ -361,7 +361,6 @@ export default function CreateRoomPage() {
       alert("룸이 등록되었습니다.")
       router.push(`/admin/residences/${residenceIdentifier}/rooms`)
     } catch (error) {
-      console.error("룸 등록 실패:", error)
       alert("룸 등록 중 오류가 발생했습니다.")
     } finally {
       setIsLoading(false)

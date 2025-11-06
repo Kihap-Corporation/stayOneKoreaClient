@@ -29,7 +29,16 @@ header: {
     notifications: "Notifications",
     paymentMethods: "Moyens de paiement",
     help: "Aide",
-    logout: "Déconnexion"
+    logout: "Déconnexion",
+    deleteAccount: "Supprimer le compte",
+    deleteAccountTitle: "Supprimer le compte",
+    deleteWarningTitle: "Avertissement",
+    deleteWarningMessage: "Une fois votre compte supprimé, toutes vos réservations, paiements et autres données seront définitivement supprimés et ne pourront pas être récupérés, et les paiements ne pourront pas être remboursés.",
+    currentPassword: "Mot de passe actuel",
+    enterCurrentPassword: "Saisir le mot de passe actuel",
+    deleteSuccess: "Le compte a été supprimé avec succès.",
+    wrongPassword: "Le mot de passe actuel est incorrect. Veuillez réessayer.",
+    deleteNotAllowedUpcomingReservation: "Vous avez des réservations à venir qui empêchent la suppression du compte. Vous devez annuler ces réservations d'abord pour supprimer votre compte."
   },
   footer: {
     company: "Nom de l'entreprise",
@@ -307,7 +316,23 @@ header: {
     checkIn: "Arrivée",
     checkOut: "Départ",
     nights: "nuits",
-    noBookings: "Aucune réservation trouvée"
+    noBookings: "Aucune réservation trouvée",
+    findBookings: "Trouver des réservations",
+    refundSuccess: "Le traitement du remboursement a été terminé avec succès.",
+    refundFailed: "Le remboursement a échoué.",
+    refundNotAllowedCheckIn: "Les remboursements ne sont pas possibles à partir de la date d'arrivée.",
+    refundNotAllowedPayment: "Les remboursements ne sont pas possibles car le paiement n'est pas terminé. Veuillez essayer le remboursement après l'achèvement du paiement.",
+    refundAlreadyCompleted: "Les remboursements ne sont pas possibles car le remboursement a déjà été terminé.",
+    refundError: "Le traitement du remboursement a échoué.",
+    confirmCancelTitle: "Confirmer l'annulation",
+    confirmCancelMessage: "Êtes-vous sûr de vouloir annuler cette réservation ? Cette action ne peut pas être annulée.",
+    confirmButton: "Annuler la réservation",
+    cancelButton: "Annuler",
+    refundStatusCannotRefund: "Les remboursements ne sont pas possibles.",
+    refundStatusSuccess: "Le remboursement a été traité avec succès. Le remboursement peut prendre 5 à 10 jours ouvrables.",
+    refundStatusFailure: "Le remboursement a échoué.",
+    refundStatusPending: "La demande de remboursement a été reçue. Le traitement de la demande de remboursement peut prendre plus de 3 jours ouvrables.",
+    refundStatusTitle: "Statut du remboursement"
   },
   payment: {
     securePayment: "Paiement sécurisé",

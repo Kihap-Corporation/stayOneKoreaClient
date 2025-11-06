@@ -148,7 +148,6 @@ export default function BookingResultPage() {
           return
         }
       } catch (error) {
-        console.error('Error fetching booking details:', error)
         const errorMessage = currentLanguage.code === 'ko'
           ? '예약 정보를 불러오는 중 오류가 발생했습니다'
           : currentLanguage.code === 'en'
