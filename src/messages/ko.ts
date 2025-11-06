@@ -58,6 +58,91 @@ header: {
       contentProtection: "본 사이트의 컨텐츠는 저작권법의 보호를 받는 바 무단 전재, 복사, 배포 등을 금합니다."
     }
   },
+  aboutGosiwon: {
+    title: "고시원 소개",
+    hero: {
+      subtitle: "가볍게 짐만 챙기세요",
+      title: "고시원, 한국형 컴팩트 스튜디오",
+      description: "보증금 제로 · 올인클루시브",
+      content: "한국의 전통적인 공부 문화에서 비롯된 이 공간은 서울에서의 현대적인 삶을 위한 가장 지능적이고 효율적인 생활 경험으로 진화했습니다.",
+      ctaButton: "숙소 찾아보기"
+    },
+    bigPoints: {
+      title: "3가지 주요 장점",
+      points: [
+        {
+          title: "보증금 제로 & 유연한 임대",
+          description: "숙박 목적에 맞게 조정된 한국 최저 보증금의 일일, 주간, 월간 계약을 유연하게 이용하세요."
+        },
+        {
+          title: "완전 가구 제공 & 올인클루시브",
+          description: "가전제품이 완비되어 있고 — 모든 공과금 포함, 추가 요금 없음."
+        },
+        {
+          title: "안전 & 최적의 위치",
+          description: "24시간 보안과 서울 전역의 지하철역, 대학, 비즈니스 지구 근처 최적의 위치."
+        }
+      ]
+    },
+    livingGuide: {
+      title: "생활 가이드",
+      subtitle: "& 스테이원코리아 보증",
+      guides: [
+        {
+          title: "컴팩트 라이프",
+          description: "컴팩트하고 유지하기 쉬우며 완벽하게 나만의 개인 공간을 경험하세요."
+        },
+        {
+          title: "검증",
+          description: "스테이원코리아는 안전하고 깨끗하며 국제 거주자를 환영하는 시설을 신중하게 선별합니다."
+        }
+      ]
+    },
+    ctaSection: {
+      title: "한국에서 숙소 찾아보기",
+      buttonText: "숙소 찾아보기"
+    },
+    introduction: {
+      title: "고시원이란?",
+      content: "고시원은 대한민국의 독특한 주거 형태로, 주로 학생, 취업 준비생, 사회 초년생들이 이용하는 저렴한 숙박 시설입니다.\n\n작은 방 하나에 침대, 책상, 의자 등의 기본 가구가 갖춰져 있어 독립적인 생활이 가능하며, 공용 시설로는 화장실, 샤워실, 세탁실 등이 있습니다."
+    },
+    features: {
+      title: "고시원의 특징",
+      costEffective: {
+        title: "경제성",
+        content: "월세가 저렴하여 경제적으로 부담이 적습니다."
+      },
+      convenience: {
+        title: "편의성",
+        content: "교통이 편리한 도심지에 위치해 있습니다."
+      },
+      privacy: {
+        title: "프라이버시",
+        content: "개별 방으로 독립적인 생활이 가능합니다."
+      },
+      facilities: {
+        title: "시설 완비",
+        content: "기본 가구와 공용 시설이 잘 갖춰져 있습니다."
+      }
+    },
+    companyInfo: {
+      title: "회사 정보",
+      company: "회사명",
+      businessNumber: "사업자등록번호",
+      representative: "대표자",
+      mailOrder: "통신판매신고",
+      hosting: "호스팅서비스제공",
+      customerService: "고객센터",
+      address: "주소"
+    },
+    importantLinks: {
+      title: "중요 링크",
+      inquiry: "문의하기"
+    },
+    disclaimer: {
+      title: "법적 고지"
+    }
+  },
   home: {
     hero: {
       title: "한국에서 숙소를 찾아보세요",

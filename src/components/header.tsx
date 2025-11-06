@@ -13,6 +13,7 @@ import {
 import { useLanguage, languages } from "./language-provider"
 import { logout } from "@/lib/api"
 import { useState, useEffect } from "react"
+import { usePathname } from "next/navigation"
 import { SearchModal } from "./header/search-modal"
 
 export function Header() {
@@ -21,6 +22,7 @@ export function Header() {
   const [isProfileOpen, setIsProfileOpen] = useState(false)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false)
+  const pathname = usePathname()
 
   // 로그인 상태 확인
   useEffect(() => {
@@ -203,18 +205,36 @@ export function Header() {
 
           {/* Desktop Navigation Buttons */}
           <div className="flex items-center gap-2 w-full">
-            <Button className="bg-[#e0004d] hover:bg-[#C2185B] text-white rounded-full px-3 py-1.5 shadow-sm hover:shadow transition-all flex items-center gap-1.5">
-              <Bed className="h-4 w-4" />
-              <span className="text-sm font-medium tracking-tight">{messages?.header?.navigation?.stays || "Stays"}</span>
-            </Button>
-            <Button variant="ghost" className="hover:bg-transparent text-[rgba(15,19,36,0.6)] hover:text-[#14151a] px-3 py-1.5 rounded-full flex items-center gap-1.5">
-              <img
-                src="/icons/info.png"
-                alt="About"
-                className="h-4 w-4"
-              />
-              <span className="text-sm font-medium tracking-tight">{messages?.header?.navigation?.about || "About Gosiwon"}</span>
-            </Button>
+            <Link href="/">
+              <Button
+                variant={pathname === "/" ? "default" : "ghost"}
+                className={`rounded-full px-3 py-1.5 transition-all flex items-center gap-1.5 ${
+                  pathname === "/"
+                    ? "bg-[#e0004d] hover:bg-[#C2185B] text-white"
+                    : "hover:bg-transparent text-[rgba(15,19,36,0.6)] hover:text-[#14151a]"
+                }`}
+              >
+                <Bed className="h-4 w-4" />
+                <span className="text-sm font-medium tracking-tight">{messages?.header?.navigation?.stays || "Stays"}</span>
+              </Button>
+            </Link>
+            <Link href="/about-gosiwon">
+              <Button
+                variant={pathname === "/about-gosiwon" ? "default" : "ghost"}
+                className={`px-3 py-1.5 rounded-full flex items-center gap-1.5 transition-all ${
+                  pathname === "/about-gosiwon"
+                    ? "bg-[#e0004d] hover:bg-[#C2185B] text-white"
+                    : "hover:bg-transparent text-[rgba(15,19,36,0.6)] hover:text-[#14151a]"
+                }`}
+              >
+                <img
+                  src="/icons/info.png"
+                  alt="About"
+                  className={`h-4 w-4 ${pathname === "/about-gosiwon" ? "brightness-0 invert" : ""}`}
+                />
+                <span className="text-sm font-medium tracking-tight">{messages?.header?.navigation?.about || "About Gosiwon"}</span>
+              </Button>
+            </Link>
           </div>
         </div>
 
@@ -277,18 +297,38 @@ export function Header() {
               <div className="max-w-[1200px] mx-auto px-4">
                 <div className="flex flex-col gap-6">
                   {/* Navigation Items */}
-                  <div className="flex items-center gap-1.5">
-                    <Bed className="h-5 w-5 text-[#14151a]" />
-                    <span className="text-[16px] font-medium leading-[24px] tracking-[-0.2px] text-[#14151a]">
+                  <Link
+                    href="/"
+                    className={`flex items-center gap-1.5 rounded px-1 py-1 transition-colors ${
+                      pathname === "/"
+                        ? "bg-[#e0004d] text-white"
+                        : "hover:bg-gray-50 text-[#14151a]"
+                    }`}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <Bed className={`h-5 w-5 ${pathname === "/" ? "text-white" : "text-[#14151a]"}`} />
+                    <span className="text-[16px] font-medium leading-[24px] tracking-[-0.2px]">
                       {messages?.header?.navigation?.stays || "Stays"}
                     </span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <img src="/icons/info.png" alt="About" className="h-5 w-5" />
-                    <span className="text-[16px] font-medium leading-[24px] tracking-[-0.2px] text-[#14151a]">
+                  </Link>
+                  <Link
+                    href="/about-gosiwon"
+                    className={`flex items-center gap-1.5 rounded px-1 py-1 transition-colors ${
+                      pathname === "/about-gosiwon"
+                        ? "bg-[#e0004d] text-white"
+                        : "hover:bg-gray-50 text-[#14151a]"
+                    }`}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <img
+                      src="/icons/info.png"
+                      alt="About"
+                      className={`h-5 w-5 ${pathname === "/about-gosiwon" ? "brightness-0 invert" : ""}`}
+                    />
+                    <span className="text-[16px] font-medium leading-[24px] tracking-[-0.2px]">
                       {messages?.header?.navigation?.about || "About Gosiwon"}
                     </span>
-                  </div>
+                  </Link>
 
                   {/* Divider */}
                   <div className="h-px bg-[#e9eaec] w-full" />
