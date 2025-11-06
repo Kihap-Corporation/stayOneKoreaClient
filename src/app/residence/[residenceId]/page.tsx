@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
+import Image from "next/image"
 import { useLanguage } from "@/components/language-provider"
 import { apiGet, apiPost } from "@/lib/api"
 import { Search, ChevronLeft, ChevronRight, Calendar, X } from "lucide-react"
@@ -381,19 +382,21 @@ export default function ResidencePage({ params }: ResidencePageProps) {
           >
             {residenceData.residenceGalleryImageUrls.map((image, index) => (
               <SwiperSlide key={index}>
-                <img
+                <Image
                   src={image}
                   alt={`${residenceData.residenceName} - ${index + 1}`}
-                  className="w-full h-full object-cover"
+                  fill
+                  className="object-cover"
                 />
               </SwiperSlide>
             ))}
           </Swiper>
         ) : (
-          <img
+          <Image
             src="http://localhost:3845/assets/242e01dbfe5fc9e8d9a2d40b0a357702ff4046f8.png"
             alt="Background"
-            className="w-full h-full object-cover"
+            fill
+            className="object-cover"
           />
         )}
       </div>

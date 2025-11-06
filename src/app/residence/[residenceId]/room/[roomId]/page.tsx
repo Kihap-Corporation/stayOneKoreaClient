@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
+import Image from "next/image"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { useLanguage } from "@/components/language-provider"
@@ -1007,21 +1008,21 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
                       const facilityName = facility.customNameI18n?.[currentLanguage.code] || facility.facilityType
 
                       return (
-                        <div key={index} className="flex items-center gap-2">
+                        <div key={index} className="flex items-start gap-2 min-w-0">
                           {facility.iconUrl ? (
                             <img
                               src={facility.iconUrl}
                               alt={facilityName}
-                              className="h-5 w-5 object-contain"
+                              className="h-5 w-5 object-contain flex-shrink-0 mt-0.5"
                               onError={(e) => {
                                 const target = e.target as HTMLImageElement
                                 target.style.display = 'none'
                               }}
                             />
                           ) : (
-                            <Icon className="h-5 w-5 text-[#14151a]" />
+                            <Icon className="h-5 w-5 text-[#14151a] flex-shrink-0 mt-0.5" />
                           )}
-                          <span className="text-[14px] font-medium leading-[20px] tracking-[-0.1px] text-[#14151a]">
+                          <span className="text-[14px] font-medium leading-[20px] tracking-[-0.1px] text-[#14151a] break-words min-w-0">
                             {facilityName}
                           </span>
                         </div>
@@ -1134,10 +1135,11 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
                 {/* 호스트 프로필 */}
                 <div className="flex items-center gap-2 w-full">
                   <div className="relative h-20 w-20 rounded-full border border-[#dee0e3] flex-shrink-0">
-                    <img
+                    <Image
                       src={roomData.residenceLogoImageUrl || "/api/placeholder/80/80"}
                       alt={roomData.residenceNameI18n}
-                      className="h-full w-full rounded-full object-cover"
+                      fill
+                      className="rounded-full object-cover"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement
                         target.src = '/api/placeholder/80/80'
@@ -1211,21 +1213,21 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
                         const facilityName = facility.customNameI18n?.[currentLanguage.code] || facility.facilityType
 
                         return (
-                          <div key={index} className="flex items-center gap-2">
+                          <div key={index} className="flex items-start gap-2 min-w-0">
                             {facility.iconUrl ? (
                               <img
                                 src={facility.iconUrl}
                                 alt={facilityName}
-                                className="h-5 w-5 object-contain"
+                                className="h-5 w-5 object-contain flex-shrink-0 mt-0.5"
                                 onError={(e) => {
                                   const target = e.target as HTMLImageElement
                                   target.style.display = 'none'
                                 }}
                               />
                             ) : (
-                              <Icon className="h-5 w-5 text-[#14151a]" />
+                              <Icon className="h-5 w-5 text-[#14151a] flex-shrink-0 mt-0.5" />
                             )}
-                            <span className="text-[16px] font-medium leading-[24px] tracking-[-0.2px] text-[#14151a]">
+                            <span className="text-[16px] font-medium leading-[24px] tracking-[-0.2px] text-[#14151a] break-words min-w-0">
                               {facilityName}
                             </span>
                           </div>
@@ -1517,16 +1519,17 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
                   <button
                     key={index}
                     onClick={() => setCurrentImageIndex(index)}
-                    className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${
+                    className={`relative flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${
                       currentImageIndex === index 
                         ? 'border-[#e0004d] scale-105' 
                         : 'border-[#e9eaec] opacity-60 hover:opacity-100 hover:border-[#14151a]'
                     }`}
                   >
-                    <img
+                    <Image
                       src={image.imageUrl}
                       alt=""
-                      className="w-full h-full object-cover"
+                      fill
+                      className="object-cover"
                     />
                   </button>
                 ))}

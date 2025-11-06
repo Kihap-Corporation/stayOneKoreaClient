@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { AdminLayout } from "@/components/admin/admin-layout"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -658,10 +659,11 @@ export default function CreateRoomPage() {
                   }`}
                 >
                   <div className="aspect-square rounded-lg overflow-hidden bg-gray-100 border-2 border-gray-200">
-                    <img
+                    <Image
                       src={img.preview}
                       alt={`갤러리 ${index + 1}`}
-                      className="w-full h-full object-cover"
+                      fill
+                      className="object-cover"
                     />
                   </div>
                   
