@@ -29,7 +29,16 @@ header: {
     notifications: "通知",
     paymentMethods: "支付方式",
     help: "帮助",
-    logout: "登出"
+    logout: "登出",
+    deleteAccount: "删除账户",
+    deleteAccountTitle: "删除账户",
+    deleteWarningTitle: "警告",
+    deleteWarningMessage: "删除账户后，所有预订、付款和其他数据将被永久删除，无法恢复，且无法退款。",
+    currentPassword: "当前密码",
+    enterCurrentPassword: "输入当前密码",
+    deleteSuccess: "账户已成功删除。",
+    wrongPassword: "当前密码不正确。请重试。",
+    deleteNotAllowedUpcomingReservation: "您有即将到来的预订，无法删除账户。您必须先取消这些预订才能删除账户。"
   },
   footer: {
     company: "公司名称",

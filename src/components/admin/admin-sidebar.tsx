@@ -33,7 +33,7 @@ const menuItems: MenuItem[] = [
   {
     icon: "📅",
     label: "예약 관리",
-    href: "/admin/bookings"
+    href: "/admin/reservations"
   },
   {
     icon: "👥",

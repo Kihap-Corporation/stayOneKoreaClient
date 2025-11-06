@@ -71,7 +71,6 @@ export default function LikePage() {
         setError('NO_LIKED_ROOMS')
       }
     } catch (error) {
-      console.error('좋아요 목록 조회 실패:', error)
       setRooms([])
       setError('NO_LIKED_ROOMS')
     } finally {
@@ -91,7 +90,6 @@ export default function LikePage() {
       }
       // 응답 코드가 200이 아닌 경우는 현재 상태를 유지 (alert 없음)
     } catch (error) {
-      console.error('좋아요 토글 실패:', error)
       // 에러 발생 시 현재 상태 유지 (alert 없음)
     }
   }

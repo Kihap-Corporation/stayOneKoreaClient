@@ -7,7 +7,7 @@ import { Footer } from "@/components/footer"
 import { useLanguage } from "@/components/language-provider"
 import { Button } from "@/components/ui/button"
 import { ConfirmationDialog } from "@/components/confirmation-dialog"
-import { apiGet, apiPost } from "@/lib/api"
+import { apiGet, apiPostWithResponse } from "@/lib/api"
 import { ChevronLeft, ChevronRight, Wifi, WashingMachine, AirVent, Bell, Flame, Globe, Clock, CheckCircle, XCircle, AlertTriangle } from "lucide-react"
 import { toast } from "sonner"
 
@@ -105,21 +105,21 @@ const getStatusInfo = (status: string) => {
     case 'RESERVATION_UNDER_WAY':
       return {
         label: 'Under Way',
-        color: 'bg-[#f48e2f] border-[#fad0a9]',
+        color: 'bg-[#2196f3]',
         textColor: 'text-white',
         icon: Clock
       }
     case 'RESERVATION_PENDING':
       return {
         label: 'Pending',
-        color: 'bg-[#ffa726] border-[#ffcc02]',
+        color: 'bg-[#ffa726] ',
         textColor: 'text-white',
         icon: Clock
       }
     case 'APPROVED':
       return {
         label: 'Approved',
-        color: 'bg-[#26bd6c] border-[#9af4c3]',
+        color: 'bg-[#26bd6c]',
         textColor: 'text-white',
         icon: CheckCircle
       }
@@ -133,15 +133,15 @@ const getStatusInfo = (status: string) => {
     case 'REJECTED':
       return {
         label: 'Rejected',
-        color: 'bg-[#f44336] border-[#ffcdd2]',
+        color: 'bg-[#f44336]',
         textColor: 'text-white',
         icon: AlertTriangle
       }
     default:
       return {
         label: status,
-        color: 'bg-[#f48e2f]',
-        textColor: 'text-white',
+        color: 'bg-gray-100',
+        textColor: 'text-gray-600',
         icon: Clock
       }
   }
@@ -210,11 +210,8 @@ export default function BookingDetailPage() {
           router.push('/account_check')
         } else if (response.code === 40500) {
           alert(messages?.roomDetail?.roomNotFound || "존재하지 않는 방입니다.")
-        } else {
-          console.error('Failed to fetch booking detail:', response)
         }
       } catch (error) {
-        console.error('Error fetching booking detail:', error)
       } finally {
         setLoading(false)
       }
@@ -245,14 +242,18 @@ export default function BookingDetailPage() {
       }).format(now)
 
       // API 요청
-      const response = await apiPost('/api/user/refund', {
+      const { response: httpResponse, data } = await apiPostWithResponse('/api/user/refund', {
         refundRequestTime: kstDate,
         reservationIdentifier: booking.reservationIdentifier,
         reason: "환불 요청"
       })
 
-      // 응답 처리
-      if (response.code === 20103) {
+      // 응답 처리 - 디버깅용
+      console.log('HTTP Response status:', httpResponse.status)
+      console.log('Response data:', data)
+      console.log('Data code:', data.code, 'Type:', typeof data.code)
+
+      if (data.code === 20103) {
         // 환불 처리 성공
         toast.success(messages?.bookings?.refundSuccess || "환불 처리가 완료되었습니다.")
         setShowCancelDialog(false)
@@ -260,19 +261,19 @@ export default function BookingDetailPage() {
         setTimeout(() => {
           router.push('/bookings')
         }, 2000)
-      } else if (response.code === 40903) {
+      } else if (data.code === 40903) {
         // 환불 실패
         alert(messages?.bookings?.refundFailed || "환불에 실패했습니다.")
         setShowCancelDialog(false)
-      } else if (response.code === 40904) {
+      } else if (data.code === 40904) {
         // 체크인 당일/이후 환불 불가능
         toast.error(messages?.bookings?.refundNotAllowedCheckIn || "체크인 당일이나 이후에는 환불이 불가능합니다.")
         setShowCancelDialog(false)
-      } else if (response.code === 40905) {
+      } else if (data.code === 40905) {
         // 결제 미완료
         toast.error(messages?.bookings?.refundNotAllowedPayment || "결제가 완료되지 않아서 환불이 불가능합니다. 결제가 완료된 후, 환불을 시도해주세요.")
         setShowCancelDialog(false)
-      } else if (response.code === 40906) {
+      } else if (data.code === 40906) {
         // 이미 환불 완료
         toast.error(messages?.bookings?.refundAlreadyCompleted || "이미 환불이 완료되어 환불이 불가능합니다.")
         setShowCancelDialog(false)
@@ -282,7 +283,6 @@ export default function BookingDetailPage() {
         setShowCancelDialog(false)
       }
     } catch (error: any) {
-      console.error('Refund error:', error)
       toast.error(messages?.bookings?.refundError || "환불 처리에 실패했습니다.")
       setShowCancelDialog(false)
     } finally {

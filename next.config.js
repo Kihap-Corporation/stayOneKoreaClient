@@ -13,6 +13,10 @@ const nextConfig = {
   // 빌드 출력 디렉토리
   distDir: '.next',
 
+  // 서버 설정
+  serverRuntimeConfig: {},
+  publicRuntimeConfig: {},
+
   // 이미지 설정
   images: {
     unoptimized: false, // static export에서는 true로 설정해야 하지만, SSR에서는 false

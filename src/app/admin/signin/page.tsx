@@ -20,29 +20,22 @@ export default function AdminSignInPage() {
     setIsLoading(true)
     setLoginError("")
 
-    console.log("🔐 관리자 로그인 시작")
-
     try {
       // 1. 일반 로그인 API 호출
-      console.log("📤 로그인 요청...")
       const loginData = await apiPost('/api/auth/login', {
         email,
         password,
       }, { skipAuth: true })
-      console.log("✅ 로그인 성공:", loginData)
 
       // 2. 로그인 응답의 role 확인 (최초 로그인 시)
       if (loginData.data?.role === "ROLE_ADMIN") {
-        console.log("✅ 관리자 권한 확인됨 (data.role)")
         // 관리자 권한 있음 - 관리자 홈으로 이동
         router.push('/admin')
       } else {
-        console.log("❌ 관리자 권한 없음:", loginData.data?.role)
         // 관리자 권한 없음
         setLoginError("관리자 권한이 없습니다.")
       }
     } catch (error) {
-      console.error("❌ Login error:", error)
       setLoginError("로그인 중 오류가 발생했습니다.")
     } finally {
       setIsLoading(false)

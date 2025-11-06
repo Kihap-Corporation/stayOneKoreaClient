@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useRouter } from "next/navigation"
 import { apiPostFormData } from "@/lib/api"
+import { AddressSearchInput } from "@/components/admin/address-search-input"
 
 interface I18nField {
   ko: string
@@ -32,9 +33,21 @@ export default function CreateResidencePage() {
   // 기본 필드
   const [address, setAddress] = useState("")
   const [addressDetail, setAddressDetail] = useState("")
+  const [zipNo, setZipNo] = useState("") // 우편번호 추가
   const [hostingStartDate, setHostingStartDate] = useState("")
   const [contactNumber, setContactNumber] = useState("")
   const [email, setEmail] = useState("")
+  
+  // 주소 검색 결과 콜백 핸들러
+  const handleAddressSelected = (roadAddr: string, zipNo: string) => {
+    setAddress(roadAddr)
+    setZipNo(zipNo)
+    
+    // 상세주소 입력란에 포커스
+    setTimeout(() => {
+      document.getElementById('addressDetail')?.focus()
+    }, 100)
+  }
   
   // 이미지 필드
   const [profileImage, setProfileImage] = useState<File | null>(null)
@@ -215,7 +228,6 @@ export default function CreateResidencePage() {
       alert("고시원이 등록되었습니다.")
       router.push("/admin/residences")
     } catch (error) {
-      console.error("고시원 등록 실패:", error)
       alert("고시원 등록 중 오류가 발생했습니다.")
     } finally {
       setIsLoading(false)
@@ -306,39 +318,51 @@ export default function CreateResidencePage() {
             <h3 className="text-lg font-semibold text-gray-900 mb-4">기본 정보</h3>
             
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="address">
-                    주소 <span className="text-red-500">*</span>
-                  </Label>
-                  <Input
-                    id="address"
-                    value={address}
-                    onChange={(e) => setAddress(e.target.value)}
-                    placeholder="서울특별시 강남구 테헤란로 123"
+              {/* 주소 검색 */}
+              <div>
+                <Label htmlFor="address">
+                  주소 <span className="text-red-500">*</span>
+                </Label>
+                <div className="mt-1">
+                  <AddressSearchInput
+                    onAddressSelected={handleAddressSelected}
                     disabled={isLoading}
-                    className={!address.trim() ? 'border-red-300' : ''}
                   />
-                  {!address.trim() && (
-                    <p className="text-xs text-red-500 mt-1">필수 입력 항목입니다</p>
-                  )}
                 </div>
-                <div>
-                  <Label htmlFor="addressDetail">
-                    상세 주소 <span className="text-red-500">*</span>
-                  </Label>
-                  <Input
-                    id="addressDetail"
-                    value={addressDetail}
-                    onChange={(e) => setAddressDetail(e.target.value)}
-                    placeholder="2floor 201ho"
-                    disabled={isLoading}
-                    className={!addressDetail.trim() ? 'border-red-300' : ''}
-                  />
-                  {!addressDetail.trim() && (
-                    <p className="text-xs text-red-500 mt-1">필수 입력 항목입니다</p>
-                  )}
-                </div>
+                {address && (
+                  <div className="mt-2 p-3 bg-blue-50 rounded-md">
+                    <p className="text-sm text-gray-700">
+                      <span className="font-semibold">선택된 주소:</span> {address}
+                    </p>
+                    {zipNo && (
+                      <p className="text-xs text-gray-500 mt-1">우편번호: {zipNo}</p>
+                    )}
+                  </div>
+                )}
+                {!address.trim() && (
+                  <p className="text-xs text-red-500 mt-1">필수 입력 항목입니다</p>
+                )}
+              </div>
+
+              {/* 상세 주소 */}
+              <div>
+                <Label htmlFor="addressDetail">
+                  상세 주소 <span className="text-red-500">*</span>
+                </Label>
+                <p className="text-xs text-gray-500 mt-1 mb-1">
+                  Please enter in English (e.g., 2F, Room 201)
+                </p>
+                <Input
+                  id="addressDetail"
+                  value={addressDetail}
+                  onChange={(e) => setAddressDetail(e.target.value)}
+                  placeholder="2F, Room 201"
+                  disabled={isLoading}
+                  className={!addressDetail.trim() ? 'border-red-300' : ''}
+                />
+                {!addressDetail.trim() && (
+                  <p className="text-xs text-red-500 mt-1">필수 입력 항목입니다</p>
+                )}
               </div>
 
               <div className="grid grid-cols-2 gap-4">
@@ -536,4 +560,3 @@ export default function CreateResidencePage() {
     </AdminLayout>
   )
 }
-

@@ -361,7 +361,6 @@ export default function CreateRoomPage() {
       alert("룸이 등록되었습니다.")
       router.push(`/admin/residences/${residenceIdentifier}/rooms`)
     } catch (error) {
-      console.error("룸 등록 실패:", error)
       alert("룸 등록 중 오류가 발생했습니다.")
     } finally {
       setIsLoading(false)
@@ -478,10 +477,16 @@ export default function CreateRoomPage() {
                 id="pricePerNight"
                 type="number"
                 value={pricePerNight}
-                onChange={(e) => setPricePerNight(e.target.value)}
-                placeholder="50"
+                onChange={(e) => {
+                  const value = e.target.value
+                  // 소수점 둘째자리까지만 허용
+                  if (value === '' || /^\d*\.?\d{0,2}$/.test(value)) {
+                    setPricePerNight(value)
+                  }
+                }}
+                placeholder="50.00"
                 min="0"
-                step="1"
+                step="0.01"
                 required
                 disabled={isLoading}
                 className={!pricePerNight || Number(pricePerNight) <= 0 ? 'border-red-300' : ''}
@@ -489,6 +494,7 @@ export default function CreateRoomPage() {
               {(!pricePerNight || Number(pricePerNight) <= 0) && (
                 <p className="text-xs text-red-500 mt-1">필수 입력 항목입니다</p>
               )}
+              <p className="text-xs text-gray-500 mt-1">소수점 둘째자리까지 입력 가능합니다</p>
             </div>
           </div>
 

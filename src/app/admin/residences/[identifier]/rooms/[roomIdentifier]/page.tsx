@@ -272,7 +272,6 @@ export default function RoomDetailPage() {
       setCustomAvailableFacilities(availableCustoms)
       setCustomUnavailableFacilities(unavailableCustoms)
     } catch (error) {
-      console.error("룸 조회 실패:", error)
       alert("룸 정보를 불러오는데 실패했습니다.")
       router.push(`/admin/residences/${residenceIdentifier}/rooms`)
     } finally {
@@ -295,7 +294,6 @@ export default function RoomDetailPage() {
       alert("룸이 삭제되었습니다.")
       router.push(`/admin/residences/${residenceIdentifier}/rooms`)
     } catch (error) {
-      console.error("룸 삭제 실패:", error)
       alert("룸 삭제에 실패했습니다.")
     } finally {
       setIsDeleting(false)
@@ -438,7 +436,6 @@ export default function RoomDetailPage() {
           try {
             const response = await fetch(img.imageUrl)
             if (!response.ok) {
-              console.warn(`갤러리 이미지 ${index} 로드 실패: ${response.status}`)
               return null
             }
             
@@ -450,7 +447,6 @@ export default function RoomDetailPage() {
               file: file
             }
           } catch (error) {
-            console.error(`갤러리 이미지 ${index} 로드 실패:`, error)
             return null
           }
         }
@@ -516,7 +512,6 @@ export default function RoomDetailPage() {
       setIsEditMode(false)
       fetchRoomDetail()
     } catch (error) {
-      console.error("룸 수정 실패:", error)
       alert("룸 수정 중 오류가 발생했습니다.")
     } finally {
       setIsSaving(false)
@@ -712,10 +707,16 @@ export default function RoomDetailPage() {
                 id="pricePerNight"
                 type="number"
                 value={pricePerNight}
-                onChange={(e) => setPricePerNight(e.target.value)}
-                placeholder="50"
+                onChange={(e) => {
+                  const value = e.target.value
+                  // 소수점 둘째자리까지만 허용
+                  if (value === '' || /^\d*\.?\d{0,2}$/.test(value)) {
+                    setPricePerNight(value)
+                  }
+                }}
+                placeholder="50.00"
                 min="0"
-                step="1"
+                step="0.01"
                 required
                 disabled={!isEditMode || isSaving}
                 readOnly={!isEditMode}
@@ -724,6 +725,7 @@ export default function RoomDetailPage() {
               {isEditMode && (!pricePerNight || Number(pricePerNight) <= 0) && (
                 <p className="text-xs text-red-500 mt-1">필수 입력 항목입니다</p>
               )}
+              <p className="text-xs text-gray-500 mt-1">소수점 둘째자리까지 입력 가능합니다</p>
             </div>
           </div>
 

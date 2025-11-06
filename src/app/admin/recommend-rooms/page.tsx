@@ -27,7 +27,6 @@ export default function RecommendRoomsPage() {
       })
       setRecommendRooms(roomMap)
     } catch (error) {
-      console.error("추천룸 조회 실패:", error)
       alert("추천룸 목록을 불러오는데 실패했습니다.")
     } finally {
       setIsLoading(false)
@@ -47,7 +46,6 @@ export default function RecommendRoomsPage() {
       alert("추천룸이 삭제되었습니다.")
       await fetchRecommendRooms()
     } catch (error) {
-      console.error("추천룸 삭제 실패:", error)
       alert("추천룸 삭제에 실패했습니다.")
     } finally {
       setDeletingOrder(null)
@@ -69,7 +67,6 @@ export default function RecommendRoomsPage() {
       setIsModalOpen(false)
       await fetchRecommendRooms()
     } catch (error) {
-      console.error("추천룸 등록 실패:", error)
       alert("추천룸 등록에 실패했습니다.")
     }
   }

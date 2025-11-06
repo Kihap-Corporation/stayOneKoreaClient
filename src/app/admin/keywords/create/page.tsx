@@ -88,7 +88,6 @@ export default function AdminKeywordCreatePage() {
       alert("키워드가 등록되었습니다.")
       router.push("/admin/keywords")
     } catch (error) {
-      console.error("키워드 등록 실패:", error)
       alert("키워드 등록 중 오류가 발생했습니다.")
     } finally {
       setIsLoading(false)

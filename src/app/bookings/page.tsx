@@ -42,7 +42,7 @@ function BookingsPageContent() {
       case 'RESERVATION_UNDER_WAY':
         return {
           label: messages?.bookings?.underWay || 'Under Way',
-          color: 'bg-[#f48e2f]',
+          color: 'bg-[#2196f3]',
           textColor: 'text-white',
           icon: Clock
         }
@@ -128,13 +128,11 @@ function BookingsPageContent() {
           setTotalPages(response.data.totalPages || 1)
           setTotalElements(response.data.totalElements || 0)
         } else {
-          console.error('Failed to fetch bookings:', response)
           setBookings([])
           setTotalPages(1)
           setTotalElements(0)
         }
       } catch (error) {
-        console.error('Error fetching bookings:', error)
         setBookings([])
         setTotalPages(1)
         setTotalElements(0)

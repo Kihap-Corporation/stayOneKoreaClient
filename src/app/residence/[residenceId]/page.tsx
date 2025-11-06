@@ -192,7 +192,6 @@ export default function ResidencePage({ params }: ResidencePageProps) {
             setDatePickerLocale(defaultKo)
         }
       } catch (error) {
-        console.error('Failed to load locale:', error)
         setDatePickerLocale(undefined)
       }
     }
@@ -256,7 +255,6 @@ export default function ResidencePage({ params }: ResidencePageProps) {
         toast.error(messages?.searchResult?.searchError || '검색 중 오류가 발생했습니다')
       }
     } catch (error) {
-      console.error('Error fetching residence detail:', error)
       setError("Failed to load residence data")
       toast.error(messages?.searchResult?.searchError || '검색 중 오류가 발생했습니다')
     } finally {
@@ -321,7 +319,6 @@ export default function ResidencePage({ params }: ResidencePageProps) {
         })
       }
     } catch (error) {
-      console.error('좋아요 토글 실패:', error)
       // 에러 발생 시 롤백
       setResidenceData(prev => {
         if (!prev) return prev
@@ -459,7 +456,6 @@ export default function ResidencePage({ params }: ResidencePageProps) {
                            currentLanguage.code === 'zh' ? '链接已复制到剪贴板!' :
                            'Lien copié dans le presse-papiers!'))
                       } catch (error) {
-                        console.error('링크 복사 실패:', error)
                         toast.error(messages?.roomDetail?.shareError ||
                           (currentLanguage.code === 'ko' ? '링크 복사에 실패했습니다' :
                            currentLanguage.code === 'en' ? 'Failed to copy link' :

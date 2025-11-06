@@ -102,7 +102,14 @@ export function AlgoliaSearch({
 
     setIsLoading(true)
     try {
-      const response = await searchAlgoliaIndex<SearchHit>('dev_places', {
+      const indexName = process.env.NEXT_PUBLIC_ALGOLIA_INDEX_NAME
+      if (!indexName) {
+        setResults([])
+        setIsLoading(false)
+        return
+      }
+      
+      const response = await searchAlgoliaIndex<SearchHit>(indexName, {
         query: searchQuery,
         hitsPerPage: 5,
       })
@@ -110,7 +117,6 @@ export function AlgoliaSearch({
       setResults(response.hits)
       setIsOpen(true)
     } catch (error) {
-      console.error('Algolia search error:', error)
       setResults([])
     } finally {
       setIsLoading(false)
