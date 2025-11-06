@@ -223,8 +223,13 @@ export default function PaymentPage() {
 
       if (newTimeRemaining <= 0) {
         clearInterval(timer)
+        
+        // 타이머 만료 시 강제로 홈으로 이동
+        // 페이지 이동으로 모든 결제 프로세스 중단 및 팝업/iframe 자동 정리
         alert(messages?.reservation?.timeExpired || "예약 가능 시간이 만료되었습니다.")
-        router.push('/')
+        
+        // 즉시 페이지 이동 (결제창/팝업도 함께 사라짐)
+        window.location.href = '/'
         return
       }
 
@@ -277,6 +282,13 @@ export default function PaymentPage() {
 
   const handlePayPalPayment = async () => {
     if (!paymentData || !reservationData) return
+    
+    // 타이머가 만료되었는지 확인
+    if (timeRemaining !== null && timeRemaining <= 0) {
+      alert(messages?.reservation?.timeExpired || "예약 가능 시간이 만료되었습니다.")
+      router.push('/')
+      return
+    }
     
     try {
       toast.info(messages?.payment?.processing || "결제 처리 중...")
