@@ -78,6 +78,9 @@ export default function PaymentPage() {
   
   // Payment loading state
   const [isProcessingPayment, setIsProcessingPayment] = useState(false)
+  
+  // Payment popup reference (팝업창 참조)
+  const [paymentPopup, setPaymentPopup] = useState<Window | null>(null)
 
   // 예약 정보 조회 및 타이머 설정
   useEffect(() => {
@@ -224,8 +227,21 @@ export default function PaymentPage() {
 
       if (newTimeRemaining <= 0) {
         clearInterval(timer)
+        
+        // 결제 팝업이 열려있다면 강제로 닫기
+        if (paymentPopup && !paymentPopup.closed) {
+          try {
+            paymentPopup.close()
+          } catch (error) {
+            console.error("Failed to close payment popup:", error)
+          }
+        }
+        
+        // 타이머 만료 시 강제로 홈으로 이동
         alert(messages?.reservation?.timeExpired || "예약 가능 시간이 만료되었습니다.")
-        router.push('/')
+        
+        // 즉시 페이지 이동
+        window.location.href = '/'
         return
       }
 
@@ -233,7 +249,7 @@ export default function PaymentPage() {
     }, 1000)
 
     return () => clearInterval(timer)
-  }, [timeRemaining, endToReserveTime, params.reservationId, router, messages])
+  }, [timeRemaining, endToReserveTime, params.reservationId, router, messages, paymentPopup])
 
   // 타이머 포맷 함수
   const formatTimer = (seconds: number) => {
@@ -261,6 +277,17 @@ export default function PaymentPage() {
   const handlePayPalPayment = async () => {
     if (!paymentData || !reservationData) return
 
+    
+    // 타이머가 만료되었는지 확인
+    if (timeRemaining !== null && timeRemaining <= 0) {
+      alert(messages?.reservation?.timeExpired || "예약 가능 시간이 만료되었습니다.")
+      router.push('/')
+      return
+    }
+    
+    // window.open 원본 저장 (try-catch 바깥에서)
+    const originalOpen = window.open
+
     try {
       toast.info(messages?.payment?.processing || "결제 처리 중...")
 
@@ -272,7 +299,16 @@ export default function PaymentPage() {
       const productsLink = process.env.NEXT_PUBLIC_PORTONE_PRODUCTS_LINK!
       const redirectUrl = process.env.NEXT_PUBLIC_PORTONE_REDIRECT_URL!
 
-      // 포트원 결제창 호출 (+결제페이지 띄워줌)
+      // window.open을 가로채서 팝업 참조 얻기
+      window.open = function(...args) {
+        const popup = originalOpen.apply(this, args as any)
+        if (popup) {
+          setPaymentPopup(popup)
+        }
+        return popup
+      }
+
+      // 포트원 결제창 호출 (팝업 방식)
       const response = await PortOne.requestPayment({
         storeId: process.env.NEXT_PUBLIC_PORTONE_STORE_ID!,
         channelKey: process.env.NEXT_PUBLIC_PORTONE_CHANNEL_KEY!,
@@ -289,7 +325,7 @@ export default function PaymentPage() {
           phoneNumber: reservationData.userPhoneNumber,
         },
         windowType: {
-          mobile: "REDIRECTION"
+          mobile: "REDIRECTION" // 모바일: REDIRECTION
         },
         redirectUrl: redirectUrl + `/payment/processing/${reservationData.reservationIdentifier}?paymentId=${paymentId}`,
         customData: {
@@ -317,6 +353,19 @@ export default function PaymentPage() {
         }
       })
       
+      // window.open 복원
+      window.open = originalOpen
+      
+      // 팝업 정리 (결제 완료/실패/취소 시)
+      if (paymentPopup && !paymentPopup.closed) {
+        try {
+          paymentPopup.close()
+        } catch (error) {
+          console.error("Failed to close popup:", error)
+        }
+      }
+      setPaymentPopup(null)
+      
       // 결제 실패 처리
       if (response?.code !== undefined) {
         toast.error(messages?.payment?.failed || "Payment failed")
@@ -328,6 +377,17 @@ export default function PaymentPage() {
       router.push(`/payment/processing/${reservationData.reservationIdentifier}?paymentId=${paymentId}`)
       
     } catch (error) {
+      // 에러 발생 시에도 window.open 복원 및 팝업 정리
+      window.open = originalOpen
+      if (paymentPopup && !paymentPopup.closed) {
+        try {
+          paymentPopup.close()
+        } catch (err) {
+          console.error("Failed to close popup:", err)
+        }
+      }
+      setPaymentPopup(null)
+      
       setVerifyingPayment(false)
       toast.error(messages?.payment?.error || "결제 중 오류가 발생했습니다")
     }
