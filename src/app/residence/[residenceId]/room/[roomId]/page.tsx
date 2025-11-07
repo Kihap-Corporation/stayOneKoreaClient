@@ -118,6 +118,7 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
   const [isMobileCalendarOpen, setIsMobileCalendarOpen] = useState(false)
   const [datePickerLocale, setDatePickerLocale] = useState<any>(undefined)
   const [isReserving, setIsReserving] = useState(false)
+  const [isNaverMapLoaded, setIsNaverMapLoaded] = useState(false)
 
   const handleGuestsChange = (newGuests: number) => {
     setGuests(Math.max(1, Math.min(1, newGuests)))
@@ -389,9 +390,9 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
     fetchRelatedRooms()
   }, [roomData, params.residenceId, params.roomId, currentLanguage, currentRoomPage])
 
-  // 네이버 지도 초기화 - roomData가 로드된 후 실행
+  // 네이버 지도 초기화 - roomData와 네이버 SDK 모두 로드된 후 실행
   useEffect(() => {
-    if (roomData && (window as any).naver) {
+    if (roomData && isNaverMapLoaded && (window as any).naver) {
       const naver = (window as any).naver;
 
       // 모바일 지도
@@ -426,7 +427,7 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
         });
       }
     }
-  }, [roomData])
+  }, [roomData, isNaverMapLoaded])
 
   // 체크인 날짜 필터링 함수 (체크인 전용)
   const filterCheckInDates = (date: Date) => {
@@ -1539,6 +1540,7 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
       <Script
         src={`https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${process.env.NEXT_PUBLIC_NAVER_CLOUD_CLIENT_ID}`}
         strategy="afterInteractive"
+        onLoad={() => setIsNaverMapLoaded(true)}
       />
     </div>
   )
