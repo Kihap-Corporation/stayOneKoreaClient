@@ -390,44 +390,91 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
     fetchRelatedRooms()
   }, [roomData, params.residenceId, params.roomId, currentLanguage, currentRoomPage])
 
-  // 네이버 지도 초기화 - roomData와 네이버 SDK 모두 로드된 후 실행
+  // 네이버 SDK가 이미 로드되어 있는지 초기 체크
   useEffect(() => {
-    if (roomData && isNaverMapLoaded && (window as any).naver) {
+    if ((window as any).naver) {
+      setIsNaverMapLoaded(true)
+    }
+  }, [])
+
+  // 네이버 지도 초기화 - roomData 로드 후 SDK를 기다리며 초기화
+  useEffect(() => {
+    if (!roomData) return
+
+    let retryCount = 0
+    const maxRetries = 50 // 최대 5초 대기 (50 * 100ms)
+    let timeoutId: NodeJS.Timeout
+
+    const initializeMaps = () => {
+      // 네이버 SDK가 로드될 때까지 대기
+      if (!(window as any).naver || !(window as any).naver.maps) {
+        retryCount++
+        if (retryCount < maxRetries) {
+          // 아직 로드되지 않았으면 100ms 후 재시도
+          timeoutId = setTimeout(initializeMaps, 100)
+        } else {
+          console.error('Naver Maps SDK failed to load after 5 seconds')
+        }
+        return
+      }
+
       const naver = (window as any).naver;
 
       // 모바일 지도
       const mobileMapElement = document.getElementById('map');
-      if (mobileMapElement) {
-        const mobileMap = new naver.maps.Map('map', {
-          center: new naver.maps.LatLng(roomData.residenceLatitude, roomData.residenceLongitude),
-          zoom: 15,
-          mapTypeControl: false,
-          zoomControl: false
-        });
+      if (mobileMapElement && !mobileMapElement.classList.contains('map-initialized')) {
+        mobileMapElement.classList.add('map-initialized')
+        try {
+          const mobileMap = new naver.maps.Map('map', {
+            center: new naver.maps.LatLng(roomData.residenceLatitude, roomData.residenceLongitude),
+            zoom: 15,
+            mapTypeControl: false,
+            zoomControl: false
+          });
 
-        new naver.maps.Marker({
-          position: new naver.maps.LatLng(roomData.residenceLatitude, roomData.residenceLongitude),
-          map: mobileMap
-        });
+          new naver.maps.Marker({
+            position: new naver.maps.LatLng(roomData.residenceLatitude, roomData.residenceLongitude),
+            map: mobileMap
+          });
+        } catch (error) {
+          console.error('Failed to initialize mobile map:', error)
+          mobileMapElement.classList.remove('map-initialized')
+        }
       }
 
       // 데스크톱 지도
       const desktopMapElement = document.getElementById('map-desktop');
-      if (desktopMapElement) {
-        const desktopMap = new naver.maps.Map('map-desktop', {
-          center: new naver.maps.LatLng(roomData.residenceLatitude, roomData.residenceLongitude),
-          zoom: 15,
-          mapTypeControl: false,
-          zoomControl: false
-        });
+      if (desktopMapElement && !desktopMapElement.classList.contains('map-initialized')) {
+        desktopMapElement.classList.add('map-initialized')
+        try {
+          const desktopMap = new naver.maps.Map('map-desktop', {
+            center: new naver.maps.LatLng(roomData.residenceLatitude, roomData.residenceLongitude),
+            zoom: 15,
+            mapTypeControl: false,
+            zoomControl: false
+          });
 
-        new naver.maps.Marker({
-          position: new naver.maps.LatLng(roomData.residenceLatitude, roomData.residenceLongitude),
-          map: desktopMap
-        });
+          new naver.maps.Marker({
+            position: new naver.maps.LatLng(roomData.residenceLatitude, roomData.residenceLongitude),
+            map: desktopMap
+          });
+        } catch (error) {
+          console.error('Failed to initialize desktop map:', error)
+          desktopMapElement.classList.remove('map-initialized')
+        }
       }
     }
-  }, [roomData, isNaverMapLoaded])
+
+    // DOM 렌더링 대기 후 초기화 시작
+    timeoutId = setTimeout(initializeMaps, 100)
+
+    // Cleanup: 컴포넌트 언마운트 시 timeout 제거
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId)
+      }
+    }
+  }, [roomData])
 
   // 체크인 날짜 필터링 함수 (체크인 전용)
   const filterCheckInDates = (date: Date) => {
