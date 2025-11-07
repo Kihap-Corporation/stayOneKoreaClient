@@ -41,7 +41,7 @@ interface ResidenceDetail {
     imageType: string
     imageUrl: string
     displayOrder: number
-  }
+  } | null  // null 허용
   galleryImages: Array<{
     identifier: string
     imageType: string
@@ -152,8 +152,8 @@ export default function ResidenceDetailPage() {
       setHostingStartDate(data.hostingStartDate)
       setContactNumber(data.contactNumber)
       setEmail(data.email)
-      setProfileImagePreview(data.profileImage.imageUrl)
-      setProfileImageIdentifier(data.profileImage.identifier)
+      setProfileImagePreview(data.profileImage?.imageUrl || "")
+      setProfileImageIdentifier(data.profileImage?.identifier || "")
       
       // 갤러리 이미지 초기화
       setGalleryImages(
