@@ -11,6 +11,8 @@ interface MobileCustomDateRangePickerProps {
   onCheckInChange: (date: Date | null) => void
   onCheckOutChange: (date: Date | null) => void
   locale?: string
+  filterCheckInDate?: (date: Date) => boolean
+  filterCheckOutDate?: (date: Date) => boolean
 }
 
 // 날짜를 YYYY-MM-DD 형식으로 비교하기 위한 키 생성
@@ -93,7 +95,9 @@ export function MobileCustomDateRangePicker({
   checkOut,
   onCheckInChange,
   onCheckOutChange,
-  locale = "en"
+  locale = "en",
+  filterCheckInDate,
+  filterCheckOutDate
 }: MobileCustomDateRangePickerProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const [calendarMonths, setCalendarMonths] = useState(12)
@@ -143,6 +147,14 @@ export function MobileCustomDateRangePicker({
     const normalizedDate = new Date(date.getFullYear(), date.getMonth(), date.getDate())
     const normalizedToday = new Date(today.getFullYear(), today.getMonth(), today.getDate())
     if (normalizedDate < normalizedToday) return
+
+    const isSelectingCheckOut = !!checkIn && !checkOut
+
+    if (isSelectingCheckOut) {
+      if (filterCheckOutDate && !filterCheckOutDate(normalizedDate)) return
+    } else {
+      if (filterCheckInDate && !filterCheckInDate(normalizedDate)) return
+    }
 
     // 체크인과 체크아웃이 모두 있을 때 -> 새로운 체크인 시작
     if (checkIn && checkOut) {
@@ -197,8 +209,23 @@ export function MobileCustomDateRangePicker({
             const isToday = isSameDay(date, today)
             const isSelected = isSameDay(date, checkIn) || isSameDay(date, checkOut)
             const inRange = isInRange(date, checkIn, checkOut)
-            const isPast = date < new Date(today.getFullYear(), today.getMonth(), today.getDate())
-            const isDisabled = !isCurrentMonth || isPast
+            const normalizedDate = new Date(date.getFullYear(), date.getMonth(), date.getDate())
+            const isPast = normalizedDate < new Date(today.getFullYear(), today.getMonth(), today.getDate())
+
+            const isSelectingCheckOut = !!checkIn && !checkOut
+            let isAvailable = true
+
+            if (isSelectingCheckOut) {
+              if (filterCheckOutDate) {
+                isAvailable = filterCheckOutDate(normalizedDate)
+              }
+            } else {
+              if (filterCheckInDate) {
+                isAvailable = filterCheckInDate(normalizedDate)
+              }
+            }
+
+            const isDisabled = !isCurrentMonth || isPast || !isAvailable
 
             let className = "h-12 flex items-center justify-center text-base rounded-lg cursor-pointer transition-colors relative"
 
