@@ -85,10 +85,6 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
-  verification: {
-    google: 'your-google-site-verification-code',
-    yandex: 'your-yandex-verification-code',
-  },
 };
 
 export default function RootLayout({
@@ -110,7 +106,7 @@ export default function RootLayout({
     ],
     "contactPoint": {
       "@type": "ContactPoint",
-      "telephone": "+82-XXX-XXXX",
+      "email": "stayonekoreaofficial@gmail.com",
       "contactType": "customer service",
       "availableLanguage": ["Korean", "English", "Chinese", "French"]
     }

@@ -272,7 +272,7 @@ export default function BookingResultPage() {
                   {/* Image */}
                   <div className="flex-shrink-0 aspect-square w-[200px] relative">
                     <Image
-                      alt=""
+                      alt={bookingData.room.title}
                       fill
                       className="object-cover"
                       src={bookingData.room.image}
@@ -306,7 +306,7 @@ export default function BookingResultPage() {
                   {/* Image */}
                   <div className="flex-shrink-0 aspect-square w-[120px] relative">
                     <Image
-                      alt=""
+                      alt={bookingData.room.title}
                       fill
                       className="object-cover"
                       src={bookingData.room.image}
