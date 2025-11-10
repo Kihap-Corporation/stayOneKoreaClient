@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { useLanguage } from "./language-provider"
+import Image from "next/image"
 
 export function Footer() {
   const { messages } = useLanguage()
@@ -14,9 +15,11 @@ export function Footer() {
           {/* Logo */}
           <div className="w-[200px] shrink-0">
             <div className="h-12 w-[120px]">
-              <img
+              <Image
                 src="/logo/footer_logo.png"
                 alt="Stay One Korea"
+                width={120}
+                height={48}
                 className="h-full w-full object-contain"
               />
             </div>
@@ -72,9 +75,11 @@ export function Footer() {
           {/* Logo */}
           <div className="w-[200px]">
             <div className="h-12 w-[120px]">
-              <img
+              <Image
                 src="/logo/footer_logo.png"
                 alt="Stay One Korea"
+                width={120}
+                height={48}
                 className="h-full w-full object-contain"
               />
             </div>

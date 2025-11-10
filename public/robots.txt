@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+
+# Block admin pages from search engines
+Disallow: /admin/
+Disallow: /api/
+
+# Allow important pages
+Allow: /
+Allow: /search
+Allow: /about-gosiwon
+
+# Sitemap
+Sitemap: https://stayonekorea.com/sitemap.xml

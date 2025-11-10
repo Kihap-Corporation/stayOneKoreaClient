@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import { LikeButton } from "@/components/ui/like-button"
 
 interface LikedRoomCardProps {
@@ -46,10 +47,11 @@ export function LikedRoomCard({
     >
       {/* Image */}
       <div className="relative aspect-square rounded-2xl overflow-hidden">
-        <img
+        <Image
           src={image}
           alt={title}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          fill
+          className="object-cover group-hover:scale-105 transition-transform duration-300"
         />
         
         {/* 좋아요 버튼 */}
