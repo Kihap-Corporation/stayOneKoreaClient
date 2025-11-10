@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { useLanguage } from "@/components/language-provider"
 import { DollarSign, Home, MapPin } from "lucide-react"
@@ -15,12 +16,15 @@ export function FeaturesSection() {
           <h2 className="text-2xl font-extrabold text-[#14151a] tracking-[-0.3px]">
             {messages?.home?.features?.title || "GOSIWON, K-Compact Studio"}
           </h2>
-          <Button 
-            variant="outline" 
+          <Button
+            asChild
+            variant="outline"
             className="bg-[rgba(10,15,41,0.04)] hover:bg-[rgba(10,15,41,0.08)] text-[#14151a] rounded-full px-3 py-1.5 h-8 text-sm font-medium cursor-pointer"
           >
-            {messages?.home?.features?.learnMore || "Learn More"}
-            <span className="ml-1 text-sm">+</span>
+            <Link href="/about-gosiwon">
+              {messages?.home?.features?.learnMore || "Learn More"}
+              <span className="ml-1 text-sm">+</span>
+            </Link>
           </Button>
         </div>
 

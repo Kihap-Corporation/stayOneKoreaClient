@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, Suspense } from "react"
+import { useState, useEffect, useMemo, Suspense } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { useLanguage } from "@/components/language-provider"
 import { Header } from "@/components/header"
@@ -101,18 +101,44 @@ function SearchResultContent() {
       }
     : { lat: 37.5665, lng: 126.9780 } // 서울 시청 기본값
 
-  // 지도 마커 생성
-  const mapMarkers = rooms.map((room, index) => ({
-    lat: room.latitude,
-    lng: room.longitude,
-    label: `$${room.pricePerNight}`,
-    color: selectedRoomIndex === index ? '#E91E63' : '#4285F4'
+  // 지도 마커 생성 (같은 고시원의 최소 가격 표시)
+  const residenceMarkerData = useMemo(() => {
+    const groups = new Map<string, { lat: number; lng: number; minPrice: number; roomIndex: number }>()
+
+    rooms.forEach((room, index) => {
+      const key = room.residenceIdentifier || room.roomIdentifier
+      const existing = groups.get(key)
+
+      if (!existing || room.pricePerNight < existing.minPrice) {
+        groups.set(key, {
+          lat: room.latitude,
+          lng: room.longitude,
+          minPrice: room.pricePerNight,
+          roomIndex: index
+        })
+      }
+    })
+
+    return Array.from(groups.values())
+  }, [rooms])
+
+  const mapMarkers = residenceMarkerData.map((marker) => ({
+    lat: marker.lat,
+    lng: marker.lng,
+    label: `$${marker.minPrice}`,
+    color: selectedRoomIndex === marker.roomIndex ? '#E91E63' : '#4285F4'
   }))
 
   const handleMarkerClick = (index: number) => {
-    setSelectedRoomIndex(index)
+    const markerData = residenceMarkerData[index]
+    if (!markerData) return
+
+    const roomIndex = markerData.roomIndex
+    setSelectedRoomIndex(roomIndex)
+
     // 스크롤하여 해당 숙소 카드로 이동
-    const element = document.getElementById(`room-${rooms[index]?.roomIdentifier}`)
+    const targetRoom = rooms[roomIndex]
+    const element = targetRoom ? document.getElementById(`room-${targetRoom.roomIdentifier}`) : null
     if (element) {
       element.scrollIntoView({ behavior: 'smooth', block: 'center' })
     }
