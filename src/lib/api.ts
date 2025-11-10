@@ -16,6 +16,8 @@ const clearLoginState = () => {
   }
 }
 
+const MAX_RETRIES = 2
+
 // 공통 API 응답 형식
 export interface ApiResponse<T = any> {
   status: number
@@ -94,6 +96,72 @@ const handleForbidden = () => {
   }
 }
 
+interface ExecuteRequestOptions {
+  skipAuth?: boolean
+}
+
+const executeRequest = async (
+  requestFn: () => Promise<Response>,
+  { skipAuth = false }: ExecuteRequestOptions = {}
+): Promise<{ response: Response; data: ApiResponse }> => {
+  let retryCount = 0
+
+  while (retryCount < MAX_RETRIES) {
+    try {
+      const response = await requestFn()
+      const data: ApiResponse = await response.json()
+
+      if (response.status === 401 && !skipAuth) {
+        const code = String(data.code)
+        if (code === "40101") {
+          const refreshSuccess = await refreshToken()
+          if (refreshSuccess) {
+            retryCount++
+            continue
+          } else {
+            throw new ApiError(data, response.status)
+          }
+        } else if (code === "40102") {
+          alert(globalMessages?.auth?.accountLoggedOut || "계정이 로그아웃 되었습니다. 다시 로그인 해주세요")
+          await handleLogout()
+          throw new ApiError(data, response.status)
+        } else {
+          clearLoginState()
+          throw new ApiError(data, response.status)
+        }
+      }
+
+      if (response.status === 403 && !skipAuth) {
+        handleForbidden()
+        throw new ApiError(data, response.status)
+      }
+
+      if (response.status === 400) {
+        const code = String(data.code)
+        if (code === "40106") {
+          alert(globalMessages?.auth?.currentPasswordIncorrect || "현재 비밀번호가 일치하지 않습니다.")
+          throw new ApiError(data, response.status)
+        }
+      }
+
+      if (!response.ok) {
+        throw new ApiError(data, response.status)
+      }
+
+      return { response, data }
+
+    } catch (error) {
+      if (error instanceof ApiError) {
+        throw error
+      }
+
+      throw new Error(globalMessages?.common?.error || '요청 중 오류가 발생했습니다.')
+    }
+  }
+
+  throw new Error('최대 재시도 횟수를 초과했습니다.')
+}
+
 // 메인 API 요청 함수
 export const apiRequest = async (
   endpoint: string,
@@ -111,74 +179,12 @@ export const apiRequest = async (
     ...fetchOptions,
   }
 
-  // 최대 재시도 횟수 설정 (무한 루프 방지)
-  const maxRetries = 2
-  let retryCount = 0
+  const { data } = await executeRequest(
+    () => fetch(`${BASE_URL}${endpoint}`, defaultOptions),
+    { skipAuth }
+  )
 
-  while (retryCount < maxRetries) {
-    try {
-      let response = await fetch(`${BASE_URL}${endpoint}`, defaultOptions)
-      let data: ApiResponse = await response.json()
-
-      // 401 에러 처리 (토큰 만료)
-      if (response.status === 401 && !skipAuth) {
-        const code = String(data.code)
-        if (code === "40101") {
-          // 토큰 재발급 시도
-          const refreshSuccess = await refreshToken()
-          if (refreshSuccess) {
-            retryCount++
-            continue // 재시도
-          } else {
-            // 재발급 실패
-            throw new ApiError(data, response.status)
-          }
-        } else if (code === "40102") {
-          // 토큰 재발급 실패 - 더 이상 시도하지 않음
-          alert(globalMessages?.auth?.accountLoggedOut || "계정이 로그아웃 되었습니다. 다시 로그인 해주세요")
-          await handleLogout()
-          throw new ApiError(data, response.status)
-        } else {
-          clearLoginState()
-          throw new ApiError(data, response.status)
-        }
-      }
-
-      // 403 에러 처리 (접근 권한 없음)
-      if (response.status === 403 && !skipAuth) {
-        handleForbidden()
-        throw new ApiError(data, response.status)
-      }
-
-      // 400 에러 처리 (특별한 경우들)
-      if (response.status === 400) {
-        // 비밀번호 변경 시 현재 비밀번호 불일치 (40106)
-        const code = String(data.code)
-        if (code === "40106") {
-          alert(globalMessages?.auth?.currentPasswordIncorrect || "현재 비밀번호가 일치하지 않습니다.")
-          throw new ApiError(data, response.status)
-        }
-      }
-
-      // 기타 에러 처리
-      if (!response.ok) {
-        throw new ApiError(data, response.status)
-      }
-
-      // 성공 시 데이터 반환
-      return data
-
-    } catch (error) {
-      if (error instanceof ApiError) {
-        throw error
-      }
-      // 네트워크 에러 등
-      throw new Error(globalMessages?.common?.error || '요청 중 오류가 발생했습니다.')
-    }
-  }
-
-  // 최대 재시도 횟수 초과
-  throw new Error('최대 재시도 횟수를 초과했습니다.')
+  return data
 }
 
 // 응답 객체를 포함한 API 요청 함수 (응답 코드 확인용)
@@ -198,69 +204,10 @@ export const apiRequestWithResponse = async (
     ...fetchOptions,
   }
 
-  // 최대 재시도 횟수 설정 (무한 루프 방지)
-  const maxRetries = 2
-  let retryCount = 0
-
-  while (retryCount < maxRetries) {
-    try {
-      let response = await fetch(`${BASE_URL}${endpoint}`, defaultOptions)
-      let data: ApiResponse = await response.json()
-
-      // 401 에러 처리 (토큰 만료)
-      if (response.status === 401 && !skipAuth) {
-        const code = String(data.code)
-        if (code === "40101") {
-          // 토큰 재발급 시도
-          const refreshSuccess = await refreshToken()
-          if (refreshSuccess) {
-            retryCount++
-            continue // 재시도
-          } else {
-            // 재발급 실패
-            throw new ApiError(data, response.status)
-          }
-        } else if (code === "40102") {
-          // 토큰 재발급 실패 - 더 이상 시도하지 않음
-          alert(globalMessages?.auth?.accountLoggedOut || "계정이 로그아웃 되었습니다. 다시 로그인 해주세요")
-          await handleLogout()
-          throw new ApiError(data, response.status)
-        } else {
-          clearLoginState()
-          throw new ApiError(data, response.status)
-        }
-      }
-
-      // 403 에러 처리 (접근 권한 없음)
-      if (response.status === 403 && !skipAuth) {
-        handleForbidden()
-        throw new ApiError(data, response.status)
-      }
-
-      // 400 에러 처리 (특별한 경우들)
-      if (response.status === 400) {
-        // 비밀번호 변경 시 현재 비밀번호 불일치 (40106)
-        const code = String(data.code)
-        if (code === "40106") {
-          alert(globalMessages?.auth?.currentPasswordIncorrect || "현재 비밀번호가 일치하지 않습니다.")
-          throw new ApiError(data, response.status)
-        }
-      }
-
-      // 응답 객체와 데이터 모두 반환
-      return { response, data }
-
-    } catch (error) {
-      if (error instanceof ApiError) {
-        throw error
-      }
-      // 네트워크 에러 등
-      throw new Error(globalMessages?.common?.error || '요청 중 오류가 발생했습니다.')
-    }
-  }
-
-  // 최대 재시도 횟수 초과
-  throw new Error('최대 재시도 횟수를 초과했습니다.')
+  return executeRequest(
+    () => fetch(`${BASE_URL}${endpoint}`, defaultOptions),
+    { skipAuth }
+  )
 }
 
 // 편의 함수들
@@ -315,58 +262,12 @@ export const apiPostFormData = async (endpoint: string, formData: FormData, opti
     ...fetchOptions,
   }
 
-  // 최대 재시도 횟수 설정
-  const maxRetries = 2
-  let retryCount = 0
+  const { data } = await executeRequest(
+    () => fetch(`${BASE_URL}${endpoint}`, defaultOptions),
+    { skipAuth }
+  )
 
-  while (retryCount < maxRetries) {
-    try {
-      let response = await fetch(`${BASE_URL}${endpoint}`, defaultOptions)
-      let data: ApiResponse = await response.json()
-
-      // 401 에러 처리 (토큰 만료)
-      if (response.status === 401 && !skipAuth) {
-        const code = String(data.code)
-        if (code === "40101") {
-          const refreshSuccess = await refreshToken()
-          if (refreshSuccess) {
-            retryCount++
-            continue
-          } else {
-            throw new ApiError(data, response.status)
-          }
-        } else if (code === "40102") {
-          alert(globalMessages?.auth?.accountLoggedOut || "계정이 로그아웃 되었습니다. 다시 로그인 해주세요")
-          await handleLogout()
-          throw new ApiError(data, response.status)
-        } else {
-          clearLoginState()
-          throw new ApiError(data, response.status)
-        }
-      }
-
-      // 403 에러 처리
-      if (response.status === 403 && !skipAuth) {
-        handleForbidden()
-        throw new ApiError(data, response.status)
-      }
-
-      // 기타 에러 처리
-      if (!response.ok) {
-        throw new ApiError(data, response.status)
-      }
-
-      return data
-
-    } catch (error) {
-      if (error instanceof ApiError) {
-        throw error
-      }
-      throw new Error(globalMessages?.common?.error || '요청 중 오류가 발생했습니다.')
-    }
-  }
-
-  throw new Error('최대 재시도 횟수를 초과했습니다.')
+  return data
 }
 
 /**
@@ -384,58 +285,12 @@ export const apiPutFormData = async (endpoint: string, formData: FormData, optio
     ...fetchOptions,
   }
 
-  // 최대 재시도 횟수 설정
-  const maxRetries = 2
-  let retryCount = 0
+  const { data } = await executeRequest(
+    () => fetch(`${BASE_URL}${endpoint}`, defaultOptions),
+    { skipAuth }
+  )
 
-  while (retryCount < maxRetries) {
-    try {
-      let response = await fetch(`${BASE_URL}${endpoint}`, defaultOptions)
-      let data: ApiResponse = await response.json()
-
-      // 401 에러 처리 (토큰 만료)
-      if (response.status === 401 && !skipAuth) {
-        const code = String(data.code)
-        if (code === "40101") {
-          const refreshSuccess = await refreshToken()
-          if (refreshSuccess) {
-            retryCount++
-            continue
-          } else {
-            throw new ApiError(data, response.status)
-          }
-        } else if (code === "40102") {
-          alert(globalMessages?.auth?.accountLoggedOut || "계정이 로그아웃 되었습니다. 다시 로그인 해주세요")
-          await handleLogout()
-          throw new ApiError(data, response.status)
-        } else {
-          clearLoginState()
-          throw new ApiError(data, response.status)
-        }
-      }
-
-      // 403 에러 처리
-      if (response.status === 403 && !skipAuth) {
-        handleForbidden()
-        throw new ApiError(data, response.status)
-      }
-
-      // 기타 에러 처리
-      if (!response.ok) {
-        throw new ApiError(data, response.status)
-      }
-
-      return data
-
-    } catch (error) {
-      if (error instanceof ApiError) {
-        throw error
-      }
-      throw new Error(globalMessages?.common?.error || '요청 중 오류가 발생했습니다.')
-    }
-  }
-
-  throw new Error('최대 재시도 횟수를 초과했습니다.')
+  return data
 }
 
 // 로그아웃 함수 (외부에서 사용할 수 있도록 export)

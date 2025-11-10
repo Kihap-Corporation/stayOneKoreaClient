@@ -260,6 +260,8 @@ export default function PaymentPage() {
   }
 
   // 날짜 포맷팅 함수
+const toMinorUnit = (amount: number) => Math.round(amount * 100)
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
     const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
@@ -272,8 +274,6 @@ export default function PaymentPage() {
       year: date.getFullYear().toString()
     }
   }
-
-  const toMinorUnit = (amount: number) => Math.round(amount * 100)
 
 
   const handlePayPalPayment = async () => {
