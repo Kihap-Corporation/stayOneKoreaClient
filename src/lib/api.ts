@@ -10,6 +10,12 @@ export const setGlobalMessages = (messages: any) => {
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
 
+const clearLoginState = () => {
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem('isLoggedIn')
+  }
+}
+
 // 공통 API 응답 형식
 export interface ApiResponse<T = any> {
   status: number
@@ -48,10 +54,7 @@ const handleLogout = async () => {
     alert(globalMessages?.auth?.logoutError || "로그아웃 중 오류가 발생했습니다.")
   }
 
-  // 로그인 상태 제거
-  if (typeof window !== 'undefined') {
-    localStorage.removeItem('isLoggedIn')
-  }
+  clearLoginState()
 
   // 로그인 페이지로 리다이렉트
   if (typeof window !== 'undefined') {
@@ -134,6 +137,9 @@ export const apiRequest = async (
           // 토큰 재발급 실패 - 더 이상 시도하지 않음
           alert(globalMessages?.auth?.accountLoggedOut || "계정이 로그아웃 되었습니다. 다시 로그인 해주세요")
           await handleLogout()
+          throw new ApiError(data, response.status)
+        } else {
+          clearLoginState()
           throw new ApiError(data, response.status)
         }
       }
@@ -218,6 +224,9 @@ export const apiRequestWithResponse = async (
           // 토큰 재발급 실패 - 더 이상 시도하지 않음
           alert(globalMessages?.auth?.accountLoggedOut || "계정이 로그아웃 되었습니다. 다시 로그인 해주세요")
           await handleLogout()
+          throw new ApiError(data, response.status)
+        } else {
+          clearLoginState()
           throw new ApiError(data, response.status)
         }
       }
@@ -330,6 +339,9 @@ export const apiPostFormData = async (endpoint: string, formData: FormData, opti
           alert(globalMessages?.auth?.accountLoggedOut || "계정이 로그아웃 되었습니다. 다시 로그인 해주세요")
           await handleLogout()
           throw new ApiError(data, response.status)
+        } else {
+          clearLoginState()
+          throw new ApiError(data, response.status)
         }
       }
 
@@ -395,6 +407,9 @@ export const apiPutFormData = async (endpoint: string, formData: FormData, optio
         } else if (code === "40102") {
           alert(globalMessages?.auth?.accountLoggedOut || "계정이 로그아웃 되었습니다. 다시 로그인 해주세요")
           await handleLogout()
+          throw new ApiError(data, response.status)
+        } else {
+          clearLoginState()
           throw new ApiError(data, response.status)
         }
       }
