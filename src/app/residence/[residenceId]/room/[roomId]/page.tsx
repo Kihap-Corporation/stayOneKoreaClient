@@ -1508,6 +1508,8 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
           saveBookingDates(checkInDate, date)
         }}
         locale={currentLanguage.code}
+        filterCheckInDate={filterCheckInDates}
+        filterCheckOutDate={filterCheckOutDates}
       />
 
       {/* 이미지 모달 */}
