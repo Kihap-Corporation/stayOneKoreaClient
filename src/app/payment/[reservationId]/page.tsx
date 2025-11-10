@@ -261,6 +261,8 @@ export default function PaymentPage() {
   }
 
   // 날짜 포맷팅 함수
+const toMinorUnit = (amount: number) => Math.round(amount * 100)
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
     const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
@@ -315,7 +317,7 @@ export default function PaymentPage() {
         channelKey: process.env.NEXT_PUBLIC_PORTONE_CHANNEL_KEY!,
         paymentId: paymentId,
         orderName: paymentData.room.title,
-        totalAmount: paymentData.totalPrice*100,
+        totalAmount: toMinorUnit(paymentData.totalPrice),
         currency: "CURRENCY_USD",
         locale: "EN_US",
         payMethod: "CARD",
@@ -344,7 +346,7 @@ export default function PaymentPage() {
           id : reservationData.reservationIdentifier,
           name : paymentData.room.title,
           code : reservationData.reservationIdentifier,
-          amount : paymentData.totalPrice*100, //소수점이 허용되지 않음.
+          amount : toMinorUnit(paymentData.totalPrice), //소수점이 허용되지 않음.
           quantity : 1,
           tag: "room",
           link: productsLink,

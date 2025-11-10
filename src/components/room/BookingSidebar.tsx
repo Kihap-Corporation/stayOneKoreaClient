@@ -216,8 +216,7 @@ export function BookingSidebar({
     return `${year}-${month}-${day}`
   }
 
-  // 좋아요 토글 함수 (낙관적 업데이트)
-  const handleToggleLike = async () => {
+  const toggleLike = async () => {
     // 낙관적 업데이트: 먼저 UI 업데이트
     setIsLiked(prev => !prev)
 
@@ -232,6 +231,16 @@ export function BookingSidebar({
       // 에러 발생 시 롤백
       setIsLiked(prev => !prev)
     }
+  }
+
+  // 좋아요 토글 함수 (로그인 체크 포함)
+  const handleToggleLike = () => {
+    requireLogin(
+      () => {
+        void toggleLike()
+      },
+      messages?.auth?.loginRequiredMessage || '로그인이 필요한 서비스입니다.'
+    )
   }
 
   // 링크 공유 함수

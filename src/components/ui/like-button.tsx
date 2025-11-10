@@ -1,9 +1,8 @@
 "use client"
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
 import { useLanguage } from "@/components/language-provider"
-import { LoginRequiredDialog } from "@/components/ui/login-required-dialog"
+import { useLoginRequired } from "@/hooks/useLoginRequired"
+import { LoginRequiredModal } from "@/components/auth/login-required-modal"
 
 interface LikeButtonProps {
   isLiked: boolean
@@ -20,9 +19,8 @@ export function LikeButton({
   className = '',
   variant = 'default'
 }: LikeButtonProps) {
-  const router = useRouter()
   const { messages } = useLanguage()
-  const [showLoginDialog, setShowLoginDialog] = useState(false)
+  const { isModalOpen, modalMessage, returnUrl, requireLogin, closeModal } = useLoginRequired()
 
   // 사이즈별 설정
   const sizeConfig = {
@@ -46,18 +44,11 @@ export function LikeButton({
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault() // 기본 동작 방지
     e.stopPropagation() // 이벤트 버블링 방지
-    
-    // 로그인 상태 확인
-    const isLoggedIn = typeof window !== 'undefined' && localStorage.getItem('isLoggedIn') === 'true'
-    
-    if (!isLoggedIn) {
-      // 로그인하지 않은 경우 다이얼로그 표시
-      setShowLoginDialog(true)
-      return
-    }
 
-    // 로그인되어 있는 경우 원래 onClick 실행
-    onClick(e)
+    requireLogin(
+      () => onClick(e),
+      messages?.auth?.loginRequiredMessage || '로그인이 필요한 서비스입니다.'
+    )
   }
 
   // always-filled 변형 (좋아요 페이지용)
@@ -84,10 +75,11 @@ export function LikeButton({
           </svg>
         </button>
 
-        {/* 로그인 필요 다이얼로그 */}
-        <LoginRequiredDialog
-          open={showLoginDialog}
-          onOpenChange={setShowLoginDialog}
+        <LoginRequiredModal
+          isOpen={isModalOpen}
+          onClose={closeModal}
+          message={modalMessage}
+          returnUrl={returnUrl}
         />
       </>
     )
@@ -131,10 +123,11 @@ export function LikeButton({
         )}
       </button>
 
-      {/* 로그인 필요 다이얼로그 */}
-      <LoginRequiredDialog
-        open={showLoginDialog}
-        onOpenChange={setShowLoginDialog}
+      <LoginRequiredModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        message={modalMessage}
+        returnUrl={returnUrl}
       />
     </>
   )
