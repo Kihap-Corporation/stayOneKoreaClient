@@ -2,6 +2,7 @@
 
 import { useState, useEffect, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
+import Image from "next/image"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { useLanguage } from "@/components/language-provider"
@@ -256,10 +257,11 @@ function BookingsPageContent() {
                     <div className="hidden lg:flex">
                       {/* Image */}
                       <div className="w-[205px] h-[205px] relative flex-shrink-0">
-                        <img
+                        <Image
                           src={booking.roomImageUrl}
                           alt={booking.roomName}
-                          className="w-full h-full object-cover"
+                          fill
+                          className="object-cover"
                           onError={(e) => {
                             // 이미지 로드 실패 시 fallback
                             const target = e.target as HTMLImageElement
@@ -341,10 +343,11 @@ function BookingsPageContent() {
                     <div className="lg:hidden">
                       {/* Image */}
                       <div className="w-full h-[180px] relative">
-                        <img
+                        <Image
                           src={booking.roomImageUrl}
                           alt={booking.roomName}
-                          className="w-full h-full object-cover"
+                          fill
+                          className="object-cover"
                           onError={(e) => {
                             // 이미지 로드 실패 시 fallback
                             const target = e.target as HTMLImageElement

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useParams, useRouter } from "next/navigation"
+import Image from "next/image"
 import { ReservationHeader } from "@/components/reservation-header"
 import { Footer } from "@/components/footer"
 import { useLanguage } from "@/components/language-provider"
@@ -467,10 +468,11 @@ export default function PaymentPage() {
             <div className="lg:hidden flex flex-col gap-0">
               <div className="bg-white border border-[#dee0e3] rounded-t-[16px] overflow-hidden">
                 <div className="h-[200px] relative">
-                  <img
+                  <Image
                     src={paymentData.room.image}
                     alt={paymentData.room.title}
-                    className="w-full h-full object-cover"
+                    fill
+                    className="object-cover"
                   />
                 </div>
                 <div className="p-5">
@@ -526,10 +528,11 @@ export default function PaymentPage() {
               <div className="bg-white border border-[#dee0e3] rounded-t-[16px] overflow-hidden">
                 <div className="flex gap-0">
                   <div className="w-1/2 h-[200px] relative">
-                    <img
+                    <Image
                       src={paymentData.room.image}
                       alt={paymentData.room.title}
-                      className="w-full h-full object-cover"
+                      fill
+                      className="object-cover"
                     />
                   </div>
                   <div className="w-1/2 p-5 flex flex-col gap-2">

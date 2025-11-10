@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { useLanguage } from "@/components/language-provider"
@@ -208,10 +209,11 @@ export default function LikePage() {
                   {/* 이미지 */}
                   <div className="relative aspect-[7/5] rounded-2xl overflow-hidden">
                     {room.mainImageUrl ? (
-                      <img
+                      <Image
                         src={room.mainImageUrl}
                         alt={room.roomName}
-                        className="w-full h-full object-cover"
+                        fill
+                        className="object-cover"
                       />
                     ) : (
                       <div className="w-full h-full bg-gray-200 flex items-center justify-center">

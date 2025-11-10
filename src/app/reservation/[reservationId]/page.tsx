@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useParams, useRouter } from "next/navigation"
+import Image from "next/image"
 import { ReservationHeader } from "@/components/reservation-header"
 import { Footer } from "@/components/footer"
 import { useLanguage } from "@/components/language-provider"
@@ -669,10 +670,11 @@ export default function ReservationPage() {
             {/* Room Card */}
             <div className="bg-white border border-[#dee0e3] rounded-[16px] overflow-hidden mb-4">
               <div className="h-[200px] relative">
-                <img
+                <Image
                   src={reservationData.room.image}
                   alt={reservationData.room.title}
-                  className="w-full h-full object-cover"
+                  fill
+                  className="object-cover"
                 />
               </div>
               <div className="p-5">
@@ -1091,10 +1093,11 @@ export default function ReservationPage() {
               {/* Room Card */}
               <div className="bg-white border border-[#dee0e3] rounded-[16px] overflow-hidden">
                 <div className="h-[200px] relative">
-                  <img
+                  <Image
                     src={reservationData.room.image}
                     alt={reservationData.room.title}
-                    className="w-full h-full object-cover"
+                    fill
+                    className="object-cover"
                   />
                 </div>
                 <div className="p-5">

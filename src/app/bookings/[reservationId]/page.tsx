@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useRouter, useParams, useSearchParams } from "next/navigation"
+import Image from "next/image"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { useLanguage } from "@/components/language-provider"
@@ -372,10 +373,11 @@ export default function BookingDetailPage() {
 
             {/* Room Image */}
             <div className="h-[200px] relative">
-              <img
+              <Image
                 src={booking.roomImageUrl}
                 alt={booking.roomName}
-                className="w-full h-full object-cover"
+                fill
+                className="object-cover"
                 onError={(e) => {
                   const target = e.target as HTMLImageElement
                   target.src = '/logo/desktop_logo.png'

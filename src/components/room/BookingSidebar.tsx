@@ -572,10 +572,11 @@ export function BookingSidebar({
         {/* 호스트 프로필 */}
         <div className="flex items-center gap-2 w-full">
           <div className="relative h-20 w-20 rounded-full border border-[#dee0e3] flex-shrink-0">
-            <img
+            <Image
               src={host.avatar || "/api/placeholder/80/80"}
               alt={host.name}
-              className="h-full w-full rounded-full object-cover"
+              fill
+              className="rounded-full object-cover"
               onError={(e) => {
                 const target = e.target as HTMLImageElement
                 target.src = '/api/placeholder/80/80'

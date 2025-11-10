@@ -5,6 +5,7 @@ import { Footer } from "@/components/footer"
 import { useLanguage } from "@/components/language-provider"
 import Link from "next/link"
 import { ChevronRight } from "lucide-react"
+import Image from "next/image"
 
 export default function AboutGosiwonPage() {
   const { messages } = useLanguage()
@@ -15,7 +16,14 @@ export default function AboutGosiwonPage() {
 
       <main className="flex-1">
         {/* Hero Section */}
-        <div className="relative h-[300px] sm:h-[350px] lg:h-[424px] bg-cover bg-center" style={{ backgroundImage: "url('/about-gosiwon-hero.png')" }}>
+        <div className="relative h-[300px] sm:h-[350px] lg:h-[424px]">
+          <Image
+            src="/about-gosiwon-hero.png"
+            alt={messages?.aboutGosiwon?.hero?.title || "GOSIWON Hero"}
+            fill
+            className="object-cover"
+            priority
+          />
           <div className="absolute inset-0" />
           <div className="relative h-full flex flex-col items-center justify-center text-center px-4 sm:px-6 lg:px-8">
             <p className="text-[18px] sm:text-[22px] font-bold leading-[18px] sm:leading-[20px] tracking-[-0.1px] text-white mb-2">

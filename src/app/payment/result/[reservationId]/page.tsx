@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useParams, useRouter } from "next/navigation"
+import Image from "next/image"
 import { ReservationHeader } from "@/components/reservation-header"
 import { Footer } from "@/components/footer"
 import { useLanguage } from "@/components/language-provider"
@@ -270,9 +271,10 @@ export default function BookingResultPage() {
                 <div className="flex gap-4 w-full">
                   {/* Image */}
                   <div className="flex-shrink-0 aspect-square w-[200px] relative">
-                    <img
-                      alt=""
-                      className="absolute inset-0 max-w-none object-cover size-full"
+                    <Image
+                      alt={bookingData.room.title}
+                      fill
+                      className="object-cover"
                       src={bookingData.room.image}
                     />
                   </div>
@@ -303,9 +305,10 @@ export default function BookingResultPage() {
                 <div className="flex gap-3 w-full">
                   {/* Image */}
                   <div className="flex-shrink-0 aspect-square w-[120px] relative">
-                    <img
-                      alt=""
-                      className="absolute inset-0 max-w-none object-cover size-full"
+                    <Image
+                      alt={bookingData.room.title}
+                      fill
+                      className="object-cover"
                       src={bookingData.room.image}
                     />
                   </div>
