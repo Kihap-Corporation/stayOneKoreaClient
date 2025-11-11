@@ -6,6 +6,39 @@ import Image from "next/image"
 
 export function Footer() {
   const { messages } = useLanguage()
+  const footerLabels = messages?.footer?.labels || {}
+  const footerInfo = [
+    {
+      key: 'company',
+      label: footerLabels.corporationName || 'Corporation',
+      value: messages?.footer?.company || ''
+    },
+    {
+      key: 'representative',
+      label: footerLabels.representative || 'Representative',
+      value: messages?.footer?.representative || ''
+    },
+    {
+      key: 'businessNumber',
+      label: footerLabels.registrationNumber || 'Registration Number',
+      value: messages?.footer?.businessNumber || ''
+    },
+    {
+      key: 'inquiryAddress',
+      label: footerLabels.address || 'Address',
+      value: messages?.footer?.inquiryAddress || ''
+    },
+    {
+      key: 'customerService',
+      label: footerLabels.customerService || 'Customer Service',
+      value: messages?.footer?.customerService || ''
+    },
+    {
+      key: 'hostingProvider',
+      label: footerLabels.hostingProvider || 'Hosting Provider',
+      value: messages?.footer?.hostingProvider || ''
+    },
+  ]
 
   return (
     <footer className="border-t bg-[#f7f7f8] mt-auto">
@@ -29,10 +62,12 @@ export function Footer() {
           <div className="flex-1 flex flex-col gap-6">
             {/* Company Info */}
             <div className="text-xs leading-4 text-[rgba(13,17,38,0.4)]">
-              <p className="mb-0">{`${messages?.footer?.company || "Loading..."} | 사업자등록번호: ${messages?.footer?.businessNumber || "Loading..."} | 대표: ${messages?.footer?.representative || "Loading..."}`}</p>
-              <p className="mb-0">{`통신판매신고 ${messages?.footer?.mailOrderNumber || "Loading..."} | 호스팅서비스제공: ${messages?.footer?.hostingProvider || "Loading..."}`}</p>
-              <p className="mb-0">{`고객센터: ${messages?.footer?.customerService || "Loading..."}`}</p>
-              <p>{messages?.footer?.inquiryAddress || "Loading..."}</p>
+              {footerInfo.map((item) => (
+                <p key={item.key} className="mb-0">
+                  {`${item.label}: ${item.value}`}
+                </p>
+              ))}
+              {/* 통신판매신고 항목은 추후 업데이트 예정 */}
             </div>
 
             {/* Links */}
@@ -89,10 +124,12 @@ export function Footer() {
           <div className="flex flex-col gap-6 w-full">
             {/* Company Info */}
             <div className="text-xs leading-4 text-[rgba(13,17,38,0.4)] w-full">
-              <p className="mb-0">{`${messages?.footer?.company || "Loading..."} | 사업자등록번호: ${messages?.footer?.businessNumber || "Loading..."} | 대표: ${messages?.footer?.representative || "Loading..."}`}</p>
-              <p className="mb-0">{`통신판매신고 ${messages?.footer?.mailOrderNumber || "Loading..."} | 호스팅서비스제공: ${messages?.footer?.hostingProvider || "Loading..."}`}</p>
-              <p className="mb-0">{`고객센터: ${messages?.footer?.customerService || "Loading..."}`}</p>
-              <p>{messages?.footer?.inquiryAddress || "Loading..."}</p>
+              {footerInfo.map((item) => (
+                <p key={item.key} className="mb-0">
+                  {`${item.label}: ${item.value}`}
+                </p>
+              ))}
+              {/* 통신판매신고 항목은 추후 업데이트 예정 */}
             </div>
 
             {/* Links */}
