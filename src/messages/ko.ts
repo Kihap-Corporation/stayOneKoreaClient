@@ -41,13 +41,22 @@ header: {
     deleteNotAllowedUpcomingReservation: "다가오는 예약된 방이 있어서 회원탈퇴가 불가능합니다. 해당 예약을 취소해야만 회원탈퇴가 가능합니다."
   },
   footer: {
-    company: "스테이원코리아",
-    businessNumber: "123-45-67890",
-    representative: "김대표",
-    mailOrderNumber: "제2024-서울강남-0123호",
+    labels: {
+      corporationName: "법인명",
+      representative: "대표자",
+      registrationNumber: "등록번호",
+      address: "주소",
+      customerService: "고객센터",
+      hostingProvider: "호스팅서비스제공",
+      mailOrder: "통신판매신고"
+    },
+    company: "주식회사 일원컴퍼니",
+    businessNumber: "627-81-02476",
+    representative: "김오희",
+    mailOrderNumber: "",
     hostingProvider: "AWS",
-    customerService: "02-1234-5678",
-    inquiryAddress: "서울특별시 강남구 테헤란로 123",
+    customerService: "stayonekoreaofficial@gmail.com",
+    inquiryAddress: "경기도 안산시 단원구 고잔로 55, 지하 1층 102-가93호(고잔동, 중앙오피스텔)",
     privacyPolicy: "개인정보처리방침",
     termsOfService: "이용약관",
     aboutGosiwon: "고시원 소개",
