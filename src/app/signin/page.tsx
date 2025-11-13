@@ -143,7 +143,7 @@ export default function SignInPage() {
                   {messages.signin.termsOfUse}
                 </Link>{" "}
                 {messages.signin.and}{" "}
-                <Link href="#" className="text-gray-600 underline hover:text-gray-900">
+                <Link href="/term/private" className="text-gray-600 underline hover:text-gray-900">
                   {messages.signin.privacyPolicy}
                 </Link>
                 {messages.signin.agreeToTerms}

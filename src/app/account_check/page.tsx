@@ -106,7 +106,7 @@ export default function AccountCheckPage() {
                   {messages?.account_check?.termsOfUse || "Terms of Use"}
                 </Link>{" "}
                 {messages?.account_check?.and || "and"}{" "}
-                <Link href="#" className="text-gray-600 underline hover:text-gray-900">
+                <Link href="/term/private" className="text-gray-600 underline hover:text-gray-900">
                   {messages?.account_check?.privacyPolicy || "Privacy Policy"}
                 </Link>
                 {messages?.account_check?.agreeToTerms || "."}
