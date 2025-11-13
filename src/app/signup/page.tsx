@@ -647,7 +647,7 @@ export default function SignupPage() {
                 {messages?.signup?.termsOfUse || "Terms of Use"}
               </a>{" "}
               {messages?.signup?.and || "and"}{" "}
-              <a href="#" className="text-gray-600 underline hover:no-underline">
+              <a href="/term/private" className="text-gray-600 underline hover:no-underline">
                 {messages?.signup?.privacyPolicy || "Privacy Policy"}
               </a>
               {messages?.signup?.agreeToTerms || "."}

@@ -105,21 +105,6 @@ export default function AdminHomePage() {
           })}
         </div>
 
-        {/* 빠른 정보 */}
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-            <div className="text-sm text-gray-600 mb-1">전체 고시원</div>
-            <div className="text-2xl font-bold text-gray-900">-</div>
-          </div>
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-            <div className="text-sm text-gray-600 mb-1">전체 룸</div>
-            <div className="text-2xl font-bold text-gray-900">-</div>
-          </div>
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-            <div className="text-sm text-gray-600 mb-1">전체 예약</div>
-            <div className="text-2xl font-bold text-gray-900">-</div>
-          </div>
-        </div>
       </div>
     </AdminLayout>
   )

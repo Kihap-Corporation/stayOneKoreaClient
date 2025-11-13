@@ -73,7 +73,7 @@ export function Footer() {
             {/* Links */}
             <div className="flex gap-0">
               <Link 
-                href="#" 
+                href="/term/private" 
                 className="bg-[rgba(10,15,41,0.04)] px-[10px] py-[6px] rounded-[10px] text-sm leading-5 text-[#14151a] tracking-[-0.1px] hover:bg-[rgba(10,15,41,0.08)] transition-colors"
               >
                 {messages?.footer?.privacyPolicy || "개인정보처리방침"}
@@ -135,7 +135,7 @@ export function Footer() {
             {/* Links */}
             <div className="flex gap-0 flex-wrap">
               <Link 
-                href="#" 
+                href="/term/private" 
                 className="bg-[rgba(10,15,41,0.04)] px-[10px] py-[6px] rounded-[10px] text-sm leading-5 text-[#14151a] tracking-[-0.1px] hover:bg-[rgba(10,15,41,0.08)] transition-colors"
               >
                 {messages?.footer?.privacyPolicy || "개인정보처리방침"}
