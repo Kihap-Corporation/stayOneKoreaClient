@@ -83,6 +83,13 @@ const nextConfig = {
         port: '',
         pathname: '/**',
       },
+      // Cloudflare R2
+      {
+        protocol: 'https',
+        hostname: 'img.stayonekorea.com',
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
   
