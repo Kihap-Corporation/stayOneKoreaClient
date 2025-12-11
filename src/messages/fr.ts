@@ -61,8 +61,6 @@ header: {
     termsOfService: "Conditions d'utilisation",
     aboutGosiwon: "À propos de Gosiwon",
     disclaimer: {
-      line1: "Parmi les produits vendus sur ce site, certains sont vendus par des vendeurs individuels enregistrés.",
-      line2: "Pour les produits vendus par des vendeurs individuels, {companyName} agit en tant qu'intermédiaire de vente par correspondance et n'est pas partie prenante de la transaction de vente par correspondance, donc nous ne sommes pas responsables des produits, informations de transaction et transactions enregistrés par les vendeurs individuels.",
       copyright: "Copyright © 2025 {companyName} Tous droits réservés.",
       contentProtection: "Le contenu de ce site est protégé par la loi sur le droit d'auteur et la reproduction, copie ou distribution non autorisée est interdite."
     }

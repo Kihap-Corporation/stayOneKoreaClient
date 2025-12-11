@@ -61,8 +61,6 @@ header: {
     termsOfService: "Terms of Service",
     aboutGosiwon: "About Gosiwon",
     disclaimer: {
-      line1: "Some products sold on this site are sold by registered individual sellers.",
-      line2: "For products sold by individual sellers, {companyName} is a mail order intermediary and is not a party to the mail order transaction, so we are not responsible for products, transaction information, and transactions registered by individual sellers.",
       copyright: "Copyright © 2025 {companyName} All right reserved.",
       contentProtection: "The content of this site is protected by copyright law and unauthorized reproduction, copying, or distribution is prohibited."
     }
