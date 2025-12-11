@@ -61,8 +61,6 @@ header: {
     termsOfService: "使用条款",
     aboutGosiwon: "关于考試院",
     disclaimer: {
-      line1: "本网站销售的产品中包含注册的个人卖家销售的产品。",
-      line2: "对于个人卖家销售的产品，{companyName}作为邮购中介，不是邮购交易的当事人，因此对个人卖家注册的产品、交易信息和交易不承担责任。",
       copyright: "版权所有 © 2025 {companyName}",
       contentProtection: "本网站的内容受版权法保护，禁止未经授权的转载、复制、分发。"
     }

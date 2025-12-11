@@ -94,11 +94,6 @@ export function Footer() {
 
             {/* Disclaimer */}
             <div className="text-xs leading-4 text-[rgba(13,17,38,0.4)]">
-              <p className="mb-0">{messages?.footer?.disclaimer?.line1 || "본 사이트에서 판매되는 상품 중에는 등록된 개별 판매자가 판매하는 상품이 포함되어 있습니다."}</p>
-              <p className="mb-0">
-                {messages?.footer?.disclaimer?.line2 ? messages.footer.disclaimer.line2.replace('{companyName}', messages.footer.company || "Company") : "개별 판매자 판매 상품의 경우 회사명은 통신판매중개업자로서 통신판매의 당사자가 아니므로, 개별 판매자가 등록한 상품, 거래정보 및 거래 등에 대해 책임을 지지 않습니다."}
-              </p>
-              <p className="mb-0">&nbsp;</p>
               <p className="mb-0">{messages?.footer?.disclaimer?.copyright ? messages.footer.disclaimer.copyright.replace('{companyName}', messages.footer.company || "Company") : "Copyright © 2025 Company All right reserved."}</p>
               <p>{messages?.footer?.disclaimer?.contentProtection || "본 사이트의 컨텐츠는 저작권법의 보호를 받는 바 무단 전재, 복사, 배포 등을 금합니다."}</p>
             </div>
@@ -156,11 +151,6 @@ export function Footer() {
 
             {/* Disclaimer */}
             <div className="text-xs leading-4 text-[rgba(13,17,38,0.4)] w-full">
-              <p className="mb-0">{messages?.footer?.disclaimer?.line1 || "본 사이트에서 판매되는 상품 중에는 등록된 개별 판매자가 판매하는 상품이 포함되어 있습니다."}</p>
-              <p className="mb-0">
-                {messages?.footer?.disclaimer?.line2 ? messages.footer.disclaimer.line2.replace('{companyName}', messages.footer.company || "Company") : "개별 판매자 판매 상품의 경우 회사명은 통신판매중개업자로서 통신판매의 당사자가 아니므로, 개별 판매자가 등록한 상품, 거래정보 및 거래 등에 대해 책임을 지지 않습니다."}
-              </p>
-              <p className="mb-0">&nbsp;</p>
               <p className="mb-0">{messages?.footer?.disclaimer?.copyright ? messages.footer.disclaimer.copyright.replace('{companyName}', messages.footer.company || "Company") : "Copyright © 2025 Company All right reserved."}</p>
               <p>{messages?.footer?.disclaimer?.contentProtection || "본 사이트의 컨텐츠는 저작권법의 보호를 받는 바 무단 전재, 복사, 배포 등을 금합니다."}</p>
             </div>
