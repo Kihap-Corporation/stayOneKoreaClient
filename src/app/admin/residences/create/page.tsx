@@ -98,6 +98,15 @@ export default function CreateResidencePage() {
   const handleProfileImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
+      // 파일 크기 체크 (30MB = 30 * 1024 * 1024 bytes)
+      const MAX_FILE_SIZE = 30 * 1024 * 1024 // 30MB
+      if (file.size > MAX_FILE_SIZE) {
+        alert(`파일 크기가 30MB를 초과합니다.\n\n파일명: ${file.name}\n파일 크기: ${(file.size / 1024 / 1024).toFixed(2)}MB\n\n30MB 이하의 파일만 업로드 가능합니다.`)
+        // input 값 초기화
+        e.target.value = ''
+        return
+      }
+
       setProfileImage(file)
       const reader = new FileReader()
       reader.onloadend = () => {
@@ -109,6 +118,13 @@ export default function CreateResidencePage() {
 
   // 갤러리 이미지 추가 (단일 이미지)
   const handleAddGalleryImage = (file: File) => {
+    // 파일 크기 체크 (30MB = 30 * 1024 * 1024 bytes)
+    const MAX_FILE_SIZE = 30 * 1024 * 1024 // 30MB
+    if (file.size > MAX_FILE_SIZE) {
+      alert(`파일 크기가 30MB를 초과합니다.\n\n파일명: ${file.name}\n파일 크기: ${(file.size / 1024 / 1024).toFixed(2)}MB\n\n30MB 이하의 파일만 업로드 가능합니다.`)
+      return
+    }
+
     const newImage: GalleryImage = {
       file,
       displayOrder: galleryImages.length,
