@@ -8,6 +8,10 @@ header: {
       myBookings: "我的预订",
       settings: "设置",
       logout: "登出"
+    },
+    auth: {
+      signin: "登录",
+      signup: "注册"
     }
   },
   mypage: {
@@ -224,7 +228,9 @@ header: {
     createAccount: "创建账户",
     termsAgreement: "创建账户即表示我同意 Stay One Korea 的",
     and: "和",
-    agreeToTerms: "。"
+    agreeToTerms: "。",
+    emailAlreadyExists: "此邮箱已注册。请登录或使用其他邮箱。",
+    signupError: "创建账户失败。请重试。"
   },
   signin: {
     title: "登录",
