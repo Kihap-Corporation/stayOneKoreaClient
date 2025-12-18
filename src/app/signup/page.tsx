@@ -314,13 +314,22 @@ export default function SignupPage() {
     return ""
   }
 
-  // localStorage에서 이메일 읽어오기
+  // localStorage 또는 URL 파라미터에서 이메일 읽어오기
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const savedEmail = localStorage.getItem('signupEmail')
-      if (savedEmail) {
-        setEmail(savedEmail)
-        localStorage.removeItem('signupEmail')
+      // URL 파라미터에서 이메일 확인
+      const urlParams = new URLSearchParams(window.location.search)
+      const emailParam = urlParams.get('email')
+      
+      if (emailParam) {
+        setEmail(emailParam)
+      } else {
+        // localStorage에서 이메일 확인 (기존 플로우 호환)
+        const savedEmail = localStorage.getItem('signupEmail')
+        if (savedEmail) {
+          setEmail(savedEmail)
+          localStorage.removeItem('signupEmail')
+        }
       }
     }
   }, [])
@@ -417,13 +426,17 @@ export default function SignupPage() {
         }
         router.push('/verify-email')
       } else {
-        // 회원가입 실패
+        // 기타 회원가입 실패 - alert 표시 후 현재 페이지에 머무름
         alert(data.message || (messages?.signup?.signupError || "Failed to create account. Please try again."))
-        router.push('/account_check')
       }
-    } catch (error) {
-      alert(messages?.signup?.signupError || "Failed to create account. Please try again.")
-      router.push('/account_check')
+    } catch (error: any) {
+      // 400번대 에러 처리
+      if (error?.response?.code === 40104 || String(error?.response?.code) === "40104") {
+        // 이미 존재하는 이메일 - alert 표시 후 현재 페이지에 머무름
+        alert(messages?.signup?.emailAlreadyExists || "This email is already registered. Please sign in or use a different email.")
+      } else {
+        alert(error?.response?.message || messages?.signup?.signupError || "Failed to create account. Please try again.")
+      }
     } finally {
       setIsLoading(false)
     }
@@ -513,8 +526,7 @@ export default function SignupPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                readOnly
-                className="rounded-lg border-gray-300 bg-gray-50 cursor-not-allowed"
+                className="rounded-lg border-gray-300"
               />
             </div>
 

@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { Search, User, ChevronDown, Globe, Menu, X, Heart, LogOut, Calendar, Bed } from "lucide-react"
+import { Search, User, ChevronDown, Globe, Menu, X, Heart, LogOut, Calendar, Bed, UserPlus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -184,16 +184,28 @@ export function Header() {
                             </button>
                           </>
                         ) : (
-                          <button
-                            className="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 rounded-lg transition-colors w-full text-left"
-                            onClick={() => {
-                              setIsProfileOpen(false)
-                              window.location.href = '/account_check'
-                            }}
-                          >
-                            <LogOut className="h-5 w-5 text-gray-600" />
-                            <span className="text-sm font-medium text-[#14151a] tracking-tight">Sign in</span>
-                          </button>
+                          <>
+                            <button
+                              className="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 rounded-lg transition-colors w-full text-left"
+                              onClick={() => {
+                                setIsProfileOpen(false)
+                                window.location.href = '/account_check'
+                              }}
+                            >
+                              <LogOut className="h-5 w-5 text-gray-600" />
+                              <span className="text-sm font-medium text-[#14151a] tracking-tight">{messages?.header?.auth?.signin || "Sign in"}</span>
+                            </button>
+                            <button
+                              className="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 rounded-lg transition-colors w-full text-left"
+                              onClick={() => {
+                                setIsProfileOpen(false)
+                                window.location.href = '/signup'
+                              }}
+                            >
+                              <UserPlus className="h-5 w-5 text-gray-600" />
+                              <span className="text-sm font-medium text-[#14151a] tracking-tight">{messages?.header?.auth?.signup || "Sign up"}</span>
+                            </button>
+                          </>
                         )}
                       </div>
                     </>
@@ -372,16 +384,28 @@ export function Header() {
                       </button>
                     </>
                   ) : (
-                    <button
-                      className="flex items-center gap-1.5 hover:bg-gray-50 rounded px-1 py-1 transition-colors w-full text-left"
-                      onClick={() => {
-                        setIsMobileMenuOpen(false)
-                        window.location.href = '/account_check'
-                      }}
-                    >
-                      <LogOut className="h-5 w-5 text-gray-600" />
-                      <span className="text-[16px] font-medium leading-[24px] tracking-[-0.2px] text-[#14151a]">Sign in</span>
-                    </button>
+                    <>
+                      <button
+                        className="flex items-center gap-1.5 hover:bg-gray-50 rounded px-1 py-1 transition-colors w-full text-left"
+                        onClick={() => {
+                          setIsMobileMenuOpen(false)
+                          window.location.href = '/account_check'
+                        }}
+                      >
+                        <LogOut className="h-5 w-5 text-gray-600" />
+                        <span className="text-[16px] font-medium leading-[24px] tracking-[-0.2px] text-[#14151a]">{messages?.header?.auth?.signin || "Sign in"}</span>
+                      </button>
+                      <button
+                        className="flex items-center gap-1.5 hover:bg-gray-50 rounded px-1 py-1 transition-colors w-full text-left"
+                        onClick={() => {
+                          setIsMobileMenuOpen(false)
+                          window.location.href = '/signup'
+                        }}
+                      >
+                        <UserPlus className="h-5 w-5 text-gray-600" />
+                        <span className="text-[16px] font-medium leading-[24px] tracking-[-0.2px] text-[#14151a]">{messages?.header?.auth?.signup || "Sign up"}</span>
+                      </button>
+                    </>
                   )}
 
                   {/* Divider */}
