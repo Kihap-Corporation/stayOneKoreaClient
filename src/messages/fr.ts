@@ -8,6 +8,10 @@ header: {
       myBookings: "Mes réservations",
       settings: "Paramètres",
       logout: "Déconnexion"
+    },
+    auth: {
+      signin: "Se connecter",
+      signup: "S'inscrire"
     }
   },
   mypage: {
@@ -224,7 +228,9 @@ header: {
     createAccount: "Créer un compte",
     termsAgreement: "En créant un compte, j'accepte les",
     and: "et",
-    agreeToTerms: "de Stay One Korea."
+    agreeToTerms: "de Stay One Korea.",
+    emailAlreadyExists: "Cet e-mail est déjà enregistré. Veuillez vous connecter ou utiliser un autre e-mail.",
+    signupError: "Échec de la création du compte. Veuillez réessayer."
   },
   signin: {
     title: "Se connecter",
