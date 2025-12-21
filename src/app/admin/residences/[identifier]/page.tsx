@@ -118,9 +118,10 @@ export default function ResidenceDetailPage() {
     if (!hostingStartDate) missing.push("호스팅 시작일")
     if (!contactNumber.trim()) missing.push("연락처")
     if (!email.trim()) missing.push("이메일")
-    
-    // 수정 페이지에서는 프로필 이미지가 기존에 있으면 OK (새로 업로드 안 해도 됨)
-    // 생성 페이지에서는 필수
+
+    // Residence 수정 스펙 변경:
+    // - profileImage는 수정 시에도 항상 새로 업로드 필수(MultipartFile)
+    if (isEditMode && !profileImage) missing.push("프로필 이미지(새로 업로드)")
 
     return missing
   }
@@ -319,87 +320,48 @@ export default function ResidenceDetailPage() {
       formData.append("email", email)
       
       // 프로필 이미지 - 필수 필드이므로 항상 보내야 함
-      if (profileImage) {
-        // 새로 업로드한 경우
-        formData.append("profileImage", profileImage)
-      } else if (residence?.profileImage?.imageUrl) {
-        // 기존 이미지를 다시 보내야 함 - CORS 문제를 해결하기 위해 프록시 API를 통해 이미지 다운로드
-        try {
-          const proxyUrl = `/api/proxy-image?url=${encodeURIComponent(residence.profileImage.imageUrl)}`
-          const response = await fetch(proxyUrl)
+      if (!profileImage) {
+        alert("프로필 이미지는 수정 시에도 새로 업로드가 필요합니다.")
+        setIsSaving(false)
+        return
+      }
+      formData.append("profileImage", profileImage)
+      
+      // 갤러리 이미지 (Delta 업데이트 스펙)
+      // - identifier O, file X: 기존 이미지 유지 (순서 변경 가능)
+      // - identifier X, file O: 신규 이미지 업로드
+      // - 요청에 포함되지 않은 기존 이미지: 삭제됨
+      // displayOrder는 0부터 시작하는 연속된 숫자여야 하므로, 정렬 후 0..n-1로 재부여해서 전송한다.
+      const sortedGallery = [...galleryImages].sort((a, b) => a.displayOrder - b.displayOrder)
 
-          if (!response.ok) {
-            throw new Error(`HTTP ${response.status}: ${response.statusText}`)
-          }
+      let galleryIndex = 0
+      sortedGallery.forEach((img) => {
+        const order = galleryIndex
 
-          const blob = await response.blob()
-
-          const filename = residence.profileImage.imageUrl.split('/').pop() || 'profile.png'
-          const file = new File([blob], filename, { type: blob.type })
-          formData.append("profileImage", file)
-        } catch (error) {
-          alert(`프로필 이미지 로드 실패:\n${error instanceof Error ? error.message : '알 수 없는 오류'}\n\nCloudflare R2 CORS 설정을 확인하거나 이미지를 새로 업로드해주세요.`)
-          setIsSaving(false)
+        // 기존 이미지 유지
+        if (img.identifier && !img.file) {
+          formData.append(`galleryImages[${galleryIndex}].identifier`, img.identifier)
+          formData.append(`galleryImages[${galleryIndex}].displayOrder`, order.toString())
+          galleryIndex++
           return
         }
-      } else {
-        alert("프로필 이미지를 업로드해주세요.")
-        setIsSaving(false)
-        return
-      }
-      
-      // 갤러리 이미지 - 모든 이미지를 File로 변환해서 보내야 함
-      // 주의: 서버는 "기존 이미지 전체 삭제 후, 전달받은 이미지로 채우기"이므로
-      // 기존 이미지 다운로드가 하나라도 실패하면 '부분 전송'이 되어 이미지가 날아갈 수 있음.
-      // 따라서 하나라도 실패하면 저장을 중단한다.
-      const galleryPromises = galleryImages.map(async (img, index) => {
-        if (img.file) {
-          // 새로 추가한 이미지
-          return {
-            displayOrder: img.displayOrder,
-            file: img.file
-          }
-        }
-        if (!img.imageUrl) {
-          throw new Error(`갤러리 이미지 URL이 없습니다. (index=${index})`)
-        }
 
-        // 기존 이미지 - CORS 문제를 해결하기 위해 프록시 API를 통해 이미지 다운로드
-        const proxyUrl = `/api/proxy-image?url=${encodeURIComponent(img.imageUrl)}`
-        const response = await fetch(proxyUrl)
-
-        if (!response.ok) {
-          throw new Error(`기존 이미지 다운로드 실패 (HTTP ${response.status}): ${img.imageUrl}`)
-        }
-
-        const blob = await response.blob()
-        
-        const filename = img.imageUrl.split('/').pop() || `gallery_${index}.png`
-        const file = new File([blob], filename, { type: blob.type })
-        return {
-          displayOrder: img.displayOrder,
-          file
-        }
-      })
-
-      let galleryFiles: Array<{ displayOrder: number; file: File }>
-      try {
-        galleryFiles = await Promise.all(galleryPromises)
-      } catch (error) {
-        const message = error instanceof Error ? error.message : "알 수 없는 오류"
-        alert(`기존 이미지 다운로드에 실패했습니다.\n\n${message}\n\n이미지 권한/CORS 설정을 확인하거나 이미지를 다시 업로드해주세요.`)
-        setIsSaving(false)
-        return
-      }
-      
-      // null이 아닌 것만 FormData에 추가 (순서대로 연속된 인덱스 사용)
-      let galleryIndex = 0
-      galleryFiles.forEach((item) => {
-        if (item && item.file) {
-          formData.append(`galleryImages[${galleryIndex}].displayOrder`, item.displayOrder.toString())
-          formData.append(`galleryImages[${galleryIndex}].file`, item.file)
+        // 신규 이미지 업로드
+        if (!img.identifier && img.file) {
+          formData.append(`galleryImages[${galleryIndex}].displayOrder`, order.toString())
+          formData.append(`galleryImages[${galleryIndex}].file`, img.file)
           galleryIndex++
+          return
         }
+
+        // 스펙 위반(둘 다 있거나 둘 다 없는 경우) -> 서버 @ValidImageUpdate와 동일하게 즉시 중단
+        // eslint-disable-next-line no-console
+        console.error("Invalid ImageUpdateDto:", {
+          identifier: img.identifier,
+          hasFile: Boolean(img.file),
+          displayOrder: img.displayOrder
+        })
+        throw new Error("갤러리 이미지 데이터가 올바르지 않습니다. (identifier/file 규칙 위반)")
       })
 
       await apiPutFormData(`/api/v1/admin/residences/${identifier}`, formData)
@@ -408,7 +370,8 @@ export default function ResidenceDetailPage() {
       setIsEditMode(false)
       fetchResidenceDetail()  // 데이터 다시 로드
     } catch (error) {
-      alert("고시원 수정 중 오류가 발생했습니다.")
+      const message = error instanceof Error ? error.message : null
+      alert(message || "고시원 수정 중 오류가 발생했습니다.")
     } finally {
       setIsSaving(false)
     }
