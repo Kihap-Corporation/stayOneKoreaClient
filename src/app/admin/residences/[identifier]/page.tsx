@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react"
 import { AdminLayout } from "@/components/admin/admin-layout"
-import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -704,11 +703,10 @@ export default function ResidenceDetailPage() {
               <div className="mt-2">
                 {profileImagePreview && (
                   <div className="relative w-48 h-48 rounded-lg overflow-hidden bg-gray-100 mb-2">
-                    <Image
+                    <img
                       src={profileImagePreview}
                       alt="프로필 미리보기"
-                      fill
-                      className="object-cover"
+                      className="w-full h-full object-cover"
                     />
                     {isEditMode && (
                       <button
@@ -760,11 +758,10 @@ export default function ResidenceDetailPage() {
                     }`}
                   >
                     <div className="aspect-square rounded-lg overflow-hidden bg-gray-100 border-2 border-gray-200">
-                      <Image
+                      <img
                         src={img.preview}
                         alt={`갤러리 ${index + 1}`}
-                        fill
-                        className="object-cover"
+                        className="w-full h-full object-cover"
                       />
                     </div>
                     
