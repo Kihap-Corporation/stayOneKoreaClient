@@ -323,9 +323,10 @@ export default function ResidenceDetailPage() {
         // 새로 업로드한 경우
         formData.append("profileImage", profileImage)
       } else if (residence?.profileImage?.imageUrl) {
-        // 기존 이미지를 다시 보내야 함 - URL에서 fetch해서 File로 변환
+        // 기존 이미지를 다시 보내야 함 - CORS 문제를 해결하기 위해 프록시 API를 통해 이미지 다운로드
         try {
-          const response = await fetch(residence.profileImage.imageUrl)
+          const proxyUrl = `/api/proxy-image?url=${encodeURIComponent(residence.profileImage.imageUrl)}`
+          const response = await fetch(proxyUrl)
 
           if (!response.ok) {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`)
@@ -348,6 +349,9 @@ export default function ResidenceDetailPage() {
       }
       
       // 갤러리 이미지 - 모든 이미지를 File로 변환해서 보내야 함
+      // 주의: 서버는 "기존 이미지 전체 삭제 후, 전달받은 이미지로 채우기"이므로
+      // 기존 이미지 다운로드가 하나라도 실패하면 '부분 전송'이 되어 이미지가 날아갈 수 있음.
+      // 따라서 하나라도 실패하면 저장을 중단한다.
       const galleryPromises = galleryImages.map(async (img, index) => {
         if (img.file) {
           // 새로 추가한 이미지
@@ -355,37 +359,46 @@ export default function ResidenceDetailPage() {
             displayOrder: img.displayOrder,
             file: img.file
           }
-        } else if (img.imageUrl) {
-          // 기존 이미지 - URL에서 fetch해서 File로 변환
-          try {
-            const response = await fetch(img.imageUrl)
-
-            if (!response.ok) {
-              throw new Error(`HTTP ${response.status}: ${response.statusText}`)
-            }
-
-            const blob = await response.blob()
-            
-            const filename = img.imageUrl.split('/').pop() || `gallery_${index}.png`
-            const file = new File([blob], filename, { type: blob.type })
-            return {
-              displayOrder: img.displayOrder,
-              file: file
-            }
-          } catch (error) {
-            return null
-          }
         }
-        return null
+        if (!img.imageUrl) {
+          throw new Error(`갤러리 이미지 URL이 없습니다. (index=${index})`)
+        }
+
+        // 기존 이미지 - CORS 문제를 해결하기 위해 프록시 API를 통해 이미지 다운로드
+        const proxyUrl = `/api/proxy-image?url=${encodeURIComponent(img.imageUrl)}`
+        const response = await fetch(proxyUrl)
+
+        if (!response.ok) {
+          throw new Error(`기존 이미지 다운로드 실패 (HTTP ${response.status}): ${img.imageUrl}`)
+        }
+
+        const blob = await response.blob()
+        
+        const filename = img.imageUrl.split('/').pop() || `gallery_${index}.png`
+        const file = new File([blob], filename, { type: blob.type })
+        return {
+          displayOrder: img.displayOrder,
+          file
+        }
       })
 
-      const galleryFiles = await Promise.all(galleryPromises)
+      let galleryFiles: Array<{ displayOrder: number; file: File }>
+      try {
+        galleryFiles = await Promise.all(galleryPromises)
+      } catch (error) {
+        const message = error instanceof Error ? error.message : "알 수 없는 오류"
+        alert(`기존 이미지 다운로드에 실패했습니다.\n\n${message}\n\n이미지 권한/CORS 설정을 확인하거나 이미지를 다시 업로드해주세요.`)
+        setIsSaving(false)
+        return
+      }
       
-      // null이 아닌 것만 FormData에 추가
-      galleryFiles.forEach((item, index) => {
+      // null이 아닌 것만 FormData에 추가 (순서대로 연속된 인덱스 사용)
+      let galleryIndex = 0
+      galleryFiles.forEach((item) => {
         if (item && item.file) {
-          formData.append(`galleryImages[${index}].displayOrder`, item.displayOrder.toString())
-          formData.append(`galleryImages[${index}].file`, item.file)
+          formData.append(`galleryImages[${galleryIndex}].displayOrder`, item.displayOrder.toString())
+          formData.append(`galleryImages[${galleryIndex}].file`, item.file)
+          galleryIndex++
         }
       })
 
