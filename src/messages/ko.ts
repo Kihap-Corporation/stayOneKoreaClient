@@ -290,6 +290,7 @@ header: {
     hideMap: "지도 숨기기",
     searchError: "검색 중 오류가 발생했습니다",
     searchButton: "검색",
+    searchThisArea: "현재 위치에서 재검색",
     showAllRooms: "모든 방 보기",
     validation: {
       selectLocation: "알고리아 검색에서 위치를 선택해주세요",

@@ -290,6 +290,7 @@ header: {
     hideMap: "Masquer la carte",
     searchError: "Une erreur s'est produite lors de la recherche",
     searchButton: "Rechercher",
+    searchThisArea: "Rechercher dans cette zone",
     showAllRooms: "Afficher toutes les chambres",
     validation: {
       selectLocation: "Veuillez sélectionner un emplacement dans la recherche Algolia",

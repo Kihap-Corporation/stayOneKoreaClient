@@ -29,6 +29,7 @@ function SearchResultContent() {
   const [priceRange, setPriceRange] = useState({ min: 0, max: undefined as number | undefined })
   const [sortOption, setSortOption] = useState<SortOption>('RECOMMEND')
   const [isInitialLoad, setIsInitialLoad] = useState(true) // 초기 로딩 여부
+  const [mapViewCenter, setMapViewCenter] = useState<{ lat: number; lng: number } | null>(null)
 
   // Extract search params
   const latitude = searchParams.get('lat')
@@ -100,6 +101,38 @@ function SearchResultContent() {
         lng: parseFloat(longitude)
       }
     : { lat: 37.5665, lng: 126.9780 } // 서울 시청 기본값
+
+  const naverMapLanguage = useMemo<'ko' | 'en' | 'zh'>(() => {
+    if (currentLanguage.code === 'ko') return 'ko'
+    if (currentLanguage.code === 'zh') return 'zh'
+    return 'en' // en + fr fallback
+  }, [currentLanguage.code])
+
+  // 최초에는 검색 위치를 지도 뷰 중심으로 사용
+  useEffect(() => {
+    setMapViewCenter(mapCenter)
+  }, [mapCenter.lat, mapCenter.lng])
+
+  const hasMapMoved = useMemo(() => {
+    if (!mapViewCenter) return false
+    const dLat = Math.abs(mapViewCenter.lat - mapCenter.lat)
+    const dLng = Math.abs(mapViewCenter.lng - mapCenter.lng)
+    // 아주 미세한 흔들림은 무시
+    return dLat > 0.0003 || dLng > 0.0003
+  }, [mapViewCenter, mapCenter.lat, mapCenter.lng])
+
+  const handleSearchThisArea = () => {
+    if (!mapViewCenter) return
+    if (!checkInDate || !checkOutDate) return
+
+    const params = new URLSearchParams(searchParams.toString())
+    params.set('lat', mapViewCenter.lat.toString())
+    params.set('lng', mapViewCenter.lng.toString())
+    // page는 URL에 없지만, UX 상 첫 페이지로 리셋
+    setCurrentPage(1)
+    setSelectedRoomIndex(null)
+    router.push(`/search?${params.toString()}`)
+  }
 
   // 지도 마커 생성 (같은 고시원의 최소 가격 표시)
   const residenceMarkerData = useMemo(() => {
@@ -263,14 +296,28 @@ function SearchResultContent() {
 
             {/* 지도 */}
             <div className="w-full h-[300px] lg:h-[600px] flex-shrink-0">
-              <NaverStaticMap
-                center={mapCenter}
-                markers={mapMarkers}
-                width={480}
-                height={818}
-                level={12}
-                onMarkerClick={handleMarkerClick}
-              />
+              <div className="relative w-full h-full">
+                <NaverStaticMap
+                  center={mapCenter}
+                  markers={mapMarkers}
+                  width={480}
+                  height={818}
+                  level={12}
+                  onMarkerClick={handleMarkerClick}
+                  onCenterChanged={(c) => setMapViewCenter(c)}
+                  language={naverMapLanguage}
+                />
+
+                {hasMapMoved && (
+                  <button
+                    type="button"
+                    onClick={handleSearchThisArea}
+                    className="absolute bottom-3 left-1/2 -translate-x-1/2 z-10 px-4 py-2 rounded-full bg-white text-[#14151a] shadow-lg border border-gray-200 hover:bg-gray-50 transition-colors cursor-pointer"
+                  >
+                    {messages?.searchResult?.searchThisArea || "Search this area"}
+                  </button>
+                )}
+              </div>
             </div>
           </div>
 

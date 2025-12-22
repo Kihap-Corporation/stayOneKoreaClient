@@ -1,12 +1,12 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import Script from "next/script"
+import { loadNaverMaps } from "@/lib/naver-maps-loader"
 
 // 네이버 지도 타입 정의
 declare global {
   interface Window {
-    naver: any
+    naver?: any
     navermap_authFailure?: () => void
   }
 }
@@ -26,6 +26,13 @@ interface NaverStaticMapProps {
   height?: number
   level?: number
   onMarkerClick?: (index: number) => void
+  onCenterChanged?: (center: { lat: number; lng: number }) => void
+  /**
+   * Naver Map language
+   * - ko, en, zh supported
+   * - if omitted, Naver default is used (but we typically pass en/ko/zh)
+   */
+  language?: 'ko' | 'en' | 'zh'
 }
 
 export function NaverStaticMap({
@@ -34,7 +41,9 @@ export function NaverStaticMap({
   width = 480,
   height = 818,
   level = 12,
-  onMarkerClick
+  onMarkerClick,
+  onCenterChanged,
+  language
 }: NaverStaticMapProps) {
   const mapRef = useRef<HTMLDivElement>(null)
   const [map, setMap] = useState<any>(null)
@@ -43,12 +52,22 @@ export function NaverStaticMap({
 
   const CLIENT_ID = process.env.NEXT_PUBLIC_NAVER_CLOUD_CLIENT_ID
 
-  // Check if script is already loaded
+  // language 변경 시 SDK를 재로딩해서 지도 언어가 즉시 반영되도록 한다.
   useEffect(() => {
-    if (typeof window !== 'undefined' && window.naver && window.naver.maps && !isLoaded) {
-      setIsLoaded(true)
-    }
-  }, [isLoaded])
+    if (!CLIENT_ID) return
+    const lang = language || 'en'
+
+    // 기존 지도/마커 제거 후 재생성 준비
+    markerInstances.forEach((marker) => marker.setMap?.(null))
+    setMarkerInstances([])
+    setMap(null)
+    setIsLoaded(false)
+
+    loadNaverMaps(CLIENT_ID, lang)
+      .then(() => setIsLoaded(true))
+      .catch(() => setIsLoaded(false))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [CLIENT_ID, language])
 
   // 지도 초기화 (한 번만)
   useEffect(() => {
@@ -79,6 +98,25 @@ export function NaverStaticMap({
     map.setCenter(new window.naver.maps.LatLng(center.lat, center.lng))
     map.setZoom(level)
   }, [map, center.lat, center.lng, level])
+
+  // 사용자 드래그/줌 등으로 중심점이 바뀐 경우 상위로 전달
+  useEffect(() => {
+    if (!map || !window.naver || !onCenterChanged) return
+
+    const listener = window.naver.maps.Event.addListener(map, 'idle', () => {
+      const c = map.getCenter()
+      // naver.maps.LatLng: lat(), lng()
+      onCenterChanged({ lat: c.lat(), lng: c.lng() })
+    })
+
+    return () => {
+      try {
+        window.naver.maps.Event.removeListener(listener)
+      } catch {
+        // ignore
+      }
+    }
+  }, [map, onCenterChanged])
 
   // 마커 생성
   useEffect(() => {
@@ -142,15 +180,6 @@ export function NaverStaticMap({
 
   return (
     <>
-      <Script
-        src={`https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${CLIENT_ID}`}
-        strategy="lazyOnload"
-        onLoad={() => setIsLoaded(true)}
-        onError={() => {
-          setIsLoaded(false)
-        }}
-      />
-
       <div
         ref={mapRef}
         className="w-full h-full rounded-2xl overflow-hidden naver-map-container"

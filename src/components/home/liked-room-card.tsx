@@ -2,10 +2,11 @@
 
 import Image from "next/image"
 import { LikeButton } from "@/components/ui/like-button"
+import { useLanguage } from "@/components/language-provider"
 
 interface LikedRoomCardProps {
   roomIdentifier: string
-  image: string
+  image?: string | null
   title: string
   provider: string
   location: string
@@ -26,6 +27,7 @@ export function LikedRoomCard({
   onLikeToggle,
   onClick
 }: LikedRoomCardProps) {
+  const { messages } = useLanguage()
   const handleClick = () => {
     if (onClick) {
       onClick(roomIdentifier)
@@ -46,13 +48,21 @@ export function LikedRoomCard({
       onClick={handleClick}
     >
       {/* Image */}
-      <div className="relative aspect-square rounded-2xl overflow-hidden">
-        <Image
-          src={image}
-          alt={title}
-          fill
-          className="object-cover group-hover:scale-105 transition-transform duration-300"
-        />
+      <div className="relative aspect-square rounded-2xl overflow-hidden bg-gray-200">
+        {image ? (
+          <Image
+            src={image}
+            alt={title}
+            fill
+            className="object-cover group-hover:scale-105 transition-transform duration-300"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center">
+            <span className="text-sm text-gray-400">
+              {messages?.common?.noImage || "No image"}
+            </span>
+          </div>
+        )}
         
         {/* 좋아요 버튼 */}
         <div className="absolute top-3 right-3">
