@@ -290,6 +290,7 @@ header: {
     hideMap: "Hide Map",
     searchError: "An error occurred while searching",
     searchButton: "Search",
+    searchThisArea: "Search this area",
     showAllRooms: "Show all rooms",
     validation: {
       selectLocation: "Please select a location from Algolia search",

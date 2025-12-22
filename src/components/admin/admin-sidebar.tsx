@@ -51,6 +51,20 @@ export function AdminSidebar() {
   const pathname = usePathname()
 
   const isActive = (href: string) => {
+    // 룸 상세/생성 페이지가 /admin/residences/[id]/rooms... 아래에 있기 때문에
+    // 단순 startsWith 매칭이면 "고시원 관리"가 선택되는 문제가 생김.
+    // 가장 간단하게는 이 경로를 "룸 관리"로 취급하도록 예외 처리한다.
+    const isResidenceRoomRoute =
+      pathname.startsWith("/admin/residences/") && pathname.includes("/rooms")
+
+    if (href === "/admin/rooms") {
+      return pathname.startsWith("/admin/rooms") || isResidenceRoomRoute
+    }
+
+    if (href === "/admin/residences") {
+      return pathname.startsWith("/admin/residences") && !isResidenceRoomRoute
+    }
+
     if (href === "/admin") {
       return pathname === href
     }

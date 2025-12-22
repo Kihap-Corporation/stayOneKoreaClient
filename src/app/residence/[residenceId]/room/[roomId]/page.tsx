@@ -13,7 +13,7 @@ import { apiGet, apiPost } from "@/lib/api"
 import { Wifi, WashingMachine, Car, AirVent, Bell, Flame, ChevronRight, Camera, ChevronLeft, X, Heart, Share2, Calendar } from "lucide-react"
 import "react-datepicker/dist/react-datepicker.css"
 import DatePicker from "react-datepicker"
-import Script from 'next/script'
+import { loadNaverMaps } from "@/lib/naver-maps-loader"
 import { MobileCustomDateRangePicker } from "@/components/home/mobile-custom-date-range-picker"
 import { getBookingDates, saveBookingDates } from "@/lib/session-storage"
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -119,7 +119,7 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
   const [isMobileCalendarOpen, setIsMobileCalendarOpen] = useState(false)
   const [datePickerLocale, setDatePickerLocale] = useState<any>(undefined)
   const [isReserving, setIsReserving] = useState(false)
-  const [isNaverMapLoaded, setIsNaverMapLoaded] = useState(false)
+  // 네이버 지도는 언어 변경 시 SDK 재로딩 + 지도 재생성이 필요
 
   const handleGuestsChange = (newGuests: number) => {
     setGuests(Math.max(1, Math.min(1, newGuests)))
@@ -391,12 +391,16 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
     fetchRelatedRooms()
   }, [roomData, params.residenceId, params.roomId, currentLanguage, currentRoomPage])
 
-  // 네이버 SDK가 이미 로드되어 있는지 초기 체크
+  // 네이버 지도 SDK 로드 (언어 변경 시 재로딩)
   useEffect(() => {
-    if ((window as any).naver) {
-      setIsNaverMapLoaded(true)
-    }
-  }, [])
+    const clientId = process.env.NEXT_PUBLIC_NAVER_CLOUD_CLIENT_ID
+    if (!clientId) return
+
+    const lang = currentLanguage.code === 'ko' ? 'ko' : currentLanguage.code === 'zh' ? 'zh' : 'en'
+    loadNaverMaps(clientId, lang).catch(() => {
+      // 지도 로딩 실패는 지도 영역에서만 조용히 처리
+    })
+  }, [currentLanguage.code])
 
   // 네이버 지도 초기화 - roomData 로드 후 SDK를 기다리며 초기화
   useEffect(() => {
@@ -423,6 +427,11 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
 
       // 모바일 지도
       const mobileMapElement = document.getElementById('map');
+      if (mobileMapElement) {
+        // 언어 변경 시 재생성되도록, 기존 map 표시를 초기화
+        mobileMapElement.classList.remove('map-initialized')
+        mobileMapElement.innerHTML = ''
+      }
       if (mobileMapElement && !mobileMapElement.classList.contains('map-initialized')) {
         mobileMapElement.classList.add('map-initialized')
         try {
@@ -445,6 +454,10 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
 
       // 데스크톱 지도
       const desktopMapElement = document.getElementById('map-desktop');
+      if (desktopMapElement) {
+        desktopMapElement.classList.remove('map-initialized')
+        desktopMapElement.innerHTML = ''
+      }
       if (desktopMapElement && !desktopMapElement.classList.contains('map-initialized')) {
         desktopMapElement.classList.add('map-initialized')
         try {
@@ -475,7 +488,7 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
         clearTimeout(timeoutId)
       }
     }
-  }, [roomData])
+  }, [roomData, currentLanguage.code])
 
   // 체크인 날짜 필터링 함수 (체크인 전용)
   const filterCheckInDates = (date: Date) => {
@@ -635,7 +648,10 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
     )
   }
 
-  const sortedImages = [...roomData.roomImages].sort((a, b) => a.displayOrder - b.displayOrder)
+  // 이미지가 없거나(imageUrl 누락) 비어있는 경우를 방어
+  const sortedImages = (roomData.roomImages || [])
+    .filter((img) => Boolean(img?.imageUrl))
+    .sort((a, b) => a.displayOrder - b.displayOrder)
   const displayedFacilities = showAllFacilities 
     ? roomData.roomFacilities 
     : roomData.roomFacilities.slice(0, 6)
@@ -1575,12 +1591,18 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
                         : 'border-[#e9eaec] opacity-60 hover:opacity-100 hover:border-[#14151a]'
                     }`}
                   >
-                    <Image
-                      src={image.imageUrl}
-                      alt=""
-                      fill
-                      className="object-cover"
-                    />
+                    {image.imageUrl ? (
+                      <Image
+                        src={image.imageUrl}
+                        alt=""
+                        fill
+                        className="object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-gray-200">
+                        <span className="text-xs text-gray-400">{messages?.common?.noImage || "No image"}</span>
+                      </div>
+                    )}
                   </button>
                 ))}
               </div>
@@ -1589,11 +1611,6 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
         </div>
       )}
 
-      <Script
-        src={`https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${process.env.NEXT_PUBLIC_NAVER_CLOUD_CLIENT_ID}`}
-        strategy="afterInteractive"
-        onLoad={() => setIsNaverMapLoaded(true)}
-      />
     </div>
   )
 }
