@@ -119,9 +119,13 @@ export default function ResidenceDetailPage() {
     if (!contactNumber.trim()) missing.push("연락처")
     if (!email.trim()) missing.push("이메일")
 
-    // Residence 수정 스펙 변경:
-    // - profileImage는 수정 시에도 항상 새로 업로드 필수(MultipartFile)
-    if (isEditMode && !profileImage) missing.push("프로필 이미지(새로 업로드)")
+    // 프로필 이미지 필수 체크:
+    // - 기존 이미지가 있으면: 선택 사항 (새로 업로드하거나 기존 유지)
+    // - 기존 이미지가 없으면: 필수 (새로 업로드 필요)
+    const hasExistingProfileImage = profileImageIdentifier && profileImagePreview
+    if (!hasExistingProfileImage && !profileImage) {
+      missing.push("프로필 이미지")
+    }
 
     return missing
   }
@@ -319,13 +323,12 @@ export default function ResidenceDetailPage() {
       formData.append("contactNumber", contactNumber)
       formData.append("email", email)
       
-      // 프로필 이미지 - 필수 필드이므로 항상 보내야 함
-      if (!profileImage) {
-        alert("프로필 이미지는 수정 시에도 새로 업로드가 필요합니다.")
-        setIsSaving(false)
-        return
+      // 프로필 이미지
+      // - 새로 업로드할 파일이 있으면: 새 이미지로 교체
+      // - 없으면: 기존 이미지 유지 (서버에서 null이면 기존 유지)
+      if (profileImage) {
+        formData.append("profileImage", profileImage)
       }
-      formData.append("profileImage", profileImage)
       
       // 갤러리 이미지 (Delta 업데이트 스펙)
       // - identifier O, file X: 기존 이미지 유지 (순서 변경 가능)
@@ -676,6 +679,11 @@ export default function ResidenceDetailPage() {
               <Label htmlFor="profileImage">
                 프로필 이미지 <span className="text-red-500">*</span>
               </Label>
+              {isEditMode && profileImageIdentifier && (
+                <p className="text-sm text-gray-500 mt-1">
+                  새 이미지를 선택하지 않으면 기존 이미지가 유지됩니다
+                </p>
+              )}
               <div className="mt-2">
                 {profileImagePreview && (
                   <div className="relative w-48 h-48 rounded-lg overflow-hidden bg-gray-100 mb-2">
@@ -688,8 +696,17 @@ export default function ResidenceDetailPage() {
                       <button
                         type="button"
                         onClick={() => {
-                          setProfileImage(null)
-                          setProfileImagePreview(residence?.profileImage?.imageUrl || "")
+                          // 새로 선택한 이미지가 있으면 → 기존 이미지로 되돌리기
+                          // 기존 이미지만 있으면 → 완전히 제거 (필수 항목 체크에 걸림)
+                          if (profileImage) {
+                            setProfileImage(null)
+                            setProfileImagePreview(residence?.profileImage?.imageUrl || "")
+                            setProfileImageIdentifier(residence?.profileImage?.identifier || "")
+                          } else {
+                            setProfileImage(null)
+                            setProfileImagePreview("")
+                            setProfileImageIdentifier("")
+                          }
                         }}
                         className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 cursor-pointer"
                       >
@@ -701,13 +718,19 @@ export default function ResidenceDetailPage() {
                   </div>
                 )}
                 {isEditMode && (
-                  <Input
-                    id="profileImage"
-                    type="file"
-                    accept="image/*"
-                    onChange={handleProfileImageChange}
-                    disabled={isSaving}
-                  />
+                  <>
+                    <Input
+                      id="profileImage"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleProfileImageChange}
+                      disabled={isSaving}
+                      className={!profileImageIdentifier && !profileImage ? 'border-red-300' : ''}
+                    />
+                    {!profileImageIdentifier && !profileImage && (
+                      <p className="text-xs text-red-500 mt-1">필수 입력 항목입니다</p>
+                    )}
+                  </>
                 )}
               </div>
             </div>

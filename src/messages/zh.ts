@@ -290,6 +290,7 @@ header: {
     hideMap: "隐藏地图",
     searchError: "搜索时发生错误",
     searchButton: "搜索",
+    searchThisArea: "在此区域重新搜索",
     showAllRooms: "显示所有房间",
     validation: {
       selectLocation: "请从 Algolia 搜索中选择位置",
