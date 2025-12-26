@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 // import { Inter, JetBrains_Mono } from "next/font/google"; // 빌드 시 네트워크 문제로 임시 주석 처리
 import { LanguageProvider } from "@/components/language-provider";
+import { ChannelTalkProvider } from "@/components/channel-talk-provider";
 import { Toaster } from "sonner";
 import "./globals.css";
 
@@ -131,7 +132,9 @@ export default function RootLayout({
         style={{ fontFamily: "'SUIT Variable', sans-serif" }}
       >
         <LanguageProvider>
-          {children}
+          <ChannelTalkProvider>
+            {children}
+          </ChannelTalkProvider>
           <Toaster
             position="top-right"
             richColors
