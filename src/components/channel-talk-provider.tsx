@@ -1,44 +1,51 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import * as ChannelService from '@channel.io/channel-web-sdk-loader';
 
 export function ChannelTalkProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const pluginKey = process.env.NEXT_PUBLIC_CHANNEL_TALK_PLUGIN_KEY;
+  const isBootedRef = useRef(false);
 
-  // 관리자 페이지 체크
-  const isAdminPage = pathname.startsWith('/admin');
+  // 관리자 페이지 체크 (개선된 로직)
+  const isAdminPage = pathname === '/admin' || pathname.startsWith('/admin/');
 
+  // 첫 번째 useEffect: 앱 시작 시 한 번만 boot
   useEffect(() => {
-    // 관리자 페이지이거나 플러그인 키가 없으면 채널톡 비활성화
-    if (isAdminPage || !pluginKey) {
+    if (!pluginKey || isBootedRef.current) {
       return;
     }
 
-    // 채널톡 SDK 초기화
     ChannelService.loadScript();
-
-    // 채널톡 boot
     ChannelService.boot({
       pluginKey: pluginKey,
-      customLauncherSelector: '.channel-talk-launcher', // 선택적: 커스텀 버튼
-      hideChannelButtonOnBoot: false, // 채널 버튼 표시
+      hideChannelButtonOnBoot: isAdminPage, // 초기 상태 반영
     });
 
-    // Cleanup 함수: 의존성 변경 시 항상 shutdown 호출
+    isBootedRef.current = true;
+
+    // cleanup: 컴포넌트 언마운트 시에만 실행
     return () => {
       ChannelService.shutdown();
+      isBootedRef.current = false;
     };
-  }, [pluginKey, isAdminPage]);
+  }, [pluginKey]); // pluginKey만 의존성
 
-  // SPA 환경: 페이지 변경 시 채널톡에 알림
+  // 두 번째 useEffect: 페이지 이동 시 표시/숨김 제어
   useEffect(() => {
-    if (!isAdminPage && pluginKey) {
-      ChannelService.setPage(pathname);
+    if (!isBootedRef.current) {
+      return;
     }
-  }, [pathname, isAdminPage, pluginKey]);
+
+    if (isAdminPage) {
+      ChannelService.hideChannelButton();
+    } else {
+      ChannelService.showChannelButton();
+      ChannelService.setPage(pathname); // 페이지 추적
+    }
+  }, [pathname, isAdminPage]);
 
   return <>{children}</>;
 }
