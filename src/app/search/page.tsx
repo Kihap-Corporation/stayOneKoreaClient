@@ -38,12 +38,30 @@ function SearchResultContent() {
   const checkOutDate = searchParams.get('checkOut')
   const locationName = searchParams.get('location')
 
+  // noindex 메타 태그 추가
+  useEffect(() => {
+    const metaRobots = document.createElement('meta')
+    metaRobots.name = 'robots'
+    metaRobots.content = 'noindex, nofollow'
+    document.head.appendChild(metaRobots)
+
+    return () => {
+      document.head.removeChild(metaRobots)
+    }
+  }, [])
+
+  // 쿼리 파라미터 없이 접근 시 홈으로 리다이렉트
+  useEffect(() => {
+    if (!latitude || !longitude || !checkInDate || !checkOutDate) {
+      router.replace('/')
+    }
+  }, [latitude, longitude, checkInDate, checkOutDate, router])
+
   // Load rooms from API
   useEffect(() => {
     const loadRooms = async () => {
-      // Validate required params
+      // Validate required params - 리다이렉트 전 로딩 방지
       if (!latitude || !longitude || !checkInDate || !checkOutDate) {
-        setError('Missing required search parameters')
         setLoading(false)
         setIsInitialLoad(false)
         return
@@ -245,6 +263,22 @@ function SearchResultContent() {
     }
   }
 
+  // 쿼리 파라미터가 없으면 리다이렉트 중이므로 로딩 표시
+  if (!latitude || !longitude || !checkInDate || !checkOutDate) {
+    return (
+      <div className="flex min-h-screen flex-col bg-white">
+        <Header />
+        <main className="flex-1 pt-10 flex items-center justify-center">
+          <div className="flex flex-col items-center gap-4">
+            <div className="h-8 w-8 border-4 border-[#E91E63] border-t-transparent rounded-full animate-spin"></div>
+            <p className="text-gray-500">{messages?.common?.loading || "Loading..."}</p>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    )
+  }
+
   if (loading) {
     return (
       <div className="flex min-h-screen flex-col bg-white">
@@ -268,7 +302,7 @@ function SearchResultContent() {
           <div className="flex flex-col items-center gap-4">
             <p className="text-red-500 text-lg">{error}</p>
             <button
-              onClick={() => window.history.back()}
+              onClick={() => router.push('/')}
               className="px-6 py-2 bg-[#E91E63] text-white rounded-xl hover:bg-[#c2185b] transition-colors cursor-pointer"
             >
               {messages?.common?.close || "Go Back"}
