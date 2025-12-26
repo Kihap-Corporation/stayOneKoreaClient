@@ -27,12 +27,9 @@ export function ChannelTalkProvider({ children }: { children: React.ReactNode })
       hideChannelButtonOnBoot: false, // 채널 버튼 표시
     });
 
-    // Cleanup 함수
+    // Cleanup 함수: 의존성 변경 시 항상 shutdown 호출
     return () => {
-      // 관리자 페이지로 이동 시 채널톡 숨김
-      if (isAdminPage) {
-        ChannelService.shutdown();
-      }
+      ChannelService.shutdown();
     };
   }, [pluginKey, isAdminPage]);
 
