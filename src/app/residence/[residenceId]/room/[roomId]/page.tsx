@@ -680,11 +680,11 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
           <div className="mx-auto max-w-[1200px] px-4">
             {/* 이미지 1개 */}
             {sortedImages.length === 1 && (
-              <div className="bg-white rounded-[16px] overflow-hidden">
+              <div className="bg-white rounded-[16px] overflow-hidden h-[480px]">
                 <img
                   src={sortedImages[0].imageUrl}
                   alt={roomData.roomNameI18n}
-                  className="w-full h-[404px] object-cover cursor-pointer"
+                  className="w-full h-full object-cover cursor-pointer"
                   onClick={() => {
                     setCurrentImageIndex(0)
                     setShowImageModal(true)
@@ -695,13 +695,13 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
 
             {/* 이미지 2개 */}
             {sortedImages.length === 2 && (
-              <div className="bg-white rounded-[16px] overflow-hidden flex gap-1">
+              <div className="bg-white rounded-[16px] overflow-hidden flex gap-1 h-[480px]">
                 {sortedImages.map((image, index) => (
                   <div key={index} className="flex-1 relative">
                     <img
                       src={image.imageUrl}
                       alt={roomData.roomNameI18n}
-                      className="w-full h-[404px] object-cover cursor-pointer"
+                      className="w-full h-full object-cover cursor-pointer"
                       onClick={() => {
                         setCurrentImageIndex(index)
                         setShowImageModal(true)
@@ -712,21 +712,21 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
               </div>
             )}
 
-            {/* 이미지 3개 */}
+            {/* 이미지 3개: 가장 이상적인 2:1 분할 (모든 이미지가 가로형 비율 유지) */}
             {sortedImages.length === 3 && (
-              <div className="bg-white rounded-[16px] overflow-hidden flex gap-1">
-                <div className="flex-1 relative">
+              <div className="bg-white rounded-[16px] overflow-hidden flex gap-1 h-[480px]">
+                <div className="w-[66.6%] relative">
                   <img
                     src={sortedImages[0].imageUrl}
                     alt={roomData.roomNameI18n}
-                    className="w-full h-[404px] object-cover cursor-pointer"
+                    className="w-full h-full object-cover cursor-pointer"
                     onClick={() => {
                       setCurrentImageIndex(0)
                       setShowImageModal(true)
                     }}
                   />
                 </div>
-                <div className="flex flex-col gap-1 w-[550px]">
+                <div className="w-[33.4%] flex flex-col gap-1">
                   {sortedImages.slice(1).map((image, index) => (
                     <div key={index + 1} className="flex-1 relative">
                       <img
@@ -746,22 +746,22 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
 
             {/* 이미지 4개 */}
             {sortedImages.length === 4 && (
-              <div className="bg-white rounded-[16px] overflow-hidden flex gap-1">
-                <div className="flex-1 relative">
+              <div className="bg-white rounded-[16px] overflow-hidden flex gap-1 h-[480px]">
+                <div className="w-[66.6%] relative">
                   <img
                     src={sortedImages[0].imageUrl}
                     alt={roomData.roomNameI18n}
-                    className="w-full h-[404px] object-cover cursor-pointer"
+                    className="w-full h-full object-cover cursor-pointer"
                     onClick={() => {
                       setCurrentImageIndex(0)
                       setShowImageModal(true)
                     }}
                   />
                 </div>
-                <div className="flex flex-col gap-1 w-[550px]">
-                  <div className="flex gap-1">
+                <div className="flex flex-col gap-1 w-[33.4%]">
+                  <div className="flex gap-1 flex-1">
                     {sortedImages.slice(1, 3).map((image, index) => (
-                      <div key={index + 1} className="flex-1 h-[200px] relative">
+                      <div key={index + 1} className="flex-1 relative">
                         <img
                           src={image.imageUrl}
                           alt=""
@@ -774,7 +774,7 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
                       </div>
                     ))}
                   </div>
-                  <div className="flex-1 h-[200px] relative">
+                  <div className="flex-1 relative">
                     <img
                       src={sortedImages[3].imageUrl}
                       alt=""
@@ -791,22 +791,22 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
 
             {/* 이미지 5개 이상 */}
             {sortedImages.length >= 5 && (
-              <div className="rounded-[16px] overflow-hidden flex gap-1">
-                <div className="flex-1 relative">
+              <div className="rounded-[16px] overflow-hidden flex gap-1 h-[480px]">
+                <div className="w-[50%] relative">
                   <img
                     src={sortedImages[0].imageUrl}
                     alt={roomData.roomNameI18n}
-                    className="w-full h-[404px] object-cover cursor-pointer"
+                    className="w-full h-full object-cover cursor-pointer"
                     onClick={() => {
                       setCurrentImageIndex(0)
                       setShowImageModal(true)
                     }}
                   />
                 </div>
-                <div className="flex flex-col gap-1 w-[550px]">
-                  <div className="flex gap-1">
+                <div className="flex flex-col gap-1 w-[50%]">
+                  <div className="flex gap-1 flex-1">
                     {sortedImages.slice(1, 3).map((image, index) => (
-                      <div key={index + 1} className="flex-1 h-[200px] relative">
+                      <div key={index + 1} className="flex-1 relative">
                         <img
                           src={image.imageUrl}
                           alt=""
@@ -819,8 +819,8 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
                       </div>
                     ))}
                   </div>
-                  <div className="flex gap-1">
-                    <div className="flex-1 h-[200px] relative">
+                  <div className="flex gap-1 flex-1">
+                    <div className="flex-1 relative">
                       <img
                         src={sortedImages[3].imageUrl}
                         alt=""
@@ -831,7 +831,7 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
                         }}
                       />
                     </div>
-                    <div className="flex-1 h-[200px] relative">
+                    <div className="flex-1 relative">
                       <img
                         src={sortedImages[4].imageUrl}
                         alt=""
@@ -859,8 +859,8 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
         </div>
 
         {/* 이미지 갤러리 섹션 - 모바일 (Swiper) */}
-        <div className="lg:hidden relative">
-          <div className="relative h-[300px]">
+        <div className="lg:hidden relative aspect-video">
+          <div className="relative h-full">
             <Swiper
               modules={[Pagination, Navigation]}
               pagination={{
@@ -1592,11 +1592,10 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
                     }`}
                   >
                     {image.imageUrl ? (
-                      <Image
+                      <img
                         src={image.imageUrl}
                         alt=""
-                        fill
-                        className="object-cover"
+                        className="w-full h-full object-cover"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center bg-gray-200">
