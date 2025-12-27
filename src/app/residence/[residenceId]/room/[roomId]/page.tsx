@@ -712,27 +712,27 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
               </div>
             )}
 
-            {/* 이미지 3개: 가장 이상적인 2:1 분할 (모든 이미지가 가로형 비율 유지) */}
+            {/* 이미지 3개: 2:1 분할 (오른쪽 작은 이미지들의 크기 동일 보장) */}
             {sortedImages.length === 3 && (
-              <div className="bg-white rounded-[16px] overflow-hidden flex gap-1 h-[480px]">
+              <div className="bg-white rounded-[16px] overflow-hidden flex gap-1 aspect-video">
                 <div className="w-[66.6%] relative">
                   <img
                     src={sortedImages[0].imageUrl}
                     alt={roomData.roomNameI18n}
-                    className="w-full h-full object-cover cursor-pointer"
+                    className="w-full h-full object-cover cursor-pointer hover:brightness-95 transition-all"
                     onClick={() => {
                       setCurrentImageIndex(0)
                       setShowImageModal(true)
                     }}
                   />
                 </div>
-                <div className="w-[33.4%] flex flex-col gap-1">
+                <div className="w-[33.4%] flex flex-col gap-1 h-full">
                   {sortedImages.slice(1).map((image, index) => (
-                    <div key={index + 1} className="flex-1 relative">
+                    <div key={index + 1} className="flex-1 relative overflow-hidden">
                       <img
                         src={image.imageUrl}
                         alt=""
-                        className="w-full h-full object-cover cursor-pointer"
+                        className="w-full h-full object-cover cursor-pointer hover:brightness-95 transition-all"
                         onClick={() => {
                           setCurrentImageIndex(index + 1)
                           setShowImageModal(true)
@@ -744,59 +744,46 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
               </div>
             )}
 
-            {/* 이미지 4개 */}
+            {/* 이미지 4개: 3:1 분할 (오른쪽 작은 이미지들의 크기 동일 보장) */}
             {sortedImages.length === 4 && (
-              <div className="bg-white rounded-[16px] overflow-hidden flex gap-1 h-[480px]">
-                <div className="w-[66.6%] relative">
+              <div className="bg-white rounded-[16px] overflow-hidden flex gap-1 aspect-video">
+                <div className="w-[75%] relative">
                   <img
                     src={sortedImages[0].imageUrl}
                     alt={roomData.roomNameI18n}
-                    className="w-full h-full object-cover cursor-pointer"
+                    className="w-full h-full object-cover cursor-pointer hover:brightness-95 transition-all"
                     onClick={() => {
                       setCurrentImageIndex(0)
                       setShowImageModal(true)
                     }}
                   />
                 </div>
-                <div className="flex flex-col gap-1 w-[33.4%]">
-                  <div className="flex gap-1 flex-1">
-                    {sortedImages.slice(1, 3).map((image, index) => (
-                      <div key={index + 1} className="flex-1 relative">
-                        <img
-                          src={image.imageUrl}
-                          alt=""
-                          className="w-full h-full object-cover cursor-pointer"
-                          onClick={() => {
-                            setCurrentImageIndex(index + 1)
-                            setShowImageModal(true)
-                          }}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                  <div className="flex-1 relative">
-                    <img
-                      src={sortedImages[3].imageUrl}
-                      alt=""
-                      className="w-full h-full object-cover cursor-pointer"
-                      onClick={() => {
-                        setCurrentImageIndex(3)
-                        setShowImageModal(true)
-                      }}
-                    />
-                  </div>
+                <div className="w-[25%] flex flex-col gap-1 h-full">
+                  {sortedImages.slice(1).map((image, index) => (
+                    <div key={index + 1} className="flex-1 relative overflow-hidden">
+                      <img
+                        src={image.imageUrl}
+                        alt=""
+                        className="w-full h-full object-cover cursor-pointer hover:brightness-95 transition-all"
+                        onClick={() => {
+                          setCurrentImageIndex(index + 1)
+                          setShowImageModal(true)
+                        }}
+                      />
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
 
-            {/* 이미지 5개 이상 */}
+            {/* 이미지 5개 이상: 1:1 분할 (모든 이미지 비율 0.88:1로 동일) */}
             {sortedImages.length >= 5 && (
-              <div className="rounded-[16px] overflow-hidden flex gap-1 h-[480px]">
+              <div className="rounded-[16px] overflow-hidden flex gap-1 aspect-video">
                 <div className="w-[50%] relative">
                   <img
                     src={sortedImages[0].imageUrl}
                     alt={roomData.roomNameI18n}
-                    className="w-full h-full object-cover cursor-pointer"
+                    className="w-full h-full object-cover cursor-pointer hover:brightness-95 transition-all"
                     onClick={() => {
                       setCurrentImageIndex(0)
                       setShowImageModal(true)
@@ -810,7 +797,7 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
                         <img
                           src={image.imageUrl}
                           alt=""
-                          className="w-full h-full object-cover cursor-pointer"
+                          className="w-full h-full object-cover cursor-pointer hover:brightness-95 transition-all"
                           onClick={() => {
                             setCurrentImageIndex(index + 1)
                             setShowImageModal(true)
@@ -824,7 +811,7 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
                       <img
                         src={sortedImages[3].imageUrl}
                         alt=""
-                        className="w-full h-full object-cover cursor-pointer"
+                        className="w-full h-full object-cover cursor-pointer hover:brightness-95 transition-all"
                         onClick={() => {
                           setCurrentImageIndex(3)
                           setShowImageModal(true)
@@ -838,7 +825,7 @@ export default function RoomDetailPage({ params }: RoomDetailPageProps) {
                         className="w-full h-full object-cover"
                       />
                       <button 
-                        className="absolute inset-0 bg-[rgba(224,0,77,0.7)] backdrop-blur-[6px] flex flex-col items-center justify-center gap-2 cursor-pointer"
+                        className="absolute inset-0 bg-[rgba(224,0,77,0.7)] backdrop-blur-[6px] flex flex-col items-center justify-center gap-2 cursor-pointer transition-all hover:bg-[rgba(224,0,77,0.8)]"
                         onClick={() => {
                           setCurrentImageIndex(0)
                           setShowImageModal(true)
