@@ -34,7 +34,7 @@ export default function AdminRoomsPage() {
   const [sortBy, setSortBy] = useState<"createdAt" | "residenceName">("createdAt")
   const [direction, setDirection] = useState<"ASC" | "DESC">("ASC")
   const [deletingId, setDeletingId] = useState<string | null>(null)
-  
+
   // 검색 관련 상태
   const [searchType, setSearchType] = useState<"ROOM_NAME" | "RESIDENCE_NAME">("ROOM_NAME")
   const [searchKeyword, setSearchKeyword] = useState("")
@@ -48,14 +48,14 @@ export default function AdminRoomsPage() {
     setIsLoading(true)
     try {
       let url = `/api/v1/admin/rooms?page=${currentPage}&size=20&sortBy=${sortBy}&direction=${direction}`
-      
+
       if (searchKeyword) {
         url += `&searchType=${searchType}&searchKeyword=${encodeURIComponent(searchKeyword)}`
       }
 
       const response = await apiGet(url)
       const data: RoomListResponse = response.data
-      
+
       setRooms(data.rooms)
       setTotalPages(data.totalPages)
       setTotalElements(data.totalElements)
@@ -99,8 +99,9 @@ export default function AdminRoomsPage() {
       await apiDelete(`/api/v1/admin/residences/${residenceIdentifier}/rooms/${roomIdentifier}`)
       alert("룸이 삭제되었습니다.")
       await fetchRooms()
-    } catch (error) {
-      alert("룸 삭제에 실패했습니다.")
+    } catch (error: any) {
+      // ApiError에서 이미 alert를 표시하므로 추가 처리 불필요
+      console.error("룸 삭제 실패:", error)
     } finally {
       setDeletingId(null)
     }
@@ -171,21 +172,19 @@ export default function AdminRoomsPage() {
             <div className="flex items-center space-x-2">
               <button
                 onClick={() => handleSortChange("createdAt")}
-                className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer ${
-                  sortBy === "createdAt"
+                className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer ${sortBy === "createdAt"
                     ? "bg-[#E91E63] text-white"
                     : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                }`}
+                  }`}
               >
                 등록일순
               </button>
               <button
                 onClick={() => handleSortChange("residenceName")}
-                className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer ${
-                  sortBy === "residenceName"
+                className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer ${sortBy === "residenceName"
                     ? "bg-[#E91E63] text-white"
                     : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                }`}
+                  }`}
               >
                 고시원명순
               </button>
