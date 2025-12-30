@@ -43,7 +43,7 @@ export default function ResidenceRoomsPage() {
         `/api/v1/admin/residences/${residenceIdentifier}/rooms?page=${page}&size=${pageSize}`
       )
       const data: RoomsResponse = response.data
-      
+
       setRooms(data.rooms)
       setCurrentPage(data.currentPage)
       setTotalPages(data.totalPages)
@@ -72,8 +72,9 @@ export default function ResidenceRoomsPage() {
       alert("룸이 삭제되었습니다.")
       // 리스트 새로고침
       fetchRooms(currentPage)
-    } catch (error) {
-      alert("룸 삭제에 실패했습니다.")
+    } catch (error: any) {
+      // ApiError에서 이미 alert를 표시하므로 추가 처리 불필요
+      console.error("룸 삭제 실패:", error)
     } finally {
       setDeletingId(null)
     }
@@ -247,11 +248,10 @@ export default function ResidenceRoomsPage() {
                           <button
                             key={page}
                             onClick={() => handlePageChange(page)}
-                            className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium cursor-pointer ${
-                              page === currentPage
+                            className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium cursor-pointer ${page === currentPage
                                 ? 'z-10 bg-[#E91E63] border-[#E91E63] text-white'
                                 : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
-                            }`}
+                              }`}
                           >
                             {page}
                           </button>

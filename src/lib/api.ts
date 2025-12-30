@@ -142,6 +142,10 @@ const executeRequest = async (
           alert(globalMessages?.auth?.currentPasswordIncorrect || "현재 비밀번호가 일치하지 않습니다.")
           throw new ApiError(data, response.status)
         }
+        if (code === "40504") {
+          alert(data.message || "예약 이력이 있는 방은 삭제할 수 없습니다.")
+          throw new ApiError(data, response.status)
+        }
       }
 
       if (!response.ok) {

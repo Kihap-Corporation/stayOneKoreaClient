@@ -148,10 +148,10 @@ export default function RoomDetailPage() {
   const [description, setDescription] = useState<I18nField>({ ko: "", en: "", zh: "", fr: "" })
   const [rules, setRules] = useState<I18nField>({ ko: "", en: "", zh: "", fr: "" })
   const [pricePerNight, setPricePerNight] = useState("")
-  
+
   // 갤러리 이미지
   const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([])
-  
+
   // 시설
   const [selectedFacilities, setSelectedFacilities] = useState<string[]>([])
   const [customAvailableFacilities, setCustomAvailableFacilities] = useState<CustomFacility[]>([])
@@ -176,17 +176,17 @@ export default function RoomDetailPage() {
     if (!name.en.trim()) missing.push("룸명(English)")
     if (!name.zh.trim()) missing.push("룸명(中文)")
     if (!name.fr.trim()) missing.push("룸명(Français)")
-    
+
     if (!description.ko.trim()) missing.push("설명(한국어)")
     if (!description.en.trim()) missing.push("설명(English)")
     if (!description.zh.trim()) missing.push("설명(中文)")
     if (!description.fr.trim()) missing.push("설명(Français)")
-    
+
     if (!rules.ko.trim()) missing.push("규칙(한국어)")
     if (!rules.en.trim()) missing.push("규칙(English)")
     if (!rules.zh.trim()) missing.push("규칙(中文)")
     if (!rules.fr.trim()) missing.push("규칙(Français)")
-    
+
     if (!pricePerNight || Number(pricePerNight) <= 0) missing.push("1박 가격")
 
     // 커스텀 시설 검증 - 추가한 경우 모든 언어 필수
@@ -226,13 +226,13 @@ export default function RoomDetailPage() {
       const data: RoomDetail = response.data
 
       setRoom(data)
-      
+
       // 폼 데이터 초기화
       setName(data.nameI18n)
       setDescription(data.descriptionI18n || { ko: "", en: "", zh: "", fr: "" })
       setRules(data.rulesI18n || { ko: "", en: "", zh: "", fr: "" })
       setPricePerNight(data.pricePerNight.toString())
-      
+
       // 갤러리 이미지 초기화
       setGalleryImages(
         data.galleryImages.map(img => ({
@@ -282,7 +282,7 @@ export default function RoomDetailPage() {
   // 룸 삭제
   const handleDelete = async () => {
     if (!room) return
-    
+
     const confirmed = confirm(
       `"${room.nameI18n.ko}" 룸을 삭제하시겠습니까?\n\n이 작업은 되돌릴 수 없습니다.`
     )
@@ -293,8 +293,9 @@ export default function RoomDetailPage() {
       await apiDelete(`/api/v1/admin/residences/${residenceIdentifier}/rooms/${roomIdentifier}`)
       alert("룸이 삭제되었습니다.")
       router.push(`/admin/residences/${residenceIdentifier}/rooms`)
-    } catch (error) {
-      alert("룸 삭제에 실패했습니다.")
+    } catch (error: any) {
+      // ApiError에서 이미 alert를 표시하므로 추가 처리 불필요
+      console.error("룸 삭제 실패:", error)
     } finally {
       setIsDeleting(false)
     }
@@ -336,7 +337,7 @@ export default function RoomDetailPage() {
     const draggedItem = newImages[draggedIndex]
     newImages.splice(draggedIndex, 1)
     newImages.splice(index, 0, draggedItem)
-    
+
     setGalleryImages(newImages.map((img, i) => ({ ...img, displayOrder: i })))
     setDraggedIndex(index)
   }
@@ -360,7 +361,7 @@ export default function RoomDetailPage() {
       type,
       customNameI18n: { ko: "", en: "", zh: "", fr: "" }
     }
-    
+
     if (type === "AVAILABLE") {
       setCustomAvailableFacilities([...customAvailableFacilities, newFacility])
     } else {
@@ -410,28 +411,28 @@ export default function RoomDetailPage() {
 
     try {
       const formData = new FormData()
-      
+
       // 다국어 필드 - 룸명 (필수)
       formData.append("nameI18n[ko]", name.ko)
       formData.append("nameI18n[en]", name.en)
       formData.append("nameI18n[zh]", name.zh)
       formData.append("nameI18n[fr]", name.fr)
-      
+
       // 설명 (필수)
       formData.append("descriptionI18n[ko]", description.ko)
       formData.append("descriptionI18n[en]", description.en)
       formData.append("descriptionI18n[zh]", description.zh)
       formData.append("descriptionI18n[fr]", description.fr)
-      
+
       // 규칙 (필수)
       formData.append("rulesI18n[ko]", rules.ko)
       formData.append("rulesI18n[en]", rules.en)
       formData.append("rulesI18n[zh]", rules.zh)
       formData.append("rulesI18n[fr]", rules.fr)
-      
+
       // 가격 (필수)
       formData.append("pricePerNight", pricePerNight)
-      
+
       // 갤러리 이미지 (Delta 업데이트 스펙)
       // - identifier O, file X: 기존 이미지 유지 (순서 변경 가능)
       // - identifier X, file O: 신규 이미지 업로드
@@ -480,10 +481,10 @@ export default function RoomDetailPage() {
       let facilityIndex = selectedFacilities.length
       customAvailableFacilities.forEach((facility) => {
         // 모든 언어가 입력된 경우만 전송
-        if (facility.customNameI18n.ko.trim() && 
-            facility.customNameI18n.en.trim() && 
-            facility.customNameI18n.zh.trim() && 
-            facility.customNameI18n.fr.trim()) {
+        if (facility.customNameI18n.ko.trim() &&
+          facility.customNameI18n.en.trim() &&
+          facility.customNameI18n.zh.trim() &&
+          facility.customNameI18n.fr.trim()) {
           formData.append(`facilities[${facilityIndex}].facilityType`, "AVAILABLE")
           formData.append(`facilities[${facilityIndex}].customNameI18n[ko]`, facility.customNameI18n.ko)
           formData.append(`facilities[${facilityIndex}].customNameI18n[en]`, facility.customNameI18n.en)
@@ -496,10 +497,10 @@ export default function RoomDetailPage() {
       // 시설 - 커스텀 UN_AVAILABLE (검증 통과한 것만)
       customUnavailableFacilities.forEach((facility) => {
         // 모든 언어가 입력된 경우만 전송
-        if (facility.customNameI18n.ko.trim() && 
-            facility.customNameI18n.en.trim() && 
-            facility.customNameI18n.zh.trim() && 
-            facility.customNameI18n.fr.trim()) {
+        if (facility.customNameI18n.ko.trim() &&
+          facility.customNameI18n.en.trim() &&
+          facility.customNameI18n.zh.trim() &&
+          facility.customNameI18n.fr.trim()) {
           formData.append(`facilities[${facilityIndex}].facilityType`, "UN_AVAILABLE")
           formData.append(`facilities[${facilityIndex}].customNameI18n[ko]`, facility.customNameI18n.ko)
           formData.append(`facilities[${facilityIndex}].customNameI18n[en]`, facility.customNameI18n.en)
@@ -615,18 +616,17 @@ export default function RoomDetailPage() {
           {/* 다국어 탭 */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">다국어 정보</h3>
-            
+
             <div className="flex space-x-1 mb-4 border-b border-gray-200">
               {languages.map((lang) => (
                 <button
                   key={lang.code}
                   type="button"
                   onClick={() => setActiveTab(lang.code)}
-                  className={`px-4 py-2 text-sm font-medium transition-colors cursor-pointer ${
-                    activeTab === lang.code
+                  className={`px-4 py-2 text-sm font-medium transition-colors cursor-pointer ${activeTab === lang.code
                       ? "text-[#E91E63] border-b-2 border-[#E91E63]"
                       : "text-gray-500 hover:text-gray-700"
-                  }`}
+                    }`}
                 >
                   {lang.label}
                 </button>
@@ -668,9 +668,8 @@ export default function RoomDetailPage() {
                   disabled={!isEditMode || isSaving}
                   readOnly={!isEditMode}
                   rows={4}
-                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#E91E63] focus:border-transparent disabled:bg-gray-50 ${
-                    isEditMode && !description[activeTab].trim() ? 'border-red-300' : 'border-gray-300'
-                  }`}
+                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#E91E63] focus:border-transparent disabled:bg-gray-50 ${isEditMode && !description[activeTab].trim() ? 'border-red-300' : 'border-gray-300'
+                    }`}
                 />
                 {isEditMode && !description[activeTab].trim() && (
                   <p className="text-xs text-red-500 mt-1">필수 입력 항목입니다</p>
@@ -691,9 +690,8 @@ export default function RoomDetailPage() {
                   disabled={!isEditMode || isSaving}
                   readOnly={!isEditMode}
                   rows={4}
-                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#E91E63] focus:border-transparent disabled:bg-gray-50 ${
-                    isEditMode && !rules[activeTab].trim() ? 'border-red-300' : 'border-gray-300'
-                  }`}
+                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#E91E63] focus:border-transparent disabled:bg-gray-50 ${isEditMode && !rules[activeTab].trim() ? 'border-red-300' : 'border-gray-300'
+                    }`}
                 />
                 {isEditMode && !rules[activeTab].trim() && (
                   <p className="text-xs text-red-500 mt-1">필수 입력 항목입니다</p>
@@ -738,7 +736,7 @@ export default function RoomDetailPage() {
           {/* 시설 */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">시설</h3>
-            
+
             {!isEditMode ? (
               // 조회 모드
               <div className="space-y-4">
@@ -759,7 +757,7 @@ export default function RoomDetailPage() {
                     </div>
                   </div>
                 )}
-                
+
                 {customAvailableFacilities.length > 0 && (
                   <div>
                     <h4 className="text-sm font-medium text-gray-700 mb-3">커스텀 시설 (이용 가능)</h4>
@@ -777,7 +775,7 @@ export default function RoomDetailPage() {
                     </div>
                   </div>
                 )}
-                
+
                 {customUnavailableFacilities.length > 0 && (
                   <div>
                     <h4 className="text-sm font-medium text-gray-700 mb-3">커스텀 시설 (이용 불가)</h4>
@@ -795,7 +793,7 @@ export default function RoomDetailPage() {
                     </div>
                   </div>
                 )}
-                
+
                 {selectedFacilities.length === 0 && customAvailableFacilities.length === 0 && customUnavailableFacilities.length === 0 && (
                   <p className="text-sm text-gray-500 text-center py-4">등록된 시설이 없습니다</p>
                 )}
@@ -810,11 +808,10 @@ export default function RoomDetailPage() {
                     {PREDEFINED_FACILITIES.map((facility) => (
                       <label
                         key={facility.type}
-                        className={`flex items-center space-x-3 p-3 border rounded-lg cursor-pointer transition-colors ${
-                          selectedFacilities.includes(facility.type)
+                        className={`flex items-center space-x-3 p-3 border rounded-lg cursor-pointer transition-colors ${selectedFacilities.includes(facility.type)
                             ? 'border-[#E91E63] bg-pink-50'
                             : 'border-gray-200 hover:border-gray-300'
-                        }`}
+                          }`}
                       >
                         <input
                           type="checkbox"
@@ -947,7 +944,7 @@ export default function RoomDetailPage() {
           {/* 갤러리 이미지 */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">갤러리 이미지</h3>
-            
+
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {galleryImages.map((img, index) => (
                 <div
@@ -956,9 +953,8 @@ export default function RoomDetailPage() {
                   onDragStart={() => isEditMode && handleDragStart(index)}
                   onDragOver={(e) => isEditMode && handleDragOver(e, index)}
                   onDragEnd={handleDragEnd}
-                  className={`relative group ${isEditMode ? 'cursor-move' : ''} ${
-                    draggedIndex === index ? 'opacity-50' : ''
-                  }`}
+                  className={`relative group ${isEditMode ? 'cursor-move' : ''} ${draggedIndex === index ? 'opacity-50' : ''
+                    }`}
                 >
                   <div className="aspect-square rounded-lg overflow-hidden bg-gray-100 border-2 border-gray-200">
                     <img
@@ -967,7 +963,7 @@ export default function RoomDetailPage() {
                       className="w-full h-full object-cover"
                     />
                   </div>
-                  
+
                   {isEditMode && (
                     <button
                       type="button"
@@ -979,13 +975,13 @@ export default function RoomDetailPage() {
                       </svg>
                     </button>
                   )}
-                  
+
                   <div className="absolute bottom-2 left-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
                     {index + 1}
                   </div>
                 </div>
               ))}
-              
+
               {isEditMode && (
                 <button
                   type="button"
